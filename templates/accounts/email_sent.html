@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - FreelanceConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden p-8 md:p-10 space-y-8 text-center relative">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-50 text-indigo-600 mb-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                </path>
+            </svg>
+        </div>
+
+        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Check your email</h2>
+        
+        {% if error %}
+        <!-- Error: Professional Alert Style -->
+        <div class="p-4 mb-4 rounded-r-lg border-l-4 border-red-500 bg-red-50 flex items-start text-left gap-3">
+            <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div class="text-red-700 text-sm font-medium">{{ error }}</div>
+        </div>
+        {% endif %}
+
+        {% if email %}
+        <p class="text-slate-500">We sent a verification link to
+            <strong class="text-slate-900">{{ email }}</strong>. Please click the link to verify your account.</p>
+        {% else %}
+        <p class="text-slate-500">We sent a verification link to
+            <strong class="text-slate-900">{{ email2 }}</strong>. Please click the link to verify your account.</p>
+        {% endif %}
+
+        <div class="space-y-4">
+            <a href="{% url 'accounts:resent_email' %}">
+                <!-- DISABLED BUTTON + ID ADDED -->
+                <button id="resendBtn"
+                    class="text-sm font-medium text-indigo-300 cursor-not-allowed transition-colors"
+                    disabled>
+                    Resend email <span id="timer" class="ml-1 text-slate-500 text-xs"></span>
+                </button>
+            </a>
+        </div>
+
+        <div class="mt-6 border-t border-slate-100 pt-6">
+            <a href="{% url 'accounts:signin' %}" class="text-sm text-slate-400 hover:text-slate-600 transition-colors">
+                Back to Sign In
+            </a>
+        </div>
+    </div>
+
+
+    <!-- TIMER SCRIPT ADDED BELOW — NO OTHER CHANGES -->
+    <script>
+        let duration = 15; // 5 minutes in seconds
+        const timerSpan = document.getElementById("timer");
+        const resendBtn = document.getElementById("resendBtn");
+
+        function startTimer() {
+            resendBtn.disabled = true;
+            resendBtn.classList.add("cursor-not-allowed");
+            resendBtn.classList.add("text-indigo-300");
+            resendBtn.classList.remove("text-indigo-600");
+
+            let remaining = duration;
+
+            let interval = setInterval(() => {
+                let minutes = String(Math.floor(remaining / 60)).padStart(2, "0");
+                let seconds = String(remaining % 60).padStart(2, "0");
+
+                timerSpan.textContent = `(${minutes}:${seconds})`;
+
+                remaining--;
+
+                if (remaining < 0) {
+                    clearInterval(interval);
+                    timerSpan.textContent = "";
+                    enableButton();
+                }
+            }, 1000);
+        }
+
+        function enableButton() {
+            resendBtn.disabled = false;
+            resendBtn.classList.remove("cursor-not-allowed", "text-indigo-300");
+            resendBtn.classList.add("text-indigo-600", "hover:text-indigo-500");
+
+            resendBtn.addEventListener("click", () => {
+                startTimer(); // restart timer on click
+            }, { once: true });
+        }
+
+        // Start countdown automatically
+        startTimer();
+    </script>
+
+</body>
+</html>
