@@ -19,3 +19,7 @@ staticfiles/
 
 # VS Code
 .vscode/
+
+media/
+
+creditial.js

@@ -1,0 +1,366 @@
+{% extends 'client/client_base.html' %} 
+{% load static %}
+
+{% block static %}
+<!-- CKEditor styles -->
+    <link rel="stylesheet" href="{% static 'client/ckeditor/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/47.3.0/ckeditor5.css" crossorigin>
+{% endblock %}
+
+{% block create_card %}
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto h-screen">
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+        <div class="flex items-center gap-4">
+            <a href="/client/home.html" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Post a New Job</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <img
+                    src="{{ user.profile_photo.url }}"
+                    alt="Profile"
+                    class="w-8 h-8 rounded-full"
+                />
+                <span class="font-medium text-slate-700">{{ user.Profile_name }}</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-8 max-w-4xl mx-auto">
+        <form class="space-y-8" action="" method="post" enctype="multipart/form-data" >
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <div class="mb-6 bg-red-100 border border4-red-400 text-red-700 px-4 py-3 rounded">
+                {% for error in form.non_field_errors %}
+                    <p>⚠ {{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+                <h2 class="text-lg font-bold text-slate-900 mb-6">Job Details</h2>
+                <div class="space-y-6">
+                    {% comment %} {% if form.errors %}
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {{ form.errors }}
+                    </div>
+                    {% endif %} {% endcomment %}
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Job Title</label>
+                        <input
+                            value="{{ card.title }}"
+                            name = "title"
+                            type="text"
+                            placeholder="e.g. Senior React Developer needed for..."
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                        {{ form.title.errors }}
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                            <select name="category_id"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1"
+                                >Required Skills (comma separated)</label
+                            >
+                            <input
+                                value = "{{ card.skills_required }}"
+                                name = "skills_required"
+                                type="text"
+                                placeholder="React, Node.js, etc."
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                            />
+                            {{ form.skills_required.errors }}
+                        </div>
+                    </div>
+
+                    {% comment %} <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                        <textarea
+                            rows="6"
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Describe the project, responsibilities, and requirements..."
+                        ></textarea>
+                    </div> {% endcomment %}
+                    
+                    <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">
+                        Description
+                    </label>
+
+                    
+                    <div class="w-full border border-slate-300 rounded-lg focus-within:ring-indigo-500 focus-within:border-indigo-500">
+                        <div id="editor" class="px-4 py-2">{{ card.description|safe }}</div>
+                    </div>
+
+                    
+                    <input type="hidden" name="description" id="description" value="">
+                    {{ form.description.errors }}
+                </div>
+
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+                <h2 class="text-lg font-bold text-slate-900 mb-6">Budget & Timeline</h2>
+                <div class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Min Budget ($)</label>
+                            <input
+                                {% comment %} value = "{{ card.min_budget }}"  {% endcomment %}
+                                name = "min_budget"
+                                type="number"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                            />
+                            {{ form.min_budget.errors.0 }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Max Budget ($)</label>
+                            <input
+                                {% comment %} value = "{{ card.max_budget }}" {% endcomment %}
+                                name = "max_budget"
+                                type="number"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                            />
+                            {{ form.max_budget.errors.0 }}
+                        </div>
+
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Timeline</label>
+                        <select
+                            name = "time_line"
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                            <option>Less than 1 week</option>
+                            <option>1 to 4 weeks</option>
+                            <option>1 to 3 months</option>
+                            <option>More than 3 months</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Attachments</label>
+                        <div
+                            class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-lg"
+                        >
+                            <div class="space-y-1 text-center">
+                                <svg
+                                    class="mx-auto h-12 w-12 text-slate-400"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    viewBox="0 0 48 48"
+                                >
+                                    <path
+                                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                                <div class="flex text-sm text-slate-600">
+                                    <label
+                                        for="file-upload"
+                                        class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                                    >
+                                        <span>Upload a file</span>
+                                        
+                                        <input id="file-upload" name="images" type="file" multiple accept="image/*" class="sr-only" />
+                                    </label>
+                                    {% comment %} <p class="pl-1">or drag and drop</p> {% endcomment %}
+                                    <p class="pl-1">You can upload up to 3 images only </p>
+                                </div>
+                                
+                                <div id="image-preview" class="mt-4 grid grid-cols-3 gap-4"></div>
+                                <!-- Existing Images (Edit Mode) -->
+                                {% if images %}
+                                <div id="existing-images-container" class="grid grid-cols-3 gap-4 mb-4" data-existing-count="{{ images|length }}">
+                                    {% for img in images %}
+                                        <div class="relative group existing-image-item" id="existing-img-{{ img.id }}">
+                                            <img src="{{ img.image.url }}" class="w-full h-32 object-cover rounded-lg border border-slate-200">
+                                            <!-- Delete Button -->
+                                            <button 
+                                                type="button" 
+                                                class="absolute -top-2 -right-2 bg-white text-red-500 rounded-full p-1 shadow-md border border-slate-200 hover:bg-red-50 transition-colors"
+                                                onclick="deleteExistingImage('{{ img.id }}')"
+                                                title="Remove image"
+                                            >
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </button>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Hidden input to track deleted image IDs -->
+                                <input type="hidden" name="deleted_image_ids" id="deleted_image_ids" value="">
+                                {% comment %} <p class="text-xs text-slate-500">PDF, DOCX, PNG, JPG up to 10MB</p> {% endcomment %}
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-4">
+                <a
+                    href="/client/home.html"
+                    class="px-6 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium"
+                    >Cancel</a
+                >
+                <button
+                    type="submit"
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium shadow-lg shadow-indigo-200"
+                >
+                    Post Job
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+<script src="https://cdn.ckeditor.com/ckeditor5/47.3.0/ckeditor5.umd.js" crossorigin></script>
+<script src="https://cdn.ckbox.io/ckbox/2.9.2/ckbox.js" crossorigin></script>
+<script src="{% static 'client/ckeditor/main.js' %}?v=1.1"></script>
+
+{% endblock  %}
+{% block ckeditor_js %}
+<!-- Your builder JS -->
+{% comment %} <script src="{% static 'client/ckeditor/main.js' %}"></script> {% endcomment %}
+
+
+
+<script>
+    // --- Image Upload & Delete Logic ---
+    const fileInput = document.getElementById("file-upload");
+    const previewContainer = document.getElementById("image-preview");
+    const deletedIdsInput = document.getElementById("deleted_image_ids");
+    const existingContainer = document.getElementById("existing-images-container");
+    
+    // Track deleted existing images
+    let deletedImageIds = new Set();
+    // Track new files using DataTransfer to allow "deleting" from input
+    const dataTransfer = new DataTransfer();
+    
+    const MAX_TOTAL_IMAGES = 3;
+
+    // --- Helpers ---
+    
+    function getExistingCount() {
+        const initialCount = existingContainer ? parseInt(existingContainer.dataset.existingCount || 0) : 0;
+        return initialCount - deletedImageIds.size;
+    }
+
+    // --- Delete Handlers ---
+
+    // 1. Delete Existing Image
+    window.deleteExistingImage = function(id) {
+        if(!confirm("Remove this image?")) return;
+
+        deletedImageIds.add(id);
+        deletedIdsInput.value = Array.from(deletedImageIds).join(',');
+        
+        const element = document.getElementById(`existing-img-${id}`);
+        if(element) element.style.display = 'none';
+        
+        // Re-check limits (optional UI update could happen here)
+    };
+
+    // 2. Delete New Image (by index in DataTransfer)
+    window.deleteNewImage = function(index) {
+        // Remove from DataTransfer
+        dataTransfer.items.remove(index);
+        
+        // Update Actual Input
+        fileInput.files = dataTransfer.files;
+        
+        // Re-render
+        renderNewPreviews();
+    };
+
+    // --- Rendering ---
+
+    function renderNewPreviews() {
+        previewContainer.innerHTML = "";
+        
+        Array.from(dataTransfer.files).forEach((file, index) => {
+            if (!file.type.startsWith("image/")) return;
+
+            const div = document.createElement("div");
+            div.className = "relative group";
+            
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(file);
+            img.className = "w-full h-32 object-cover rounded-lg border border-slate-300";
+            
+            // Delete button for new image
+            const btn = document.createElement("button");
+            btn.type = "button"; // prevent submit
+            btn.className = "absolute -top-2 -right-2 bg-white text-red-500 rounded-full p-1 shadow-md border border-slate-200 hover:bg-red-50 transition-colors z-10";
+            btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            btn.onclick = () => deleteNewImage(index);
+            
+            div.appendChild(img);
+            div.appendChild(btn);
+            previewContainer.appendChild(div);
+        });
+    }
+
+    // --- Input Listener ---
+
+    fileInput.addEventListener("change", function () {
+        const newFiles = Array.from(this.files);
+        
+        // Calculate projected total
+        // Logic: Current Existing + Current New (in DT) + Newly Selected
+        const currentExisting = getExistingCount();
+        const currentNew = dataTransfer.files.length;
+        const incoming = newFiles.length;
+        
+        const totalProjected = currentExisting + currentNew + incoming;
+
+        if (totalProjected > MAX_TOTAL_IMAGES) {
+             alert(`You can only upload a maximum of ${MAX_TOTAL_IMAGES} images.`);
+             
+             // Reset the input to match dataTransfer (ignore this selection)
+             this.files = dataTransfer.files;
+             return;
+        }
+
+        // Add correct files to DataTransfer
+        newFiles.forEach(file => dataTransfer.items.add(file));
+        
+        // Update input to reflect accumulated files
+        this.files = dataTransfer.files;
+
+        // Render
+        renderNewPreviews();
+    });
+</script>
+
+
+{% endblock  %}

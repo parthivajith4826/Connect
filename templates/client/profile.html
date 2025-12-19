@@ -1,0 +1,330 @@
+{% extends 'client/client_base.html' %} 
+{% load static %} 
+{% block cropper %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
+{% endblock %} 
+
+
+{% block profile %}
+
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto h-screen">
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+        <h1 class="text-xl font-bold text-slate-800">Profile</h1>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+
+                <img
+                    src="{% if user.profile_photo %} {{ user.profile_photo.url }} {% else %} {% static 'images/user.png' %}{% endif %} "
+                    alt="Profile"
+                    class="w-8 h-8 rounded-full"
+                />
+            </div>
+        </div>
+    </header>
+
+    <div class="p-8 max-w-4xl mx-auto">
+        <form class="space-y-8" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Basic Info -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+                <h2 class="text-lg font-bold text-slate-900 mb-6">Profile View</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2 flex items-center gap-6">
+                        {% if user.profile_photo %}
+                        <img id="profilePreview" src="{{ user.profile_photo.url }}" alt="Profile" class="w-24 h-24 rounded-full object-cover" />
+                        {% else %}
+                        <img id="profilePreview" src="{% static 'images/user.png' %}" alt="Profile" class="w-24 h-24 rounded-full" />
+                        {% endif %}
+
+                        {% comment %} <input type="file" id="imageInput" name="profile_picture" accept="image/*" class="hidden" /> {% endcomment %}
+                        {{ form1.profile_photo }}
+                        {{ form1.profile_photo.errors }}
+                        <button
+                            type="button"
+                            onclick="document.getElementById('imageInput').click()"
+                            class="px-4 py-2 border border-slate-300 rounded-lg"
+                        >
+                            Change Photo
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1" >User Name</label>
+                        {% comment %} <input
+                            name="username"
+                            type="text"
+                            value="{{ user.Profile_name }}"
+                            
+                        /> {% endcomment %}
+                        {{ form1.Profile_name }}
+                        {{ form1.Profile_name.errors }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                        <input
+                            type="email"
+                            value="{{ user.email }}"
+                            disabled
+                            class="w-full px-4 py-2 border border-slate-200 bg-slate-50 rounded-lg text-slate-500"
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                        {% comment %} <input
+                        type="text"
+                        id="location"
+                        name="location_name"
+                        placeholder="Use current location"
+                        readonly
+                        class="w-full px-4 py-2 border rounded-lg"
+                        /> {% endcomment %}
+                        {{ form2.location_name }}
+                        {{ form2.location_name.errors }}
+                        {{ form2.latitude.errors }}
+                        {{ form2.longitude.error }}
+
+                        {% comment %} <input type="hidden" id="lat" name="latitude"> {% endcomment %}
+                        {{ form2.latitude }}
+
+                        {% comment %} <input type="hidden" id="lng" name="longitude"> {% endcomment %}
+                        {{ form2.longitude }}
+
+                        <button
+                        type="button"
+                        onclick="getLocation()"
+                        class="mt-2 px-3 py-2 bg-indigo-600 text-white rounded"
+                        id="fetchLocationBtn"
+                        >
+                        Use my current location
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4">
+                <button
+                    type="button"
+                    class="px-6 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium shadow-lg shadow-indigo-200"
+                >
+                    Save Changes
+                </button>
+            </div>
+        </form>
+        <!-- Cropper Modal -->
+        <div id="cropperModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-6 w-[90%] max-w-lg">
+                <h3 class="text-lg font-bold mb-4">Crop Image</h3>
+
+                <div class="max-h-[400px]">
+                    <img id="cropperImage" class="max-w-full max-h-[400px]" />
+                </div>
+
+                <div class="flex justify-between mt-4">
+                    {% comment %} <div class="flex gap-2">
+                        <button type="button" onclick="cropper.zoom(0.1)" class="px-3 py-1 border rounded">Zoom +</button>
+                        <button type="button" onclick="cropper.zoom(-0.1)" class="px-3 py-1 border rounded">Zoom -</button>
+                    </div> {% endcomment %}
+
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeCropper()" class="px-4 py-2 border rounded">Cancel</button>
+                        <button type="button" onclick="applyCrop()" class="px-4 py-2 bg-indigo-600 text-white rounded">
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %} 
+{% block cropper_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let cropper = null;
+
+        const selectedFileInput = document.getElementById("imageInput");
+        const modal = document.getElementById("cropperModal");
+        const image = document.getElementById("cropperImage");
+
+        if (!selectedFileInput) {
+            console.error("imageInput not found");
+            return;
+        }
+
+        selectedFileInput.addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                image.src = event.target.result;
+
+                // SHOW MODAL
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
+
+                // DESTROY OLD CROPPER (CRITICAL)
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+
+                cropper = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: "move",
+                    movable: true,
+                    zoomable: true,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                });
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        window.closeCropper = function () {
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        };
+
+        
+        window.applyCrop = function () {
+            if (!cropper) return;
+
+            const originalFile = selectedFileInput.files[0];
+            const mimeType = originalFile?.type || "image/jpeg";
+            const extension = mimeType.split("/")[1];
+
+            cropper
+                .getCroppedCanvas({
+                    width: 300,
+                    height: 300,
+                    imageSmoothingQuality: "high",
+                })
+                .toBlob(function (blob) {
+                    // 1️⃣ Create file for form submission
+                    const file = new File([blob], `profile.${extension}`, {
+                        type: mimeType,
+                    });
+
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    selectedFileInput.files = dataTransfer.files;
+
+                    // 2️⃣ PREVIEW IMAGE IN ROUND AVATAR (NEW PART 🔥)
+                    const previewURL = URL.createObjectURL(blob);
+                    const previewImg = document.getElementById("profilePreview");
+
+                    if (previewImg) {
+                        previewImg.src = previewURL;
+                    }
+
+                    closeCropper();
+                }, mimeType);
+        };
+
+
+
+    });
+
+    window.zoomIn = function () {
+        if (cropper) cropper.zoom(0.1);
+    };
+
+    window.zoomOut = function () {
+        if (cropper) cropper.zoom(-0.1);
+    };
+</script>
+<script>
+let clickCount = 0;
+let cooldown = false;
+let cooldownTimer = null;
+
+function getLocation() {
+  if (cooldown) {
+    return; // ⛔ block extra clicks
+  }
+
+  clickCount++;
+
+  // allow max 3 clicks
+  if (clickCount > 3) {
+    cooldown = true;
+    alert("Please wait a few seconds before trying again.");
+
+    // reset after 10 seconds
+    cooldownTimer = setTimeout(() => {
+      clickCount = 0;
+      cooldown = false;
+    }, 10000);
+
+    return;
+  }
+
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  const btn = document.getElementById("fetchLocationBtn");
+  btn.disabled = true;
+  btn.classList.add("opacity-50", "cursor-not-allowed");
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      document.getElementById("lat").value = lat;
+      document.getElementById("lng").value = lng;
+
+      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+
+      try {
+        const response = await fetch(url, {
+          headers: { "Accept": "application/json" }
+        });
+
+        const data = await response.json();
+
+        document.getElementById("location").value =
+          data?.display_name || "Location found (name unavailable)";
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        // re-enable button after 3 seconds
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.classList.remove("opacity-50", "cursor-not-allowed");
+        }, 3000);
+      }
+    },
+    () => {
+      alert("Location access denied.");
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.classList.remove("opacity-50", "cursor-not-allowed");
+      }, 3000);
+    }
+  );
+}
+</script>
+
+
+{% endblock %}

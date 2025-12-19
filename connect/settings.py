@@ -56,6 +56,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     
+    
+    'management.apps.ManagementConfig',
+    
 ]
 
 #allauth
@@ -212,4 +215,9 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # SOCIALACCOUNT_QUERY_EMAIL = True
 
 SOCIALACCOUNT_ADAPTER = "accounts.adapters.MySocialAccountAdapter"
+
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 

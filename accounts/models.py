@@ -1,23 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import uuid
-
-
-# Create your models here.4
-
-
-# class User(AbstractUser):
-#     username = None
-#     email = models.EmailField(unique=True)
-#     location = models.CharField(max_length=255,null=True,blank=True)
-#     profile_photo = models.CharField(max_length=255,null=True,blank=True)
-#     is_verified = models.BooleanField(default=False)
-#     Role_choices = (('freelancer','freelancer'),('client','client'),)
-#     role = models.CharField(max_length=20,choices = Role_choices,null=True,blank=True)
-    
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-    
     
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractUser
@@ -50,9 +33,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
+    Profile_name = models.CharField(max_length=255, unique=True,blank=True , null=True)
     email = models.EmailField(unique=True)
-    location = models.CharField(max_length=255, null=True, blank=True)
-    profile_photo = models.CharField(max_length=255, null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='profile_photo', null=True, blank=True)
     is_verified = models.BooleanField(default=False)
     email_verification_token = models.UUIDField(default=uuid.uuid4, unique=True,null=True,blank=True)
     
@@ -62,6 +45,8 @@ class User(AbstractUser):
         ('client', 'client'),
     )
     role = models.CharField(max_length=20, choices=Role_choices, null=True, blank=True)
+    
+    profile_completed = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -79,6 +64,9 @@ class User(AbstractUser):
 class Otp(models.Model):
     user_id = models.ForeignKey( User , on_delete=models.CASCADE, related_name='otps')
     otp = models.IntegerField()
+    
+
+    
         
 
     

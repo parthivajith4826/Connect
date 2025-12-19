@@ -4,12 +4,13 @@ from django.contrib.auth import authenticate
 from .models import User, Otp
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth import login
+
 
 
 
 from django.core.mail import send_mail
 from django.conf import settings
-
 import secrets
 
 @never_cache
@@ -24,6 +25,9 @@ def landing_page(request):
             return redirect('client:home')
     else :
         return render(request,'landing_page.html')
+    
+    # #temp aytt vechathane
+    # return render(request,'landing_page.html')
 
 
 @never_cache
@@ -111,11 +115,12 @@ def resent_email(request):
 @never_cache
 #procedure 2, this page is come from the link that is got the user from thei email.
 def verify_email(request,token):
+    
     if request.session.get('user_email'):
         email = request.session.get('user_email')
         user = User.objects.get(email=email)
         if user.role == "freelancer":
-            return redirect('freelancer:home')
+            return redirect('freelancer:home') 
         else :
             return redirect('client:home')
     
@@ -189,10 +194,10 @@ def role(request):
                 role = request.POST.get('role')
                 user.role = role
                 user.save()
-                
+                print("socail role saved")
                 request.session['user_email'] = request.user.email
                 
-                if role == "freelancer":
+                if user.role == "freelancer":
                     return redirect('freelancer:home')
                 else :
                     return redirect('client:home')
@@ -208,7 +213,7 @@ def role(request):
         email_social = request.user.email
         user = User.objects.filter(email = email_social).first()
         
-        request.session['user_email'] = request.user.email
+        # request.session['user_email'] = request.user.email
         
         
         if user.role:
@@ -238,8 +243,13 @@ def signin(request):
         
         user = authenticate(request,email = email, password = password)
         if user :
+            # if user.
             if user.is_verified :  
-                request.session['user_email'] = email  
+                
+                request.session['user_email'] = email
+                login(request,user)
+                
+                print(request.session.get('user_email'))  
                 if user.role == "freelancer":
                         return redirect('freelancer:home')
                 else :
@@ -389,6 +399,8 @@ def reset_password(request):
 
 @never_cache
 def social_email_conflict(request):
+    
+
     if request.session.get('user_email'):
         email = request.session.get('user_email')
         user = User.objects.get(email=email)
