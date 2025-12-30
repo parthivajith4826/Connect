@@ -1,0 +1,145 @@
+{% extends 'client/client_base.html' %}
+{% load static %}
+
+{% block home %}
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto h-screen bg-white">
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+        <div class="flex items-center gap-4">
+            <a href="{% url 'client:home' %}" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Job Details</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <img src="{{ user.profile_photo.url }}" alt="Profile" class="w-8 h-8 rounded-full" />
+                <span class="font-medium text-slate-700">{{ user.Profile_name }}</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-8 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Job Description & Details -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Header Info -->
+                <div class="border-b border-slate-100 pb-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ card.title }}</h2>
+                            <div class="flex items-center gap-4 text-sm text-slate-500">
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    {{ card.created_at|timesince }} ago
+                                </span>
+                                <span>•</span>
+                                <span class="text-indigo-600 font-medium">{{ card.category_id }}</span>
+                            </div>
+                        </div>
+                        {% if not card.is_blocked %}
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-semibold rounded-full">Active</span>
+                        {% else %}
+                        <span class="px-3 py-1 bg-red-100 text-black-700 text-sm font-semibold rounded-full">Disabled</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Attachments -->
+                <div>
+                    {% comment %} <h3 class="text-lg font-bold text-slate-900 mb-4">Attachments</h3> {% endcomment %}
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {% for image in images %}
+                        <div class="relative group rounded-lg overflow-hidden border border-slate-200 aspect-video bg-slate-50">
+                            <img src="{{ image.image.url }}" alt="Attachment" class="w-full h-full object-cover">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Description -->
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-4">Description</h3>
+                    <div class="prose prose-slate max-w-none text-slate-600">
+                        {{ card.description|safe }}
+                    </div>
+                </div>
+
+                <!-- Skills -->
+               <div>
+                <h3 class="text-lg font-bold text-slate-900 mb-4">Required Skills</h3>
+
+                    <div class="flex flex-wrap gap-3">
+                        {% for skill in skill_list %}
+                            <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm font-medium">
+                                {{ skill }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <div class="space-y-6">
+                <!-- Actions Card -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <div class="space-y-3">
+                        <a href="{% url 'client:edit_card' card.slug %}" class="block w-full py-2.5 px-4 bg-indigo-600 text-white text-center font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+                            Edit Job Post
+                        </a><br>
+
+                        <a href="{% url 'client:close_card' card.slug %}">
+                        <button class="block w-full py-2.5 px-4 bg-white border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors">
+                            Close Job
+                        </button>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Job Stats/Proposals -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide mb-4">Proposals</h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex -space-x-2">
+                            <img class="w-10 h-10 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Alice&background=random" alt="" />
+                            <img class="w-10 h-10 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Bob&background=random" alt="" />
+                            <img class="w-10 h-10 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Charlie&background=random" alt="" />
+                            <div class="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-xs text-slate-500 font-bold">
+                                +2
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-2xl font-bold text-slate-900">5</span>
+                            <span class="text-xs text-slate-500 font-medium">Total Proposals</span>
+                        </div>
+                    </div>
+                    <a href="/client/proposals/list.html" class="block w-full py-2 px-4 border border-slate-300 text-slate-700 text-center font-medium rounded-lg hover:bg-slate-50 transition-colors text-sm">
+                        View All Proposals
+                    </a>
+                </div>
+
+                <!-- Budget & Timeline -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-6">
+                    <div>
+                        <h3 class="text-sm font-medium text-slate-500 mb-2">Budget Range</h3>
+                        <p class="text-2xl font-bold text-slate-900">{{ card.min_budget }} - {{ card.max_budget }}</p>
+                    </div>
+                    <div class="border-t border-slate-100 pt-6">
+                        <h3 class="text-sm font-medium text-slate-500 mb-2">Project Timeline</h3>
+                        <div class="flex items-center gap-2 text-slate-900 font-medium">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            {{ card.time_line }}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

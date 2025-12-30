@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile | Connect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-grid-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 bg-grid-pattern min-h-screen">
+    
+    <!-- Simplified Brand Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <!-- Logo Placeholder (matches generic "Connect" branding) -->
+                    <div class="flex-shrink-0 flex items-center gap-2">
+                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">C</span>
+                        </div>
+                        <span class="font-bold text-xl text-gray-900 tracking-tight">Connect</span>
+                    </div>
+                </div>
+                <!-- User Profile simplified -->
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500 hidden sm:block">Welcome back</span>
+                    <div class="h-8 w-8 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center text-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex flex-col justify-center py-12 sm:px-6 lg:px-8" style="min-height: calc(100vh - 4rem);">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <!-- Content Card -->
+            <div class="bg-white py-10 px-6 shadow-xl shadow-slate-200/50 rounded-2xl border border-gray-100 relative overflow-hidden">
+                
+                <!-- Decorative Top Bar -->
+                <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 ring-4 ring-amber-50/50">
+                        <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                        Complete your profile
+                    </h2>
+                    
+                    <p class="text-gray-500 mb-8 max-w-sm leading-relaxed">
+                        To access the full features of Connect and start your journey, we need a few more details from you.
+                    </p>
+
+                    <div class="w-full space-y-4">
+                        <a href="{% url 'client:profile' %}" class="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:-translate-y-0.5">
+                            Go to Profile Settings
+                            <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                        
+                        <a href="#" class="w-full flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors">
+                            Need help? Contact Support
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            
+            <p class="mt-8 text-center text-xs text-gray-400">
+                &copy; {{ now.year }} Connect Platform. All rights reserved.
+            </p>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+{% extends "client/client_base.html" %}
+{% block wallet %}
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<main class="flex-1 p-8 max-w-xl mx-auto">
+    <h2 class="text-2xl font-bold mb-4">
+        Pay ₹{{ amount }}
+    </h2>
+
+    <div id="card-element" class="mb-4"></div>
+
+    <button
+        id="payBtn"
+        class="px-6 py-3 bg-indigo-600 text-white rounded-lg"
+    >
+        Pay Now
+    </button>
+</main>
+
+<script>
+const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+const elements = stripe.elements();
+const card = elements.create("card");
+card.mount("#card-element");
+
+const payBtn = document.getElementById("payBtn");
+
+payBtn.onclick = async () => {
+    payBtn.disabled = true;
+    payBtn.innerText = "Processing...";
+
+    const result = await stripe.confirmCardPayment(
+        "{{ client_secret }}",
+        {
+            payment_method: { card: card }
+        }
+    );
+
+    // 🔴 ERROR HANDLING (THIS WAS MISSING)
+    if (result.error) {
+        alert(result.error.message);
+        payBtn.disabled = false;
+        payBtn.innerText = "Pay Now";
+        return;
+    }
+
+    // 🟢 SUCCESS HANDLING
+    if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+        setTimeout(() => {
+            window.location.href = "{% url 'client:wallet' %}";
+        }, 2000);
+    }
+};
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Role - FreelanceConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .role-card:hover { border-color: #4f46e5; transform: translateY(-4px); }
+        .role-radio:checked + .role-content { border-color: #4f46e5; background-color: #eef2ff; }
+        .role-radio:checked + .role-content .role-icon { background-color: #4f46e5; color: white; }
+    </style>
+</head>
+</head>
+<body class="bg-gray-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-3xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden p-8 md:p-12 space-y-10">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">Join as a Client or Freelancer</h2>
+            <p class="mt-3 text-lg text-slate-500">Choose how you want to use FreelanceConnect.</p>
+        </div>
+
+        <form action="{% url 'accounts:role' %}" method="post" class="grid md:grid-cols-2 gap-8">
+            {% csrf_token %}
+            <!-- Client Option -->
+            <label class="cursor-pointer group relative">
+                <input type="radio" name="role" value="client" class="role-radio hidden" required>
+                <div class="role-content border-2 border-slate-100 rounded-2xl p-8 transition-all duration-300 h-full flex flex-col items-center text-center group-hover:border-indigo-400 group-hover:shadow-lg bg-white relative z-10">
+                    <div class="role-icon w-20 h-20 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">I'm a Client</h3>
+                    <p class="text-base text-slate-500 leading-relaxed">I want to post requirements and hire talent for my projects.</p>
+                </div>
+            </label>
+
+            <!-- Freelancer Option -->
+            <label class="cursor-pointer group relative">
+                <input type="radio" name="role" value="freelancer" class="role-radio hidden" required>
+                <div class="role-content border-2 border-slate-100 rounded-2xl p-8 transition-all duration-300 h-full flex flex-col items-center text-center group-hover:border-indigo-400 group-hover:shadow-lg bg-white relative z-10">
+                    <div class="role-icon w-20 h-20 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">I'm a Freelancer</h3>
+                    <p class="text-base text-slate-500 leading-relaxed">I want to find work and offer my services to clients.</p>
+                </div>
+            </label>
+
+            <div class="md:col-span-2 mt-6">
+                <button type="submit" class="w-full flex justify-center py-4 px-6 border border-transparent rounded-xl shadow-lg shadow-indigo-200 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform hover:-translate-y-1">
+                    Create Account
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center text-sm">
+            <p class="text-slate-500">
+                Already have an account? 
+                <a href="{% url 'accounts:signin' %}" class="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors">Sign in</a>
+            </p>
+        </div>
+    </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+</body>
+</html>
