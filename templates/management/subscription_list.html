@@ -123,19 +123,45 @@
                                                     </button>
                                                     </a>
                                                     
-                                                    {% comment %} <form action=""> {% endcomment %}
-                                                    <button
-                                                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
-                                                    >
-                                                        Disable
-                                                    </button>
-                                                    {% comment %} </form> {% endcomment %}
+                                                    {% if subscription.is_active %} 
+                                                    <form method="POST" action="{% url "control_panel:disable_subscription" subscription.slug %}" class="inline">
+                                                        <!-- where to go AFTER disabling -->
+                                                        <input type="hidden" name="next" value="{%url "control_panel:subscriptions" %}">
+                                                        {% csrf_token %}
+                                                        <button
+                                                            type="submit"
+                                                            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                        >
+                                                            Disable
+                                                        </button>
+                                                    </form>
+                                                    {% else %} 
+                                                    <form method="POST" action="{% url "control_panel:enable_subscription" subscription.slug %}" class="inline">
+                                                        <!-- where to go AFTER disabling -->
+                                                        <input type="hidden" name="next" value="{% url "control_panel:subscriptions" %}">
+                                                        {% csrf_token %}
+                                                        <button
+                                                            type="submit"
+                                                            class="text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                        >
+                                                            Enable
+                                                        </button>
+                                                    </form>
+                                                    {% endif %}
 
-                                                    <button
-                                                        class="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
-                                                    >
-                                                        Delete
-                                                    </button>
+                                                     
+                                                    <form method="POST" action="{% url "control_panel:delete_subscription" subscription.slug %}" class="inline">
+                                                        <!-- where to go AFTER disabling -->
+                                                        <input type="hidden" name="next" value="{% url "control_panel:subscriptions" %}">
+                                                        {% csrf_token %}
+                                                        <button
+                                                            class="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                        </button>
+                                                    </form>
+
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -187,27 +213,37 @@
                                         </thead>
                                         <tbody class="bg-white">
                                             <!-- Plan Type Row 1 -->
+                                            {% for plantype in plantypes %}
                                             <tr
-                                                data-name="Freelancer"
-                                                data-desc="Plans specifically for freelancers to bid on work"
+                                                data-id="{{ plantype.id }}"
+                                                data-name="{{ plantype.name }}"
+                                                data-desc="{{ plantype.description }}"
                                             >
                                                 <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                                    Freelancer
+                                                    {{ plantype.name }}
                                                 </td>
                                                 <td
                                                     class="p-4 whitespace-normal text-sm font-normal text-gray-500 max-w-xs"
                                                 >
-                                                    Plans specifically for freelancers to bid on work
+                                                    {{ plantype.description }}
                                                 </td>
                                                 <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                                    {% if plantype.is_active %}
                                                     <span
                                                         class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded status-badge"
                                                         >Active</span
                                                     >
+                                                    {% else %}
+                                                    <span
+                                                        class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded status-badge"
+                                                        >Not Active</span
+                                                    >
+                                                    {% endif %}
                                                 </td>
                                                 <td class="p-4 whitespace-nowrap space-x-2">
                                                     <button
-                                                        onclick="openPlanTypeEditModal(this)"
+                                                        type = "button"
+                                                        onclick="openEditPlanTypeModal(this)"
                                                         class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
                                                     >
                                                         Edit
@@ -224,44 +260,7 @@
                                                     </button>
                                                 </td>
                                             </tr>
-                                            <!-- Plan Type Row 2 -->
-                                            <tr
-                                                data-name="Client"
-                                                data-desc="Plans for clients to post advanced requirements"
-                                            >
-                                                <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                                    Client
-                                                </td>
-                                                <td
-                                                    class="p-4 whitespace-normal text-sm font-normal text-gray-500 max-w-xs"
-                                                >
-                                                    Plans for clients to post advanced requirements
-                                                </td>
-                                                <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                                    <span
-                                                        class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded status-badge"
-                                                        >Active</span
-                                                    >
-                                                </td>
-                                                <td class="p-4 whitespace-nowrap space-x-2">
-                                                    <button
-                                                        onclick="openPlanTypeEditModal(this)"
-                                                        class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
-                                                    >
-                                                        Disable
-                                                    </button>
-                                                    <button
-                                                        class="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </td>
-                                            </tr>
+                                            {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
@@ -357,82 +356,67 @@
                 </div>
             </div>
 
+
             <!-- Edit Plan Type Modal -->
-            <div
-                id="editPlanTypeModal"
-                tabindex="-1"
-                aria-hidden="true"
-                class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full justify-center items-center flex"
-                style="background-color: rgba(0, 0, 0, 0.5)"
-            >
-                <div class="relative p-4 w-full max-w-md h-full md:h-auto">
-                    <div class="relative bg-white rounded-lg shadow">
-                        <!-- Modal Header -->
-                        <div class="flex justify-between items-center p-5 rounded-t border-b">
-                            <h3 class="text-xl font-medium text-gray-900">Edit Plan Type</h3>
-                            <button
-                                type="button"
-                                onclick="closeModal('editPlanTypeModal')"
-                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-                            >
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"
-                                    ></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <!-- Modal Body (Form) -->
-                        <div class="p-6 space-y-6">
-                            <form action="#">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="pt_name" class="block mb-2 text-sm font-medium text-gray-900"
-                                            >Name</label
-                                        >
-                                        <input
-                                            type="text"
-                                            id="pt_name"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label for="pt_desc" class="block mb-2 text-sm font-medium text-gray-900"
-                                            >Description</label
-                                        >
-                                        <textarea
-                                            id="pt_desc"
-                                            rows="4"
-                                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-cyan-600 focus:border-cyan-600"
-                                            placeholder="Description of the plan type..."
-                                        ></textarea>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <!-- Modal Footer -->
-                        <div class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200">
-                            <button
-                                onclick="saveChanges('editPlanTypeModal')"
-                                type="button"
-                                class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            >
-                                Save
-                            </button>
-                            <button
-                                onclick="closeModal('editPlanTypeModal')"
-                                type="button"
-                                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
-                            >
-                                Cancel
-                            </button>
-                        </div>
+            <div id="plantypeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg w-full max-w-md p-6">
+                <h3 class="text-lg font-semibold mb-4">Add Plan Type</h3>
+
+                {% comment %} <form method="post" action="{% url "control_panel:create_subscriptions" %}"> {% endcomment %}
+                <form id="plantypeForm">
+                    <input type="hidden" name="id" id="plantypeId">
+
+
+
+                    {% csrf_token %}
+                    <input type="hidden" name="id" id="plantypeId">
+
+                    {% if plantype_form.non_field_errors %}
+                        <p class="text-red-600 text-sm">{{ plantype_form.non_field_errors }}</p>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label class="text-sm font-medium">Name</label>
+                        <input
+                            value = "{{ plantype_form.name.value|default_if_none:'' }}"
+                            name="name"
+                            type="text"
+                            class="w-full border rounded p-2"
+                        >
+                        {% comment %} {{ plantype_form.name.errors }} {% endcomment %}
+                        <p id="nameError" class="text-red-600 text-sm mt-1"></p>
                     </div>
-                </div>
+
+                    <div class="mb-4">
+                        <label class="text-sm font-medium">Description</label>
+                        <textarea
+                            value = "{{ plantype_form.name.description|default_if_none:'' }}"
+                            name="description"
+                            class="w-full border rounded p-2"
+                        ></textarea>
+                        {% comment %} {{ plantype_form.description.errors }} {% endcomment %}
+                        <p id="descriptionError" class="text-red-600 text-sm mt-1"></p>
+                    </div>
+
+                    <div class="flex justify-end gap-3">
+                        <button
+                            type="button"
+                            onclick="closePlanTypeModal()"
+                            class="px-4 py-2 border rounded"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="px-4 py-2 bg-cyan-600 text-white rounded"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </form>
             </div>
+        </div>
         </div>
     </main>
 </div>
@@ -544,18 +528,95 @@
         openModal("viewSubscriptionModal");
     }
 
-    // Edit Plan Type - Mock
-    function openPlanTypeEditModal(btn) {
-        const row = btn.closest("tr");
-        const data = row.dataset;
-        document.getElementById("pt_name").value = data.name;
-        document.getElementById("pt_desc").value = data.desc;
-        openModal("editPlanTypeModal");
-    }
+</script>
+<script>
+document.getElementById("plantypeForm").addEventListener("submit", function (e) {
+    e.preventDefault(); // 🚫 stop page reload
 
-    function saveChanges(modalId) {
-        closeModal(modalId);
+    const form = e.target;
+    const formData = new FormData(form);
+
+    // clear old errors
+    document.getElementById("nameError").innerText = "";
+    document.getElementById("descriptionError").innerText = "";
+
+    fetch("{% url 'control_panel:edit_plantype' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+        },
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        // ❌ VALIDATION ERRORS
+        if (!data.success) {
+            console.log(data)
+            if (data.errors.name) {
+                document.getElementById("nameError").innerText =
+                    data.errors.name[0];
+            }
+            if (data.errors.description) {
+                document.getElementById("descriptionError").innerText =
+                    data.errors.description[0];
+            }
+            return;
+        }
+
+        // ✅ SUCCESS
+        const select = document.getElementById("plantype");
+        const option = document.createElement("option");
+        option.value = data.id;
+        option.text = data.name;
+        option.selected = true;
+        select.appendChild(option);
+
+        closePlanTypeModal();
+        form.reset();
+    });
+});
+</script>
+<script>
+function openPlanTypeModal() {
+    document.getElementById("plantypeModal").classList.remove("hidden");
+    document.getElementById("plantypeModal").classList.add("flex");
+}
+
+function closePlanTypeModal() {
+    document.getElementById("plantypeModal").classList.add("hidden");
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const openBtn = document.getElementById("openPlanTypeBtn");
+
+    if (openBtn) {
+        openBtn.addEventListener("click", function () {
+            openPlanTypeModal();
+        });
     }
+});
+</script>
+<script>
+function openEditPlanTypeModal(btn) {
+    const row = btn.closest("tr");
+
+    const id = row.dataset.id;
+    const name = row.dataset.name;
+    const desc = row.dataset.desc;
+
+    // Fill form fields
+    document.querySelector("#plantypeId").value = id;
+    document.querySelector("#plantypeForm input[name='name']").value = name;
+    document.querySelector("#plantypeForm textarea[name='description']").value = desc;
+
+    // Clear old errors
+    document.getElementById("nameError").innerText = "";
+    document.getElementById("descriptionError").innerText = "";
+
+    openPlanTypeModal();
+}
 </script>
 
 {% endblock general%}

@@ -5,9 +5,10 @@ from accounts.models import User
 from freelancer.models import Gig,Freelancer_Profile,GigImages
 from client.models import Card,Categories,WalletTransactions,Wallet,Card_images
 from django.http import Http404
-from .forms import CategoryForm,SubscriptionForm,PlanTypeForm,EditSubscriptionForm
+from .forms import CategoryForm,SubscriptionForm,PlanTypeForm,EditSubscriptionForm,EditPlanTypeForm
 from .models import Plantype,SubscriptionPack
 from django.http import JsonResponse
+
 
 # Create your views here.
 
@@ -362,7 +363,8 @@ def logout(request):
 
 def subscriptions(request):
     subscriptions = SubscriptionPack.objects.all()
-    return render(request,"management/subscription_list.html",{"subscriptions":subscriptions})
+    plantypes = Plantype.objects.all()
+    return render(request,"management/subscription_list.html",{"subscriptions":subscriptions,"plantypes":plantypes})
 
 def create_subscriptions(request):
     plantype = Plantype.objects.filter(is_active = True)
@@ -421,5 +423,51 @@ def edit_subscription(request,slug):
     
     
     return render(request,"management/edit_subscription.html",{"form":form,"plantype":plantype})
+
+
+def disable_subscription(request,slug):
+    if request.method == "POST":
+        next_url = request.POST.get("next")
+        subscriptionpack = SubscriptionPack.objects.filter(slug = slug).first()
+        subscriptionpack.is_active = False
+        subscriptionpack.save()
+        return redirect(next_url)
+    
+def enable_subscription(request,slug):
+    if request.method == "POST":
+        next_url = request.POST.get("next")
+        subscriptionpack = SubscriptionPack.objects.filter(slug = slug).first()
+        subscriptionpack.is_active = True
+        subscriptionpack.save()
+        return redirect(next_url)
+    
+    
+def delete_subscription(request,slug):
+    if request.method == "POST":
+        next_url = request.POST.get("next")
+        subscriptionpack = SubscriptionPack.objects.filter(slug = slug).first()
+        subscriptionpack.delete()
+        return redirect(next_url)
+    
+    
+def edit_plantype(request):
+    plantype_id = request.POST.get("id")
+   
+
+    form = EditPlanTypeForm(request.POST, instance=plantype)
+
+    if form.is_valid():
+        updated = form.save()
+        return JsonResponse({
+            "success": True,
+            "id": updated.id,
+            "name": updated.name,
+        })
+
+    return JsonResponse({
+        "success": False,
+        "errors": form.errors,
+    }, status=400)
+    
     
 

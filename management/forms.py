@@ -289,3 +289,65 @@ class PlanTypeForm(forms.ModelForm):
             raise ValidationError("Phone numbers are not allowed.")
 
         return description
+    
+    
+class EditPlanTypeForm(forms.ModelForm):
+    class Meta:
+        model = Plantype
+        fields = ["name", "description"]
+
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name")
+        print(name)
+        if not name:
+            raise ValidationError("Plan type name is required.")
+
+        name = name.strip()
+
+        if len(name) < 2:
+            raise ValidationError("Minimum 2 characters should be there.")
+
+        if not re.match(r'^[A-Za-z ]+$', name):
+            raise ValidationError("Only letters are allowed.")
+
+        return name
+
+    
+    def clean_description(self):
+        description = self.cleaned_data.get("description")
+        print(description)
+
+        # Description is optional
+        if not description:
+            return description
+
+        description = description.strip()
+
+        # Prevent only spaces
+        if len(description) == 0:
+            raise ValidationError("Description cannot be empty.")
+
+        # Minimum length
+        if len(description) < 10:
+            raise ValidationError(
+                "Description must be at least 10 characters long."
+            )
+
+        # Maximum length
+        if len(description) > 300:
+            raise ValidationError(
+                "Description cannot exceed 300 characters."
+            )
+
+        # Block email addresses
+        email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+        if re.search(email_pattern, description):
+            raise ValidationError("Email addresses are not allowed.")
+
+        # Block phone numbers
+        phone_pattern = r"(\+?\d{1,3}[\s-]?)?\d{10}"
+        if re.search(phone_pattern, description):
+            raise ValidationError("Phone numbers are not allowed.")
+
+        return description

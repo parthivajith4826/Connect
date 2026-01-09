@@ -52,6 +52,10 @@ urlpatterns = [
     path("subscriptions/",views.subscriptions,name = "subscriptions"),
     path("create-subscriptions/",views.create_subscriptions,name = "create_subscriptions"),
     path("edit-subscription/<slug:slug>",views.edit_subscription,name = "edit_subscription"),
+    path("disable-subscription/<slug:slug>",views.disable_subscription,name = "disable_subscription"),
+    path("enable-subscription/<slug:slug>",views.enable_subscription,name = "enable_subscription"),
+    path("delete-subscription/<slug:slug>",views.delete_subscription,name = "delete_subscription"),
     
+    path("edit-plantype/",views.edit_plantype,name = "edit_plantype"),    
     
    ] 
