@@ -1,0 +1,127 @@
+{% extends "management\management_base.html" %} {% block general %}
+{% load static %}
+<main class="flex-grow pt-6 px-4">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-8 xl:gap-4 my-4">
+        <!-- Profile Card -->
+        <div class="bg-white shadow rounded-lg p-4 sm:p-6 h-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold leading-none text-gray-900">Freelancer Profile</h3>
+                <a
+                    href="{% url "control_panel:freelancers" %}"
+                    class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg inline-flex items-center p-2"
+                >
+                    Back to list
+                </a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    {% if user.profile_photo %}
+                    <img
+                        class="h-20 w-20 rounded-full"
+                        src="{{ user.profile_photo.url }}"
+                        alt="{{ user.Profile_name }} profile picture"
+                    />
+                    {% else %}
+                    <img
+                        class="h-20 w-20 rounded-full"
+                        src="{% static 'images/user.png' %}"
+                        alt="Parthiv Ajith profile picture"
+                    />
+                    {% endif %}
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">{{ user.Profile_name }}</h1>
+                    <p class="text-sm text-gray-500">{{ user.email }}</p>
+                    
+                </div>
+            </div>
+
+            <ul class="divide-y divide-gray-200 mt-4">
+                <li class="py-3 sm:py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">Account Status</p>
+                        </div>
+                        <div class="inline-flex items-center text-base font-semibold text-gray-900">
+                            {% if user.is_verified %}
+                            <span class="text-green-500">Verified</span>
+                            {% else %}
+                            <span class="text-red-500">Not Verified</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </li>
+                <li class="py-3 sm:py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">Joined Date</p>
+                        </div>
+                        <div class="inline-flex items-center text-base font-semibold text-gray-900">{{ user.date_joined|date:"M d, Y" }}</div>
+                    </div>
+                </li>
+                <li class="py-3 sm:py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">Phone</p>
+                        </div>
+                        <div class="inline-flex items-center text-base font-semibold text-gray-900">+91 {{ profile.phone_number }}</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Subscription Card -->
+        <div class="bg-white shadow rounded-lg p-4 sm:p-6 h-full">
+            <h3 class="text-xl font-bold leading-none text-gray-900 mb-4">Subscription Status</h3>
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-base font-normal text-gray-500">Current Plan</span>
+                <span class="text-sm font-bold text-gray-900">Premium Pro</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
+                <div class="bg-cyan-600 h-2.5 rounded-full" style="width: 45%"></div>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-500">Status</span>
+                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Active</span>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-500">Expires on</span>
+                <span class="text-sm font-bold text-gray-900">Jan 20, 2026</span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-500">Remaining</span>
+                <span class="text-sm font-bold text-cyan-600">300 Days</span>
+            </div>
+
+            <div class="mt-6">
+                <button
+                    class="text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full"
+                >
+                    Cancel Subscription
+                </button>
+            </div>
+        </div>
+
+        <!-- Freelancer Gigs Card -->
+        <div class="bg-white shadow rounded-lg p-4 sm:p-6 h-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold leading-none text-gray-900">Freelancer Gigs</h3>
+            </div>
+            <div class="flow-root">
+                <p class="text-sm text-gray-500 mb-4">View and manage all gigs posted by this freelancer.</p>
+                <div class="flex items-center justify-between min-w-0">
+                    <div class="text-base font-bold text-gray-900">Total Gigs</div>
+                    <div class="text-base font-bold text-cyan-600">{{ count }}</div>
+                </div>
+                <div class="mt-6">
+                    <a
+                        href="{% url "control_panel:freelancer_gig_list" user.Profile_name %}"
+                        class="text-white bg-cyan-600 hover:bg-cyan-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full block"
+                        >View All Gigs</a
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock general %}

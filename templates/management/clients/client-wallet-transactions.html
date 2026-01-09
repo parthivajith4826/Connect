@@ -1,0 +1,133 @@
+{% extends "management\management_base.html" %} {% block general %}
+{% load static %}
+<div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
+    <div class="mb-4 flex items-center justify-between">
+        <div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Wallet Transactions</h3>
+            <div class="flex items-center space-x-2 text-gray-500 text-sm">
+                <span>Client:</span>
+                <span class="font-semibold text-gray-900">{{ client.Profile_name }}</span>
+            </div>
+        </div>
+        <div class="flex-shrink-0 space-x-2">
+            <a
+                href="{% url "control_panel:client_profile" client.Profile_name %}"
+                class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"
+            >
+                Back to Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="flex flex-col mt-8">
+        <div class="overflow-x-auto rounded-lg">
+            <div class="align-middle inline-block min-w-full">
+                <div class="shadow overflow-hidden sm:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    scope="col"
+                                    class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell"
+                                >
+                                    User
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                    Amount
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                    Status
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell"
+                                >
+                                    Date
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell"
+                                >
+                                    Time
+                                </th>
+                            </tr>
+                        </thead>
+                        {% for txn in txns %}
+                        <tbody class="bg-white">
+                            <!-- Row 1: Credit -->
+                            <tr>
+                                <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-medium text-gray-900 hidden sm:table-cell">
+                                    <div class="flex items-center">
+                                    {% if client.profile_photo %}
+                                    <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-2 sm:mr-3" src="{{ client.profile_photo.url }}" alt="Profile_picture">
+                                    {% else %}
+                                    <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-2 sm:mr-3" src="{% static 'images/user.png' %}" alt="Profile_picture">
+                                    {% endif %}
+                                    <span class="font-semibold">{{ client.Profile_name }}</span>
+                                    </div>
+                                </td>
+                                {% if txn.transaction_type == "credit" %}
+                                <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-bold text-green-600">+₹{{ txn.amount }}</td>
+                                {% else %}
+                                <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-bold text-red-600">-₹{{ txn.amount }}</td>
+                                {% endif %}
+                                <td class="p-2 sm:p-4 whitespace-nowrap text-sm text-gray-600">
+                                    {% if txn.status == "pending" %}
+                                        <form
+                                            method="post"
+                                            action="{% url "control_panel:txn_update" txn.id %}"
+                                            class="flex items-center gap-1 sm:gap-2"
+                                        >
+                                            {% csrf_token %}
+
+                                            <!-- Status Select -->
+                                            <select
+                                                name="status"
+                                                class="h-8 rounded-md border border-gray-300 bg-white px-1 sm:px-2 text-xs sm:text-sm
+                                                    focus:border-blue-500 focus:ring-1 focus:ring-blue-500 max-w-[80px] sm:max-w-none"
+                                            >
+                                                <option value="pending" selected>Pending</option>
+                                                <option value="success">Success</option>
+                                            </select>
+
+                                            <!-- Action Button -->
+                                            <button
+                                                type="submit"
+                                                class="h-8 rounded-md bg-blue-600 px-2 sm:px-3 text-xs font-medium text-white
+                                                    hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            >
+                                                Update
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <!-- Locked Status -->
+                                        <select
+                                            class="h-8 w-full rounded-md border border-gray-200 bg-gray-100 px-2 text-sm
+                                                text-gray-500 cursor-not-allowed"
+                                            disabled
+                                        >
+                                            <option selected>{{ txn.status|capfirst }}</option>
+                                        </select>
+                                    {% endif %}
+                                </td>
+
+                                <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-normal text-gray-500 hidden md:table-cell">{{ txn.created_at|date:"M d, Y" }}
+</td>
+                                <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-normal text-gray-500 hidden lg:table-cell">{{ txn.created_at|time:"h:i A" }}</td>
+                            </tr>
+                        </tbody>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock general %}

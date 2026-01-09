@@ -1,0 +1,133 @@
+{% extends "management/management_base.html" %} {% block general %}
+{% load static %}
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-y-8 xl:gap-4 my-4">
+    <!-- Profile Card -->
+    <div class="bg-white shadow rounded-lg p-4 sm:p-6 h-full">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold leading-none text-gray-900">Client Profile</h3>
+            <a
+                href="{% url "control_panel:clients" %}"
+                class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg inline-flex items-center p-2"
+            >
+                Back to list
+            </a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+                {% if client.profile_photo %}
+                <img
+                    class="h-20 w-20 rounded-full"
+                    src="{{ client.profile_photo.url }}"
+                    alt="Client profile"
+                />
+                {% else %}
+                <img
+                    class="h-20 w-20 rounded-full"
+                    src="{% static 'images/user.png' %}"
+                    alt="Client profile"
+                />
+                {% endif %}
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-gray-900">{{ client.Profile_name }}</h1>
+                <p class="text-sm text-gray-500">{{ client.email }}</p>
+            </div>
+        </div>
+
+        <ul class="divide-y divide-gray-200 mt-4">
+            <li class="py-3 sm:py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">Account Status</p>
+                    </div>
+                    <div class="inline-flex items-center text-base font-semibold text-gray-900">
+                        {% if client.is_verified %}
+                        <span class="text-green-500">Verified</span>
+                        {% else %}
+                        <span class="text-red-500">Verified</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </li>
+            <li class="py-3 sm:py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">Joined Date</p>
+                    </div>
+                    <div class="inline-flex items-center text-base font-semibold text-gray-900">{{ client.date_joined|date:"M d, Y" }}</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Wallet Summary Card -->
+    <div class="bg-white shadow rounded-lg p-4 sm:p-6 h-full xl:col-span-1">
+        <h3 class="text-xl font-bold leading-none text-gray-900 mb-4">Wallet Summary</h3>
+
+        <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-medium text-gray-500">Total Balance</span>
+            <span class="text-2xl font-bold text-gray-900">₹{{ wallet.balance }}</span>
+        </div>
+        <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-medium text-gray-500">Total Credited</span>
+            <span class="text-sm font-bold text-green-600">+₹{{ credit }}</span>
+        </div>
+        <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-medium text-gray-500">Total Withdrawn</span>
+            <span class="text-sm font-bold text-red-600">-₹{{ debit }}</span>
+        </div>
+
+        <div class="mt-8 space-y-4">
+    <!-- View Transactions -->
+    <a
+        href="{% url 'control_panel:client_wallet_transactions' wallet.user.Profile_name %}"
+        class="block w-full rounded-lg bg-cyan-600 px-5 py-2.5 text-center text-sm font-medium text-white
+               hover:bg-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-300"
+    >
+        View Transactions
+    </a>
+
+    {% if not wallet.is_blocked %}
+        <!-- Freeze Wallet (Danger) -->
+        <a
+            href="{% url 'control_panel:freeze_wallet' wallet.id %}"
+            class="block w-full rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white
+                   hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300"
+        >
+            Freeze Wallet
+        </a>
+    {% else %}
+        <!-- Unfreeze Wallet (Success) -->
+        <a
+            href="{% url 'control_panel:unfreeze_wallet' wallet.id %}"
+            class="block w-full rounded-lg bg-green-600 px-5 py-2.5 text-center text-sm font-medium text-white
+                   hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300"
+        >
+            Unfreeze Wallet
+        </a>
+    {% endif %}
+</div>
+
+    </div>
+    <!-- Freelancer Gigs Card -->
+        <div class="bg-white shadow rounded-lg p-4 sm:p-6 h-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold leading-none text-gray-900">Client Cards</h3>
+            </div>
+            <div class="flow-root">
+                <p class="text-sm text-gray-500 mb-4">View and manage all cards posted by this client.</p>
+                <div class="flex items-center justify-between min-w-0">
+                    <div class="text-base font-bold text-gray-900">Total Cards</div>
+                    <div class="text-base font-bold text-cyan-600">{{ cards_count }}</div>
+                </div>
+                <div class="mt-6">
+                    <a
+                        href="{% url "control_panel:client_cards_list" client.Profile_name %}"
+                        class="text-white bg-slate-600 hover:bg-slate-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-full block"
+                        >View All Cards</a
+                    >
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock general %}

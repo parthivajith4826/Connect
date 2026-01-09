@@ -1,0 +1,165 @@
+{% extends "management\management_base.html" %} {% block general %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Main Info -->
+    <div class="md:col-span-2 space-y-6">
+        <!-- Header & Back Button -->
+        <div class="bg-white shadow rounded-lg p-4 sm:p-6 mb-4 flex items-center justify-between">
+            <h3 class="text-xl font-bold leading-none text-gray-900">{{ gig.title }}</h3>
+            {% comment %} <a
+                href="{% url "control_panel:freelancer_gig_list" gig.freelancer_id.Profile_name %}"
+                class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"
+            >
+                Back to Gig List
+            </a> {% endcomment %}
+        </div>
+
+        <!-- Image Carousel (Simulated) -->
+        <!-- Image Carousel (Simulated) -->
+        <div class="bg-white shadow rounded-lg overflow-hidden relative h-64">
+            {% for img in gig_images %}
+            <img
+                src="{{ img.image.url }}"
+                class="w-full h-full object-cover gig-slide absolute inset-0 transition-opacity duration-500 {% if not forloop.first %}opacity-0 pointer-events-none{% else %}opacity-100{% endif %}"
+                alt="Gig Image {{ forloop.counter }}"
+                data-index="{{ forloop.counter0 }}"
+            />
+            {% endfor %}
+            <button
+                onclick="prevSlide()"
+                class="absolute left-2 top-1/2 bg-black/50 text-white px-3 py-1 rounded transform -translate-y-1/2 hover:bg-black/70 z-10"
+            >
+                ‹
+            </button>
+            <button
+                onclick="nextSlide()"
+                class="absolute right-2 top-1/2 bg-black/50 text-white px-3 py-1 rounded transform -translate-y-1/2 hover:bg-black/70 z-10"
+            >
+                ›
+            </button>
+        </div>
+        
+        
+
+        <!-- Details -->
+        <div class="bg-white shadow rounded-lg p-4 sm:p-6">
+            <div class="flex justify-between items-start mb-4">
+                <h2 class="text-xl font-bold text-gray-900">Description</h2>
+                {% if not gig.is_blocked %}
+                <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-semibold rounded-full">Active</span>
+                {% else %}
+                <span class="px-3 py-1 bg-red-100 text-red-800 text-sm font-semibold rounded-full">Not Active</span>
+                {% endif %}
+            </div>
+            <div class="prose prose-slate max-w-none text-gray-600">
+                {{ gig.description|safe }}
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Skills</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for skill in skills %}
+                    <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="space-y-6">
+        <!-- Pricing Card -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wide mb-4">Pricing</h3>
+            <div class="flex items-baseline gap-1 mb-2">
+                <span class="text-3xl font-bold text-gray-900">₹{{ gig.price_min }} - ₹{{ gig.price_max }}</span>
+            </div>
+        </div>
+
+        {% comment %} <!-- Performance Stats -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wide mb-4">Stats</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <div class="text-2xl font-bold text-gray-900">1,240</div>
+                    <div class="text-xs text-gray-500">Views</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-gray-900">45</div>
+                    <div class="text-xs text-gray-500">Orders</div>
+                </div>
+            </div>
+        </div> {% endcomment %}
+
+        <!-- Admin Actions -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wide mb-4">Admin Actions</h3>
+            <div class="space-y-3">
+                {% if gig.is_blocked %}
+                    <a href="{% url "control_panel:gig_unblock2" gig.slug %}"">
+                    <button class="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors">                        
+                    Unblock
+                    </button>
+                    </a>
+                {% else %}
+                    <a href="{% url "control_panel:gig_block2" gig.slug %}">
+                    <button class="w-full py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"> 
+                        Block
+                    </button>
+                    </a>
+                {% endif %}
+                {% comment %} <button
+                    class="w-full py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                >
+                    Contact Freelancer
+                </button> {% endcomment %}
+            </div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wide mb-4">Navigations</h3>
+            <div class="space-y-3">
+                <a href="{% url "control_panel:freelancer_gig_list" gig.freelancer_id.Profile_name %}">
+                <button class="w-full py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 font-medium transition-colors">                        
+                Back Freelancer Gigs
+                </button>
+                </a>
+                <div></div>
+                <a href="{% url "control_panel:all_gig_list"%}">
+                <button class="w-full py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 font-medium transition-colors">                        
+                Back to All Gig List
+                </button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.gig-slide');
+            
+            function showSlide(index) {
+                // Handle index wrapping
+                if (index < 0) index = slides.length - 1;
+                if (index >= slides.length) index = 0;
+                
+                currentSlide = index;
+                
+                slides.forEach((slide, i) => {
+                    if (i === currentSlide) {
+                        slide.classList.remove('opacity-0', 'pointer-events-none');
+                        slide.classList.add('opacity-100');
+                    } else {
+                        slide.classList.remove('opacity-100');
+                        slide.classList.add('opacity-0', 'pointer-events-none');
+                    }
+                });
+            }
+
+            function prevSlide() {
+                showSlide(currentSlide - 1);
+            }
+
+            function nextSlide() {
+                showSlide(currentSlide + 1);
+            }
+        </script>
+{% endblock general %}

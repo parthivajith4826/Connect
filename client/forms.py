@@ -20,6 +20,7 @@ class ProfileForm(forms.ModelForm):
     def clean_Profile_name(self):
         Profile_name = self.cleaned_data.get('Profile_name')
         # print(Profile_name)
+
         # print(Profile_name)
         
         if not Profile_name:
@@ -29,7 +30,9 @@ class ProfileForm(forms.ModelForm):
         if ' ' in Profile_name:
             
             raise forms.ValidationError("Spaces are not allowed")
+
         
+
             
         
         pattern = r"^(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9_]{3,}$"
@@ -39,6 +42,25 @@ class ProfileForm(forms.ModelForm):
         
         return Profile_name
     
+
+    def clean_profile_photo(self):
+        
+        profile_photo = self.cleaned_data.get('profile_photo')
+
+        if not profile_photo and not self.instance.profile_photo:
+            raise forms.ValidationError("Image not selected")
+
+        print(type(profile_photo))
+        
+        if isinstance(profile_photo, UploadedFile):
+            if profile_photo.size > 2 * 1024 * 1024:
+                raise forms.ValidationError("Image too large (max 2MB)")
+
+            if profile_photo.content_type not in ("image/jpeg", "image/png"):
+                raise forms.ValidationError("Only JPG/PNG allowed")
+        
+        return profile_photo
+
     # def clean_profile_photo(self):
         
     #     profile_photo = self.cleaned_data.get('profile_photo')
@@ -56,6 +78,7 @@ class ProfileForm(forms.ModelForm):
     #             raise forms.ValidationError("Only JPG/PNG allowed")
         
     #     return profile_photo
+
     
     
     

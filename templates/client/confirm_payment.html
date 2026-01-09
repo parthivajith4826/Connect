@@ -46,9 +46,10 @@ payBtn.onclick = async () => {
     }
 
     // 🟢 SUCCESS HANDLING
-    if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+    if (result.paymentIntent) {
         setTimeout(() => {
-            window.location.href = "{% url 'client:wallet' %}";
+            const pi = result.paymentIntent.id;
+            window.location.href = `{% url 'client:wallet' %}?pi=${pi}`;
         }, 2000);
     }
 };
@@ -56,3 +57,8 @@ payBtn.onclick = async () => {
 
 
 {% endblock %}
+
+
+
+
+

@@ -1,0 +1,136 @@
+{% extends "management\management_base.html" %}
+{% load static %}
+{% block general %}
+<!-- Example Breadcrumb / Header -->
+                    <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
+                        <div class="mb-4 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Freelancers</h3>
+                                <span class="text-base font-normal text-gray-500">Manage all registered freelancers</span>
+                            </div>
+                            <div class="flex-shrink-0 space-x-2">
+                                <a href="{% url "control_panel:home" %}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200">
+                                    Back to Dashboard
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="flex flex-col mt-8">
+                            <div class="overflow-x-auto rounded-lg">
+                                <div class="align-middle inline-block min-w-full">
+                                    <div class="shadow overflow-hidden sm:rounded-lg">
+                                        <table class="min-w-full divide-y divide-gray-200">
+                                            <thead class="bg-gray-50">
+                                                <tr>
+                                                    <th scope="col" class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Name
+                                                    </th>
+                                                    <th scope="col" class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                                                        Email
+                                                    </th>
+                                                    <th scope="col" class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                                                        Sub. Status
+                                                    </th>
+                                                    <th scope="col" class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                                        Account Status
+                                                    </th>
+                                                    <th scope="col" class="p-2 sm:p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Actions
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            {% for freelancer in freelancers %}
+                                            <tbody class="bg-white">
+                                                <!-- Row 1 -->
+                                                <tr>
+                                                    <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-normal text-gray-900 flex items-center">
+                                                        {% if freelancer.profile_photo %}
+                                                        <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-2 sm:mr-3" src="{{ freelancer.profile_photo.url }}" alt="Profile_picture">
+                                                        {% else %}
+                                                        <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full mr-2 sm:mr-3" src="{% static 'images/user.png' %}" alt="Profile_picture">
+                                                        {% endif %}
+                                                        <span class="font-semibold">{{ freelancer.Profile_name }}</span>
+                                                    </td>
+                                                    <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-normal text-gray-500 hidden md:table-cell">
+                                                        {{ freelancer.email }}
+                                                    </td>
+                                                    <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-semibold text-green-600 hidden lg:table-cell">
+                                                        <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Active</span>
+                                                    </td>
+                                                    <td class="p-2 sm:p-4 whitespace-nowrap text-sm font-normal text-gray-500 hidden sm:table-cell">
+                                                        {% if freelancer.is_verified %}
+                                                        <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                                                            >Verified</span
+                                                        >
+                                                        {% else %}
+                                                        <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                                                            >Not Verified</span
+                                                        >
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="p-2 sm:p-4 whitespace-nowrap space-x-1 sm:space-x-2">
+                                                        <a href="{% url "control_panel:freelancer_profile" freelancer.Profile_name %}" class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-2 py-1 sm:px-3 sm:py-2 text-center">
+                                                            View
+                                                        </a>
+                                                            {% if not freelancer.is_active %}
+                                                            <a href="{% url "control_panel:freelancer_unblock" freelancer.Profile_name %}">
+                                                                <button type="submit" class="text-white bg-green-500 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-2 py-1 sm:px-3 sm:py-2 text-center min-w-[60px] sm:min-w-[80px]">
+                                                                    Unblock
+                                                                </button>
+                                                            </a>
+                                                            {% else %}
+                                                            <a href="{% url "control_panel:freelancer_block" freelancer.Profile_name %}">
+                                                                <button type="submit" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-1 sm:px-3 sm:py-2 text-center min-w-[60px] sm:min-w-[80px]">
+                                                                    Block
+                                                                </button>
+                                                            </a>
+                                                            {% endif %}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            {% endfor %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+
+                    </div>
+{% endblock general %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

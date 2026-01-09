@@ -1,0 +1,222 @@
+{% extends "freelancer\freelancer_base.html" %} {% block gig_view %}
+{% load static %}
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto h-screen">
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
+        <div class="flex items-center gap-4">
+            <a href="{% url "freelancer:home" %}" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                </svg>
+            </a>
+            <h1 class="text-lg md:text-xl font-bold text-slate-800">Gig Details</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            {% comment %} <a
+                href="{% url 'freelancer:edit_gig' gig.slug %}"
+                class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium text-sm transition-colors"
+            >
+                Edit Gig
+            </a> {% endcomment %}
+            <div class="flex items-center gap-3">
+                <img
+                    {% if user.profile_photo %}
+                    src="{{ user.profile_photo.url }}"
+                    alt="Profile"
+                    {% else %}
+                    src="{% static 'images/user.png' %}"
+                    alt="Profile"
+                    {% endif %}
+                    class="w-8 h-8 rounded-full"
+                />
+            </div>
+        </div>
+    </header>
+
+    <div class="p-4 md:p-8 max-w-5xl mx-auto">
+        <div class="grid lg:grid-cols-3 gap-6 md:gap-8">
+            <!-- Main Info -->
+            <div class="lg:col-span-2 space-y-8">
+                {% comment %} <!-- Cover Image -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <img
+                        src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=1200&q=80"
+                        alt="Gig Cover"
+                        class="w-full h-64 object-cover"
+                    />
+                </div> {% endcomment %}
+
+                <div class="relative overflow-hidden h-64 rounded-xl">
+    {% for img in gig.images.all %}
+    <img
+        src="{{ img.image.url }}"
+        class="gig-slide absolute inset-0 w-full h-full object-cover {% if not forloop.first %}hidden{% endif %}"
+    />
+    {% endfor %}
+
+    <button onclick="prevSlide()" class="absolute left-2 top-1/2 bg-black/50 text-white px-3 py-1 rounded">
+        ‹
+    </button>
+    <button onclick="nextSlide()" class="absolute right-2 top-1/2 bg-black/50 text-white px-3 py-1 rounded">
+        ›
+    </button>
+</div>
+
+
+                <!-- Details -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-lg md:text-xl font-bold text-slate-900">{{ gig.title }}</h2>
+                        {% if not gig.is_blocked %}
+                        <span class="px-3 py-1 bg-green-100 text-white-700 text-sm font-semibold rounded-full"> Active</span>
+                        {% else %}
+                        <span class="px-3 py-1 bg-red-100 text-white-700 text-sm font-semibold rounded-full"> Not Active</span>
+
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center gap-4 text-sm text-slate-500 mb-6">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                                ></path>
+                            </svg>
+                            {{ gig.categories }}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                ></path>
+                            </svg>
+                            {{ gig.created_at|timesince }} ago
+                         </span>
+                    </div>
+
+                    <div class="prose prose-slate max-w-none">
+                        {{ gig.description|safe }}
+                    </div>
+
+                    <div class="mt-8 pt-8 border-t border-slate-100">
+                        <h3 class="text-lg font-bold text-slate-900 mb-4">Skills</h3>
+                        
+                        <div class="flex flex-wrap gap-2">
+                            {%for skill in skills %}
+                            <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">{{ skill }}</span>
+                            {% comment %} <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">Tailwind CSS</span>
+                            <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">HTML5</span>
+                            <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">JavaScript</span> {% endcomment %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Info -->
+            <div class="space-y-6">
+                <!-- Pricing Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Pricing</h3>
+                    <div class="flex items-baseline gap-1 mb-2">
+                        <span class="text-3xl font-bold text-slate-900">₹{{ gig.price_min }}</span>
+                        <span class="text-slate-500"> - </span>
+                        <span class="text-3xl font-bold text-slate-900">₹{{gig.price_max}}</span>
+                    </div>
+                    {% comment %} <p class="text-sm text-slate-500 mb-6">Estimated price range for this service.</p>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Delivery Time</span>
+                            <span class="font-medium text-slate-900">7 Days</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Revisions</span>
+                            <span class="font-medium text-slate-900">Unlimited</span>
+                        </div>
+                    </div> {% endcomment %}
+                </div>
+
+                {% comment %} <!-- Performance Stats -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Performance</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-2xl font-bold text-slate-900">124</div>
+                            <div class="text-xs text-slate-500">Views</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-slate-900">12</div>
+                            <div class="text-xs text-slate-500">Clicks</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-slate-900">5</div>
+                            <div class="text-xs text-slate-500">Orders</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-slate-900">4.9</div>
+                            <div class="text-xs text-slate-500">Rating</div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                <!-- Actions -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Actions</h3>
+                    <div class="space-y-3">
+                        {% comment %} <button
+                            class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
+                        >
+                            Promote Gig
+                        </button> {% endcomment %}
+                        <a href="{% url 'freelancer:edit_gig' gig.slug %}" class=""><button
+                            class="w-full py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium transition-colors"
+                        >
+                            Edit
+                        </button>
+                        </a>
+                        <a href="{% url 'freelancer:close_gig' gig.slug %}" class="">
+                        <button
+                            class="w-full py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 font-medium transition-colors"
+                        >
+                            Delete Gig
+                        </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+let index = 0;
+const slides = document.querySelectorAll(".gig-slide");
+
+function showSlide(i) {
+    slides.forEach(s => s.classList.add("hidden"));
+    slides[i].classList.remove("hidden");
+}
+
+function nextSlide() {
+    index = (index + 1) % slides.length;
+    showSlide(index);
+}
+
+function prevSlide() {
+    index = (index - 1 + slides.length) % slides.length;
+    showSlide(index);
+}
+</script>
+
+{% endblock %}

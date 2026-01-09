@@ -71,9 +71,9 @@ def profile(request):
             form2 = LocationForm()
         return render(request,'client/profile.html',{'user':user,'form1':form1,'form2':form2})
 
-@never_cache
-def wallet(request):
-    return render(request,'client/wallet.html')
+# @never_cache
+# def wallet(request):
+#     return render(request,'client/wallet.html')
 
 @never_cache
 def create_card(request):
@@ -189,10 +189,7 @@ def edit_card(request,slug):
 
             
             for img in images:
-                Card_images.objects.create(
-                    card_id=card,
-                    image=img
-                )
+                Card_images.objects.create(card_id=card,image=img)
 
             return redirect("client:home")
 
@@ -200,7 +197,7 @@ def edit_card(request,slug):
         return render(request,"client/create_card.html",{"form": form,"categories": categories,"card":card,"images":images_db})
 
     
-    form = CreatecardForm()
+    form = CreatecardForm(instance = card)
     return render(request,"client/create_card.html",{"form": form,"categories": categories,"card":card,"images":images_db})
     
 
@@ -212,81 +209,266 @@ def close_card(request,slug):
     
 def add_fund(request):
     if request.method == 'POST':
-        amount = request.POST.get('amount')
-        print(request.user)
-    
-        if not amount or int(amount) <= 0:
-            return render(request,"client/add_funds.html",{"error":"Enter a valid amount"})
-        
-                # create Stripe PaymentIntent
-        intent = stripe.PaymentIntent.create(
-            amount=int(amount) * 100,
-            currency="inr",
-            metadata={
-                "user_id": request.user.id,
-                "purpose": "wallet_topup"
-            }
-        )
-        
-        return render(
-            request,
-            "client/confirm_payment.html",
-            {
-                "client_secret": intent.client_secret,
-                "amount": amount,
-                "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
-            }
-        )
+        wallet = Wallet.objects.filter(user = request.user).first()
+        if not wallet.is_blocked:
+            amount = request.POST.get('amount')
+            
+            if not amount or int(amount) <= 0:
+                return render(request,"client/add_funds.html",{"error":"Enter a valid amount"})
+            
+                    # create Stripe PaymentIntent
+            intent = stripe.PaymentIntent.create(
+                amount=int(amount) * 100,
+                currency="inr",
+                metadata={
+                    "user_id": request.user.id,
+                    "purpose": "wallet_topup"
+                }
+            )
+            
+            return render(
+                request,
+                "client/confirm_payment.html",
+                {
+                    "client_secret": intent.client_secret,
+                    "amount": amount,
+                    "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
+                }
+            )
 
+        else :
+            return render(request,'client/add_funds.html',{"error":"Wallet is disabled"})
         
     return render(request,'client/add_funds.html')
    
 
 def wallet(request):
     wallet, created = Wallet.objects.get_or_create(user=request.user)
-    transactions = WalletTransactions.objects.filter(wallet=wallet).order_by("-created_at")
+    transactions = WalletTransactions.objects.filter(
+        wallet=wallet
+    ).order_by("-created_at")[:4]
 
-    return render(request, "client/wallet.html", {
-        "wallet": wallet,
-        "transactions": transactions
-    })
+    message = None
+    message_type = None  # success / error / warning
+
+    pi = request.GET.get("pi")
+    print(pi)
+    if pi:
+        txn = WalletTransactions.objects.filter(
+            stripe_payment_intent=pi
+        ).order_by("-created_at").first()
+
+        if txn:
+            if txn.status == "success":
+                message = "Payment successful. Wallet credited."
+                message_type = "success"
+
+            elif txn.status == "failed":
+                message = "Payment failed. No amount was deducted."
+                message_type = "error"
+
+            elif txn.status == "canceled":
+                message = "Payment was canceled."
+                message_type = "warning"
+
+            elif txn.status == "refunded":
+                message = "Payment was refunded. Amount removed from wallet."
+                message_type = "warning"
+
+    return render(
+        request,
+        "client/wallet.html",
+        {
+            "wallet": wallet,
+            "transactions": transactions,
+            "message": message,
+            "message_type": message_type,
+        },
+    )
     
     
+
+
+
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from decimal import Decimal
+import stripe
 
 @csrf_exempt
 def stripe_webhook(request):
-    print("Webhhok etheettend")
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
 
-    event = stripe.Webhook.construct_event(
-        payload,
-        sig_header,
-        settings.STRIPE_WEBHOOK_SECRET
-    )
-    print(event["type"])
+    try:
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            settings.STRIPE_WEBHOOK_SECRET
+        )
+    except (ValueError, stripe.error.SignatureVerificationError):
+        return HttpResponse(status=400)
 
-    if event["type"] == "payment_intent.succeeded":
-        intent = event["data"]["object"]
-        user_id = intent["metadata"]["user_id"]
-        # amount = intent["amount"] / 100
-        
+    event_type = event["type"]
+    data_object = event["data"]["object"]
+
+   
+
+    if event_type.startswith("payment_intent"):
+        intent = data_object
+
+        user_id = intent["metadata"].get("user_id")
+        if not user_id:
+            return HttpResponse(status=200)
+
         amount = Decimal(intent["amount"]) / Decimal("100")
-
         wallet = Wallet.objects.get(user_id=user_id)
-        wallet.balance += amount
+
+        
+        if event_type == "payment_intent.succeeded":
+            txn, created = WalletTransactions.objects.get_or_create(
+                stripe_payment_intent=intent["id"],
+                defaults={
+                    "wallet": wallet,
+                    "amount": amount,
+                    "transaction_type": "credit",
+                    "status": "success",
+                }
+            )
+
+            if created:
+                wallet.balance += amount
+                wallet.save()
+
+       
+        elif event_type == "payment_intent.payment_failed":
+            WalletTransactions.objects.get_or_create(
+                stripe_payment_intent=intent["id"],
+                defaults={
+                    "wallet": wallet,
+                    "amount": amount,
+                    "transaction_type": "credit",
+                    "status": "failed",
+                }
+            )
+
+        
+        elif event_type == "payment_intent.canceled":
+            WalletTransactions.objects.get_or_create(
+                stripe_payment_intent=intent["id"],
+                defaults={
+                    "wallet": wallet,
+                    "amount": amount,
+                    "transaction_type": "credit",
+                    "status": "canceled",
+                }
+            )
+
+
+    elif event_type == "charge.refunded":
+        charge = data_object
+        intent_id = charge["payment_intent"]
+        amount = Decimal(charge["amount_refunded"]) / Decimal("100")
+
+        txn = WalletTransactions.objects.filter(
+            stripe_payment_intent=intent_id,
+            status="success"
+        ).first()
+
+        if txn:
+            wallet = txn.wallet
+            wallet.balance -= amount
+            wallet.save()
+
+            WalletTransactions.objects.create(
+                wallet=wallet,
+                amount=amount,
+                transaction_type="debit",
+                stripe_payment_intent=intent_id,
+                status="refunded",
+            )
+
+    
+    return HttpResponse(status=200)
+
+
+from decimal import Decimal
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+
+def withdraw(request):
+    wallet = Wallet.objects.get(user=request.user)
+
+    if request.method == "POST":
+        amount = request.POST.get("amount")
+
+        try:
+            amount = Decimal(amount)
+        except:
+            return render(request, "client/withdraw.html", {
+                "error": "Invalid amount"
+            })
+
+        if amount <= 0:
+            return render(request, "client/withdraw.html", {
+                "error": "Amount must be greater than zero"
+            })
+
+        if amount > wallet.balance:
+            return render(request, "client/withdraw.html", {
+                "error": "Insufficient wallet balance"
+            })
+
+       
+        wallet.balance -= amount
         wallet.save()
 
+        
         WalletTransactions.objects.create(
             wallet=wallet,
             amount=amount,
-            transaction_type="credit",
-            stripe_payment_intent=intent["id"],
-            status="success"
+            transaction_type="debit",
+            status="pending",
         )
 
-    # return HttpResponse(status=200)
-    return redirect('client:wallet')
+        return redirect("client:wallet")
+
+    return render(request, "client/withdraw.html")
+
+
+import uuid                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+@csrf_exempt
+def quill_image_upload(request):
+    if request.method == "POST" and request.FILES.get("image"):
+        image = request.FILES["image"]
+
+        base_name = sanitize_filename(image.name)
+        ext = os.path.splitext(image.name)[1]
+
+        filename = f"quill/{base_name}_{uuid.uuid4().hex[:8]}{ext}"
+
+        path = default_storage.save(filename, ContentFile(image.read()))
+        image_url = default_storage.url(path)
+
+        return JsonResponse({
+            "success": True,
+            "url": image_url
+        })
+
+    return JsonResponse({"success": False}, status=400)
+
+import uuid
+import os
+import re
+
+def sanitize_filename(name):
+    name = os.path.splitext(name)[0]          # remove extension
+    print(name)
+    name = re.sub(r'[^a-zA-Z]+', '_', name)    # letters only
+    return name.strip('_').lower()

@@ -13,6 +13,9 @@
             body {
                 font-family: "Inter", sans-serif;
             }
+             a {
+        text-decoration: none !important;
+    }
         </style>
         {% block cropper %}
         {% endblock %}
@@ -76,10 +79,12 @@
                         </svg>
                         My Connections
                     </a>
-                    <a
-                        href="#"
+                    {% comment %} <a
+                        href="{% url 'freelancer:gigs' %}"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-                        {% if request.resolver_match.url_name == '#' %}
+                        {% if request.resolver_match.url_name == 'gigs' %}
+                            bg-indigo-600 text-white
+                        {% elif request.resolver_match.url_name == 'add_gig' %}
                             bg-indigo-600 text-white
                         {% else %}
                             text-slate-400 hover:text-white hover:bg-slate-800
@@ -94,7 +99,7 @@
                             ></path>
                         </svg>
                         My Gigs
-                    </a>
+                    </a> {% endcomment %}
                     <a
                         href="#"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
@@ -135,6 +140,11 @@
                     <a
                         href="{% url 'freelancer:signout' %}"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+                        {% if request.resolver_match.url_name == 'signout' %}
+                            bg-indigo-600 text-white
+                        {% else %}
+                            text-slate-400 hover:text-white hover:bg-slate-800
+                        {% endif %}" >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 stroke-linecap="round"
@@ -151,6 +161,11 @@
             {% endblock %}
             {% block profile %}
             {% endblock %}
+            {% block gig_list %}
+            {% endblock %}
+            {% block create_gig %}
+            {% endblock create_gig %}
+            {% block gig_view  %}{% endblock %}
         </div>
     </body>
     {% block cropper_js %}

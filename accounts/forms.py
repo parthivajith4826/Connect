@@ -38,7 +38,7 @@ class SignupForm(UserCreationForm):
         if ' ' in password:
             raise forms.ValidationError("Password cannot contain spaces.")
         
-        pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z1-9@$!%*?&#]{8,}$"
+        pattern = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9@$!%*?&#]{8,}$"
         if not re.match(pattern,password):
             raise forms.ValidationError("Password must contain at least 8 characters, including uppercase, lowercase, and numbers.`")
         return password

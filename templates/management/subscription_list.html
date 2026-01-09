@@ -1,0 +1,561 @@
+{% extends "management\management_base.html" %} {% block general %}
+
+<div class="flex flex-col min-h-full">
+    <main class="flex-grow pt-6 px-4">
+        <div class="w-full mb-6">
+            <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
+                <!-- 
+                        TAB NAVIGATION HEADER
+                        -->
+                <div class="border-b border-gray-200 mb-6">
+                    <div class="flex items-center justify-between">
+                        <ul class="flex flex-wrap -mb-px">
+                            <li class="mr-2">
+                                <button
+                                    onclick="switchTab('subscription')"
+                                    id="tab-subscription"
+                                    class="inline-block p-4 rounded-t-lg active group tab-active font-medium text-cyan-600 bg-cyan-50 border-b-2 border-cyan-600 transition-all duration-300 ease-in-out"
+                                >
+                                    Subscription Packs
+                                </button>
+                            </li>
+                            <li class="mr-2">
+                                <button
+                                    onclick="switchTab('planTypes')"
+                                    id="tab-planTypes"
+                                    class="inline-block p-4 rounded-t-lg group tab-inactive font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 ease-in-out"
+                                >
+                                    Plan Types
+                                </button>
+                            </li>
+                        </ul>
+                        <!-- Create Button (Only visible for Subscription Packs) -->
+                        <div class="flex-shrink-0" id="create-btn-container">
+                            <a
+                                href="edit-subscription.html"
+                                class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center px-4 py-2"
+                            >
+                                Create New Subscription Pack
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 
+                        SUBSCRIPTION PACKS CONTENT
+                        Shown when 'subscription' tab is active
+                        -->
+                <div id="subscription-section">
+                    <div class="flex flex-col">
+                        <div class="overflow-x-auto rounded-lg">
+                            <div class="align-middle inline-block min-w-full">
+                                <div class="shadow overflow-hidden sm:rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200" id="subscriptionTable">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th
+                                                    scope="col"
+                                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Title
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Price
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Status
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <!-- Static Row 1 -->
+                                            {% for subscription in subscriptions %}
+                                            <tr
+                                                data-id="{{ subscription.id }}"
+                                                data-plantype="{{ subscription.plantype }}"
+                                                data-title="{{ subscription.title }}"
+                                                data-price="{{ subscription.price }}"
+                                                data-maxgigs="{{ subscription.max_gigs }}"
+                                                data-maximg="{{ subscription.max_images_per_gig }}"
+                                                data-conn="{{ subscription.connection_limit }}"
+                                                data-days="{{ subscription.duration_days }}"
+                                                data-created="{{ subscription.created_at|date:'Y-m-d' }}"
+                                                data-free="{{ subscription.is_free|yesno:'true,false' }}"
+                                                data-active="{{ subscription.is_active|yesno:'true,false' }}"
+                                            >
+                                                <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                                    {{ subscription.title }}
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                                    ₹{{ subscription.price }}
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                                    {% if subscription.is_active %}
+                                                    <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded status-badge">Active</span>
+                                                    {% else %}
+                                                    <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded status-badge">Active</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap space-x-2">
+                                                    <button
+                                                        onclick="openViewModal(this)"
+                                                        class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        View
+                                                    </button>
+                                                    <a href="{% url "control_panel:edit_subscription" subscription.slug %}" class="">
+                                                    <button
+                                                        class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-xs px-3 py-2 text-center inline-block"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    </a>
+                                                    
+                                                    {% comment %} <form action=""> {% endcomment %}
+                                                    <button
+                                                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        Disable
+                                                    </button>
+                                                    {% comment %} </form> {% endcomment %}
+
+                                                    <button
+                                                        class="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 
+                        PLAN TYPES CONTENT
+                        Shown when 'planTypes' tab is active
+                        -->
+                <div id="plan-types-section" class="hidden">
+                    <div class="flex flex-col">
+                        <div class="overflow-x-auto rounded-lg">
+                            <div class="align-middle inline-block min-w-full">
+                                <div class="shadow overflow-hidden sm:rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th
+                                                    scope="col"
+                                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Name
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Description
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Status
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <!-- Plan Type Row 1 -->
+                                            <tr
+                                                data-name="Freelancer"
+                                                data-desc="Plans specifically for freelancers to bid on work"
+                                            >
+                                                <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                                    Freelancer
+                                                </td>
+                                                <td
+                                                    class="p-4 whitespace-normal text-sm font-normal text-gray-500 max-w-xs"
+                                                >
+                                                    Plans specifically for freelancers to bid on work
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                                    <span
+                                                        class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded status-badge"
+                                                        >Active</span
+                                                    >
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap space-x-2">
+                                                    <button
+                                                        onclick="openPlanTypeEditModal(this)"
+                                                        class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        Disable
+                                                    </button>
+                                                    <button
+                                                        class="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <!-- Plan Type Row 2 -->
+                                            <tr
+                                                data-name="Client"
+                                                data-desc="Plans for clients to post advanced requirements"
+                                            >
+                                                <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                                    Client
+                                                </td>
+                                                <td
+                                                    class="p-4 whitespace-normal text-sm font-normal text-gray-500 max-w-xs"
+                                                >
+                                                    Plans for clients to post advanced requirements
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                                    <span
+                                                        class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded status-badge"
+                                                        >Active</span
+                                                    >
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap space-x-2">
+                                                    <button
+                                                        onclick="openPlanTypeEditModal(this)"
+                                                        class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        Disable
+                                                    </button>
+                                                    <button
+                                                        class="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Subscription Modal -->
+            <div
+                id="viewSubscriptionModal"
+                tabindex="-1"
+                aria-hidden="true"
+                class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full justify-center items-center flex"
+                style="background-color: rgba(0, 0, 0, 0.5)"
+            >
+                <div class="relative p-4 w-full max-w-md h-full md:h-auto">
+                    <div class="relative bg-white rounded-lg shadow">
+                        <!-- Modal Header -->
+                        <div class="flex justify-between items-center p-5 rounded-t border-b">
+                            <h3 class="text-xl font-medium text-gray-900">Subscription Details</h3>
+                            <button
+                                type="button"
+                                onclick="closeModal('viewSubscriptionModal')"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                            >
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"
+                                    ></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Modal Body (Details Card) -->
+                        <div class="p-6 space-y-4">
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <h4 id="view_title" class="text-lg font-bold text-gray-900 mb-1"></h4>
+                                <p
+                                    id="view_plantype"
+                                    class="text-sm text-cyan-600 font-medium mb-3 uppercase tracking-wider"
+                                ></p>
+
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Price:</span>
+                                        <span id="view_price" class="text-gray-900 font-bold"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Duration:</span>
+                                        <span id="view_duration"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Max Gigs:</span>
+                                        <span id="view_max_gigs"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Images/Gig:</span>
+                                        <span id="view_max_images"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Connections:</span>
+                                        <span id="view_connections"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Free Plan:</span>
+                                        <span id="view_is_free"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Status:</span>
+                                        <span id="view_is_active" class="text-green-600"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Created At:</span>
+                                        <span id="view_created_at"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal Footer -->
+                        <div class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200">
+                            <button
+                                onclick="closeModal('viewSubscriptionModal')"
+                                type="button"
+                                class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Plan Type Modal -->
+            <div
+                id="editPlanTypeModal"
+                tabindex="-1"
+                aria-hidden="true"
+                class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full justify-center items-center flex"
+                style="background-color: rgba(0, 0, 0, 0.5)"
+            >
+                <div class="relative p-4 w-full max-w-md h-full md:h-auto">
+                    <div class="relative bg-white rounded-lg shadow">
+                        <!-- Modal Header -->
+                        <div class="flex justify-between items-center p-5 rounded-t border-b">
+                            <h3 class="text-xl font-medium text-gray-900">Edit Plan Type</h3>
+                            <button
+                                type="button"
+                                onclick="closeModal('editPlanTypeModal')"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                            >
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"
+                                    ></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Modal Body (Form) -->
+                        <div class="p-6 space-y-6">
+                            <form action="#">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="pt_name" class="block mb-2 text-sm font-medium text-gray-900"
+                                            >Name</label
+                                        >
+                                        <input
+                                            type="text"
+                                            id="pt_name"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label for="pt_desc" class="block mb-2 text-sm font-medium text-gray-900"
+                                            >Description</label
+                                        >
+                                        <textarea
+                                            id="pt_desc"
+                                            rows="4"
+                                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-cyan-600 focus:border-cyan-600"
+                                            placeholder="Description of the plan type..."
+                                        ></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Modal Footer -->
+                        <div class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200">
+                            <button
+                                onclick="saveChanges('editPlanTypeModal')"
+                                type="button"
+                                class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                            >
+                                Save
+                            </button>
+                            <button
+                                onclick="closeModal('editPlanTypeModal')"
+                                type="button"
+                                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const sidebar = document.getElementById("sidebar");
+    const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+    const toggleSidebarMobile = document.getElementById("toggleSidebarMobile");
+    const toggleSidebarMobileHamburger = document.getElementById("toggleSidebarMobileHamburger");
+    const toggleSidebarMobileClose = document.getElementById("toggleSidebarMobileClose");
+
+    toggleSidebarMobile.addEventListener("click", () => {
+        toggleSidebarMobileHamburger.classList.toggle("hidden");
+        toggleSidebarMobileClose.classList.toggle("hidden");
+        sidebar.classList.toggle("hidden");
+        sidebarBackdrop.classList.toggle("hidden");
+        sidebarBackdrop.classList.toggle("bg-opacity-50");
+        sidebarBackdrop.classList.toggle("flex");
+    });
+
+    sidebarBackdrop.addEventListener("click", () => {
+        sidebar.classList.add("hidden");
+        sidebarBackdrop.classList.add("hidden");
+        toggleSidebarMobileHamburger.classList.remove("hidden");
+        toggleSidebarMobileClose.classList.add("hidden");
+    });
+
+    /* 
+    ---------------------------------------------
+    TAB SWITCHING LOGIC
+    ---------------------------------------------
+    */
+    function switchTab(tab) {
+        // Content Sections
+        const subSection = document.getElementById("subscription-section");
+        const planSection = document.getElementById("plan-types-section");
+
+        // Tab Buttons
+        const subTab = document.getElementById("tab-subscription");
+        const planTab = document.getElementById("tab-planTypes");
+
+        if (tab === "subscription") {
+            // Show Subscription Section, Hide Plan Types
+            subSection.classList.remove("hidden");
+            planSection.classList.add("hidden");
+
+            // Update Tab Styles
+            subTab.classList.add("text-cyan-600", "bg-cyan-50", "border-b-2", "border-cyan-600");
+            subTab.classList.remove("text-gray-500", "hover:text-gray-700", "hover:bg-gray-50", "hover:border-gray-300");
+
+            planTab.classList.remove("text-cyan-600", "bg-cyan-50", "border-b-2", "border-cyan-600");
+            planTab.classList.add("text-gray-500", "hover:text-gray-700", "hover:bg-gray-50", "hover:border-gray-300");
+
+            // Show Create Button only on Subscriptions tab
+            document.getElementById("create-btn-container").classList.remove("hidden");
+        } else {
+            // Show Plan Types Section, Hide Subscriptions
+            subSection.classList.add("hidden");
+            planSection.classList.remove("hidden");
+
+            // Update Tab Styles
+            subTab.classList.remove("text-cyan-600", "bg-cyan-50", "border-b-2", "border-cyan-600");
+            subTab.classList.add("text-gray-500", "hover:text-gray-700", "hover:bg-gray-50", "hover:border-gray-300");
+
+            planTab.classList.add("text-cyan-600", "bg-cyan-50", "border-b-2", "border-cyan-600");
+            planTab.classList.remove("text-gray-500", "hover:text-gray-700", "hover:bg-gray-50", "hover:border-gray-300");
+
+            // Hide Create Button on Plan Types tab
+            document.getElementById("create-btn-container").classList.add("hidden");
+        }
+    }
+
+    /* 
+    ---------------------------------------------
+    MODAL VISIBILITY HANDLING
+    ---------------------------------------------
+    */
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove("hidden");
+        document.getElementById(modalId).classList.add("flex");
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add("hidden");
+        document.getElementById(modalId).classList.remove("flex");
+    }
+
+    /* 
+    ---------------------------------------------
+    DATA POPULATION: VIEW SUBSCRIPTION
+    ---------------------------------------------
+    */
+    function openViewModal(btn) {
+        const row = btn.closest("tr");
+        const data = row.dataset;
+
+        // Populate fields by ID
+        document.getElementById("view_title").innerText = data.title;
+        document.getElementById("view_plantype").innerText = data.plantype;
+        document.getElementById("view_price").innerText = "₹" + data.price;
+        document.getElementById("view_duration").innerText = data.days + " Days";
+        document.getElementById("view_max_gigs").innerText = data.maxgigs;
+        document.getElementById("view_max_images").innerText = data.maximg;
+        document.getElementById("view_connections").innerText = data.conn;
+        document.getElementById("view_is_free").innerText = data.free === "true" ? "Yes" : "No";
+        document.getElementById("view_is_active").innerText = data.active === "true" ? "Active" : "Inactive";
+        document.getElementById("view_created_at").innerText = data.created;
+
+        openModal("viewSubscriptionModal");
+    }
+
+    // Edit Plan Type - Mock
+    function openPlanTypeEditModal(btn) {
+        const row = btn.closest("tr");
+        const data = row.dataset;
+        document.getElementById("pt_name").value = data.name;
+        document.getElementById("pt_desc").value = data.desc;
+        openModal("editPlanTypeModal");
+    }
+
+    function saveChanges(modalId) {
+        closeModal(modalId);
+    }
+</script>
+
+{% endblock general%}

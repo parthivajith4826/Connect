@@ -1,0 +1,195 @@
+{% extends "management\management_base.html" %} {% block general %}
+<div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
+    <div class="mb-4 flex items-center justify-between">
+        <div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Edit Subscription Pack</h3>
+            <span class="text-base font-normal text-gray-500">Edit plan details and limits</span>
+        </div>
+        <div class="flex-shrink-0">
+            <a
+                href="{% url "control_panel:subscriptions" %}"
+                class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg inline-flex items-center p-2"
+            >
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                </svg>
+                Back to list
+            </a>
+        </div>
+    </div>
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+                <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Title</label>
+                <input
+                    value="{{ form.title.value }}"
+                    name="title"
+                    type="text"
+                    id="title"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                    placeholder="e.g. Basic Plan"
+                    required
+                />
+                {% if form.title.errors %}
+                <p class="text-red-600 text-sm mt-1">
+                    {{ form.title.errors.0 }}
+                </p>
+                {% endif %}
+            </div>
+        
+
+            <div>
+                <label for="plantype" class="block mb-2 text-sm font-medium text-gray-900">Plan Type</label>
+                <select
+                    name="plantype"
+                    id="plantype"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                >
+                {% for pt in plantype %}
+                <option value="{{ pt.id }}" {% if pt.id == form.plantype.value %} selected {% endif %}>{{ pt.name }}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="price" class="block mb-2 text-sm font-medium text-gray-900">Price (INR)</label>
+                <input
+                    value="{{ form.price.value }}"
+                    name="price"
+                    type="number"
+                    id="price"
+                    step="0.01"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                    placeholder="0.00"
+                />
+                {% if form.price.errors %}
+                <p class="text-red-600 text-sm mt-1">
+                    {{ form.price.errors.0 }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="duration_days" class="block mb-2 text-sm font-medium text-gray-900">Duration (Days)</label>
+                <input
+                    value="{{ form.duration_days.value }}"
+                    name="duration_days"
+                    type="number"
+                    id="duration_days"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                    placeholder="30"
+                />
+                {% if form.duration_days.errors %}
+                <p class="text-red-600 text-sm mt-1">
+                    {{ form.duration_days.errors.0 }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="max_gigs" class="block mb-2 text-sm font-medium text-gray-900">Max Gigs</label>
+                <input
+                    value="{{ form.max_gigs.value }}"
+                    name="max_gigs"
+                    type="number"
+                    id="max_gigs"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                    placeholder="10"
+                />
+                {% if form.max_gigs.errors %}
+                <p class="text-red-600 text-sm mt-1">
+                    {{ form.max_gigs.errors.0 }}
+                </p>
+                {% endif %}
+            </div>
+            
+
+            <div>
+                <label for="max_images_per_gig" class="block mb-2 text-sm font-medium text-gray-900"
+                    >Max Images per Gig</label
+                >
+                <input
+                    value="{{ form.max_images_per_gig.value }}"
+                    name="max_images_per_gig"
+                    type="number"
+                    id="max_images_per_gig"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                    placeholder="5"
+                />
+                {% if form.max_images_per_gig.errors %}
+                <p class="text-red-600 text-sm mt-1">
+                    {{ form.max_images_per_gig.errors.0 }}
+                </p>
+                {% endif %}
+            </div>
+            
+
+            <div>
+                <label for="connection_limit" class="block mb-2 text-sm font-medium text-gray-900">Connection Limit</label>
+                <input
+                    value="{{ form.connection_limit.value }}"
+                    name="connection_limit"
+                    type="number"
+                    id="connection_limit"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                    placeholder="50"
+                />
+                {% if form.connection_limit.errors %}
+                <p class="text-red-600 text-sm mt-1">
+                    {{ form.connection_limit.errors.0 }}
+                </p>
+                {% endif %}
+            </div>
+            
+
+            <div class="flex items-center mt-6">
+                <input
+                    
+                    name="is_free"
+                    id="is_free"
+                    type="checkbox"
+                    {% if form.is_free.value %}
+                    checked
+                    {% endif %}
+                    class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-cyan-300"
+                />
+                <label for="is_free" class="ml-3 text-sm font-medium text-gray-900">Is Free?</label>
+            </div>
+        </div>
+
+        <div class="mt-8 flex justify-end gap-3">
+    
+            <!-- Cancel Button -->
+            <a
+                href="{% url "control_panel:subscriptions" %}"
+                class="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+                Cancel
+            </a>
+
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+                Update Subscription Pack
+            </button>
+
+        </div>
+    </form>
+</div>
+{% endblock general %}

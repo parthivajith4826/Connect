@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" class="overflow-x-hidden">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Sign In | Admin Dashboard</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: {
+                                50: "#eff6ff",
+                                100: "#dbeafe",
+                                200: "#bfdbfe",
+                                300: "#93c5fd",
+                                400: "#60a5fa",
+                                500: "#3b82f6",
+                                600: "#2563eb",
+                                700: "#1d4ed8",
+                                800: "#1e40af",
+                                900: "#1e3a8a",
+                            },
+                            cyan: { 600: "#0891b2", 700: "#0e7490" },
+                        },
+                        fontFamily: {
+                            sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "system-ui"],
+                        },
+                    },
+                },
+            };
+        </script>
+        <style>
+            /* Smooth Background Pattern */
+            body {
+                background-color: #f8fafc; /* Slate-50 */
+                /* Optional subtle pattern grid */
+                background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+                background-size: 40px 40px;
+            }
+
+            /* Soft Bokeh/Gradient Blobs */
+            .blob {
+                position: absolute;
+                border-radius: 50%;
+                filter: blur(80px);
+                opacity: 0.6;
+                z-index: 0;
+            }
+            .blob-1 {
+                top: -10%;
+                left: -10%;
+                width: 500px;
+                height: 500px;
+                background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); /* Blue-100/200 */
+                animation: float 10s ease-in-out infinite alternate;
+            }
+            .blob-2 {
+                bottom: -10%;
+                right: -10%;
+                width: 500px;
+                height: 500px;
+                background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%); /* Cyan-100/200 */
+                animation: float 12s ease-in-out infinite alternate-reverse;
+            }
+
+            @keyframes float {
+                0% { transform: translate(0, 0); }
+                100% { transform: translate(30px, 50px); }
+            }
+
+            /* Content Wrapper */
+            .content-wrapper {
+                position: relative;
+                z-index: 10;
+            }
+        </style>
+    </head>
+    <body class="flex flex-col items-center justify-center min-h-screen px-4 overflow-x-hidden relative bg-slate-50">
+        
+        <!-- Ambient Background Shapes - Constrained in fixed container -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+        </div>
+
+        <div class="content-wrapper w-full flex flex-col items-center justify-center">
+            <!-- Logo / Brand -->
+            <a href="#" class="flex items-center justify-center mb-8 text-2xl font-semibold lg:mb-10 text-gray-900 drop-shadow-sm">
+                <span class="self-center whitespace-nowrap text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
+                    AdminPanel
+                </span>
+            </a>
+
+            <!-- Login Card -->
+            <div class="w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-xl md:mt-0 sm:max-w-md xl:p-0 border border-white/50">
+                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                        Welcome back
+                    </h1>
+                    <p class="text-sm font-light text-gray-500 -mt-2">
+                        Enter your credentials to access the dashboard.
+                    </p>
+
+                    <form class="space-y-4 md:space-y-6" id="loginForm" onsubmit="handleLogin(event)" action="" method="post">
+                        {% csrf_token %}
+                        <div>
+                            <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email Address</label>
+                            <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                class="bg-gray-50/50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5 transition ease-in-out duration-150 focus:bg-white focus:outline-none focus:ring-2 placeholder-gray-400"
+                                placeholder="name@company.com"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="••••••••"
+                                class="bg-gray-50/50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5 transition ease-in-out duration-150 focus:bg-white focus:outline-none focus:ring-2 placeholder-gray-400"
+                                required
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            id="submitBtn"
+                            class="w-full text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center shadow-lg hover:shadow-cyan-500/30"
+                        >
+                            <span id="btnText">Sign in</span>
+                            <svg
+                                id="loadingSpinner"
+                                class="hidden w-5 h-5 ml-2 text-white animate-spin"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    stroke-width="4"
+                                ></circle>
+                                <path
+                                    class="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                            </svg>
+                        </button>
+
+                        <p class="text-sm font-light text-gray-500 text-center mt-4">
+                            Need help? <a href="#" class="font-medium text-cyan-600 hover:underline">Contact Support</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+            
+            <footer class="mt-8 text-sm text-gray-400 text-center">&copy; 2025 Connect Platform. All rights reserved.</footer>
+        </div>
+
+        <script>
+            function handleLogin(event) {
+                // Allow form to submit naturally to the backend
+                // We only update the UI to show processing state
+                
+                const btn = document.getElementById('submitBtn');
+                const btnText = document.getElementById('btnText');
+                const spinner = document.getElementById('loadingSpinner');
+
+                // Show Loading State
+                // Note: We do NOT use event.preventDefault() so the form submits
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+                btnText.innerText = 'Signing in...';
+                spinner.classList.remove('hidden');
+                
+                // Optional: Prevent double-clicks if needed, though form submit usually handles nav
+                btn.onclick = (e) => e.preventDefault(); 
+            }
+        </script>
+
+    </body>
+</html>

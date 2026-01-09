@@ -6,7 +6,7 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import login
 
-from accounts.tasks import send_verification_email
+from accounts.tasks import send_verification_email,send_verification_otp,resend_verification_otp
 
 
 
@@ -17,15 +17,24 @@ import secrets
 @never_cache
 # Create your views here.
 def landing_page(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
             return redirect('client:home')
     else :
         return render(request,'landing_page.html')
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    # else :
+    #     return render(request,'landing_page.html')
     
     # #temp aytt vechathane
     # return render(request,'landing_page.html')
@@ -34,9 +43,16 @@ def landing_page(request):
 @never_cache
 #Procedure 1
 def register(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
@@ -73,16 +89,21 @@ def register(request):
 
 @never_cache
 def resent_email(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
             return redirect('client:home')
-    
-    
-    
+        
     
     
     email = request.session.get('register_email')
@@ -127,6 +148,13 @@ def verify_email(request,token):
     #         return redirect('freelancer:home') 
     #     else :
     #         return redirect('client:home')
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
+        if user.role == "freelancer":
+            return redirect('freelancer:home')
+        else :
+            return redirect('client:home')
     
     
     
@@ -150,21 +178,30 @@ def verify_email(request,token):
 @never_cache   
 #procedure 3 
 def role(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
-        if user.role == "freelancer":
-            return redirect('freelancer:home')
-        else :
-            return redirect('client:home')
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
     
     
-    
+    # if request.user.is_authenticated:
+    #     user = request.user
+    #     print(type(user))
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
     
     
     
     if request.method == 'POST':
+        print("role select ")
         email = request.session.get('email')
+        print("Email : ")
+        print(email)
         # email_social = request.user.email
         
         # #alteration
@@ -172,6 +209,7 @@ def role(request):
         
         #This is the normal case of role selection when user sign up with email and passowrd
         if email:
+            
             user = User.objects.filter(email = email).first()
             role = request.POST.get('role')
             user.role = role
@@ -180,11 +218,11 @@ def role(request):
             
             request.session['user_email'] = email
             
-            
-            if user.role == "freelancer":
-                return redirect('freelancer:home')
-            else :
-                return redirect('client:home')
+            return redirect('accounts:signin')
+            # if user.role == "freelancer":
+            #     return redirect('freelancer:home')
+            # else :
+            #     return redirect('client:home')
         
         #This is the else case , it is mean that normal email is not existed, that means user is trying to sign up with social account , that means 
         # trying to sign up with google.
@@ -197,14 +235,17 @@ def role(request):
                 # del request.session['email_social']
                 role = request.POST.get('role')
                 user.role = role
+                user.is_verified = True
                 user.save()
                 print("socail role saved")
                 request.session['user_email'] = request.user.email
                 
-                if user.role == "freelancer":
-                    return redirect('freelancer:home')
-                else :
-                    return redirect('client:home')
+                return redirect('accounts:signin')
+                
+                # if user.role == "freelancer":
+                #     return redirect('freelancer:home')
+                # else :
+                #     return redirect('client:home')
             
             
     else :
@@ -232,9 +273,16 @@ def role(request):
 
 @never_cache
 def signin(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
@@ -247,13 +295,15 @@ def signin(request):
         
         user = authenticate(request,email = email, password = password)
         if user :
-            # if user.
+            print("user ind")
+            print(user)
+            
             if user.is_verified :  
                 
                 request.session['user_email'] = email
                 login(request,user)
                 
-                print(request.session.get('user_email')) 
+                # print(request.session.get('user_email')) 
                 if user.role == None:
                     return redirect('accounts:role')
                 else : 
@@ -271,9 +321,16 @@ def signin(request):
 
 @never_cache
 def request_otp(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
@@ -296,13 +353,16 @@ def request_otp(request):
             else :
             
                 otp = ''.join(str(secrets.randbelow(10)) for _ in range(6))
+                print(otp)
                 
-                send_mail(
-                subject="OTP",
-                message=otp,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-            )
+                send_verification_otp.delay(email,otp)
+                
+            #     send_mail(
+            #     subject="OTP",
+            #     message=otp,
+            #     from_email=settings.DEFAULT_FROM_EMAIL,
+            #     recipient_list=[email],
+            # )
                 Otp.objects.create(user_id = user,otp = otp)
                 request.session['otp_sent'] = True
                 return redirect('accounts:otp')
@@ -313,9 +373,16 @@ def request_otp(request):
   
 @never_cache  
 def resent_otp(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
@@ -327,14 +394,16 @@ def resent_otp(request):
     email = request.session.get('otp_email')
     user = User.objects.filter(email = email).first()
     otp = ''.join(str(secrets.randbelow(10)) for _ in range(6))
+    print(otp)
                 
+    resend_verification_otp.delay(email,otp)
            
-    send_mail(
-    subject="OTP",
-    message=otp,
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    recipient_list=[email],
-)
+#     send_mail(
+#     subject="OTP",
+#     message=otp,
+#     from_email=settings.DEFAULT_FROM_EMAIL,
+#     recipient_list=[email],
+# )
     temp = Otp.objects.filter(user_id = user)
     temp.delete()
     Otp.objects.create(user_id = user,otp = otp)
@@ -343,14 +412,20 @@ def resent_otp(request):
 
 @never_cache
 def otp(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
             return redirect('client:home')
-    
     
     
     
@@ -373,15 +448,21 @@ def otp(request):
 
 @never_cache
 def reset_password(request):
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
             return redirect('client:home')
-    
-    
     
     
     
@@ -408,9 +489,16 @@ def reset_password(request):
 def social_email_conflict(request):
     
 
-    if request.session.get('user_email'):
-        email = request.session.get('user_email')
-        user = User.objects.get(email=email)
+    # if request.session.get('user_email'):
+    #     email = request.session.get('user_email')
+    #     user = User.objects.get(email=email)
+    #     if user.role == "freelancer":
+    #         return redirect('freelancer:home')
+    #     else :
+    #         return redirect('client:home')
+    if request.user.is_authenticated:
+        user = request.user
+        print(type(user))
         if user.role == "freelancer":
             return redirect('freelancer:home')
         else :
@@ -418,5 +506,6 @@ def social_email_conflict(request):
     
     
     
-    
     return render(request, "account/social_email_conflict.html")
+
+

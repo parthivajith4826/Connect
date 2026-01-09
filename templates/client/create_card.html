@@ -3,11 +3,23 @@
 
 {% block static %}
 <!-- CKEditor styles -->
-    <link rel="stylesheet" href="{% static 'client/ckeditor/style.css' %}">
-    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/47.3.0/ckeditor5.css" crossorigin>
+    {% comment %} <link rel="stylesheet" href="{% static 'client/ckeditor/style.css' %}"> {% endcomment %}
+    {% comment %} <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/47.3.0/ckeditor5.css" crossorigin> {% endcomment %}
+    
 {% endblock %}
 
 {% block create_card %}
+
+
+<!-- Quill CSS -->
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+
+
 <!-- Main Content -->
 <main class="flex-1 overflow-y-auto h-screen">
     <!-- Topbar -->
@@ -58,7 +70,7 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Job Title</label>
                         <input
-                            value="{{ card.title }}"
+                            value="{{ form.title.value }}"
                             name = "title"
                             type="text"
                             placeholder="e.g. Senior React Developer needed for..."
@@ -86,7 +98,7 @@
                                 >Required Skills (comma separated)</label
                             >
                             <input
-                                value = "{{ card.skills_required }}"
+                                value = "{{ form.skills_required.value }}"
                                 name = "skills_required"
                                 type="text"
                                 placeholder="React, Node.js, etc."
@@ -105,7 +117,7 @@
                         ></textarea>
                     </div> {% endcomment %}
                     
-                    <div>
+                    {% comment %} <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">
                         Description
                     </label>
@@ -118,7 +130,56 @@
                     
                     <input type="hidden" name="description" id="description" value="">
                     {{ form.description.errors }}
-                </div>
+                </div> {% endcomment %}
+                <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+
+                        <!-- Quill Toolbar -->
+                        <div id="quill-toolbar">
+                            <span class="ql-formats">
+                                <select class="ql-header">
+                                    <option value="1"></option>
+                                    <option value="2"></option>
+                                    <option selected></option>
+                                </select>
+                            </span>
+
+                            <span class="ql-formats">
+                                <select class="ql-align"></select>
+                            </span>
+
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                            </span>
+
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                                <button class="ql-image"></button>
+                                <button class="ql-code-block"></button>
+                            </span>
+                        </div>
+
+                        <!-- Quill Editor -->
+                        <div
+                            id="quill-editor"
+                            class="bg-white border border-slate-300 rounded-lg"
+                            style="min-height: 200px"
+                        >
+                    {{ form.description.value|safe }}
+                    </div>
+
+                        <!-- Hidden input sent to Django -->
+                        <input type="hidden" name="description" id="description" />
+                        {{ form.description.errors }}
+                    </div>
+                
 
                 </div>
             </div>
@@ -128,9 +189,9 @@
                 <div class="space-y-6">
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Min Budget ($)</label>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Min Budget (₹)</label>
                             <input
-                                {% comment %} value = "{{ card.min_budget }}"  {% endcomment %}
+                                value = "{{ form.min_budget.value }}" 
                                 name = "min_budget"
                                 type="number"
                                 class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
@@ -138,9 +199,9 @@
                             {{ form.min_budget.errors.0 }}
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Max Budget ($)</label>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Max Budget (₹)</label>
                             <input
-                                {% comment %} value = "{{ card.max_budget }}" {% endcomment %}
+                                value = "{{ form.max_budget.value }}"
                                 name = "max_budget"
                                 type="number"
                                 class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
@@ -243,10 +304,67 @@
         </form>
     </div>
 </main>
-<script src="https://cdn.ckeditor.com/ckeditor5/47.3.0/ckeditor5.umd.js" crossorigin></script>
-<script src="https://cdn.ckbox.io/ckbox/2.9.2/ckbox.js" crossorigin></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // register resize module correctly
+    Quill.register('modules/imageResize', window.ImageResize.default);
+
+    const quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'Describe your service in detail...',
+        modules: {
+            toolbar: {
+                container: '#quill-toolbar',
+                handlers: {
+                    image: imageHandler
+                }
+            },
+            imageResize: {
+                modules: ['Resize', 'DisplaySize', 'Toolbar']
+            }
+        }
+    });
+
+    // 🔥 Custom image handler
+    function imageHandler() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.click();
+
+        input.onchange = async () => {
+            const file = input.files[0];
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch('/quill/upload-image/', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                const range = quill.getSelection();
+                quill.insertEmbed(range.index, 'image', data.url);
+            }
+        };
+    }
+
+    // save clean HTML on submit
+    document.querySelector("form").addEventListener("submit", function () {
+        document.getElementById("description").value =
+            quill.root.innerHTML;
+    });
+
+});
+</script>
+{% comment %} <script src="https://cdn.ckeditor.com/ckeditor5/47.3.0/ckeditor5.umd.js" crossorigin></script> {% endcomment %}
+{% comment %} <script src="https://cdn.ckbox.io/ckbox/2.9.2/ckbox.js" crossorigin></script> {% endcomment %}
 {% comment %} <script src="{% static 'client/ckeditor/main.js' %}?v=1.1"></script> {% endcomment %}
-<script type="module" src="{% static 'client/ckeditor/main.js' %}"></script>
+{% comment %} <script type="module" src="{% static 'client/ckeditor/main.js' %}"></script> {% endcomment %}
 
 {% endblock  %}
 {% block ckeditor_js %}

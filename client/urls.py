@@ -13,4 +13,6 @@ urlpatterns = [
     path('close-card/<slug:slug>/',views.close_card,name = 'close_card'),
     
     path('add-fund',views.add_fund,name = 'add_fund'),
+    path("withdraw/", views.withdraw, name="withdraw"),
+
 ]

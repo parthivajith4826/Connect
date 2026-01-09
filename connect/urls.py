@@ -23,6 +23,8 @@ from django.conf.urls.static import static
 
 from client.views import stripe_webhook
 
+from freelancer import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('accounts.urls')),
@@ -38,6 +40,9 @@ urlpatterns = [
 
 
     path("stripe/webhook/", stripe_webhook, name="stripe_webhook"),
+    
+    path("quill/upload-image/", views.quill_image_upload, name="quill_image_upload"),
+
 
 
 ]

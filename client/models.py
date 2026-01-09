@@ -14,6 +14,7 @@ class Location(models.Model):
 class Categories(models.Model):
     name = models.CharField(max_length=255,null=False)
     is_blocked = models.BooleanField(default=False)
+    slug =AutoSlugField( populate_from ='name',blank=True)
     
     def __str__(self):
         return self.name
@@ -39,8 +40,9 @@ class Card_images(models.Model):
     
     
 class Wallet(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,on_delete=models.CASCADE,)
     balance = models.DecimalField(max_digits=10,decimal_places=2,default=0)
+    is_blocked = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True)
     
 
