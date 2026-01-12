@@ -44,9 +44,9 @@
                         Dashboard
                     </a>
                     <a
-                        href="#"
+                        href="{% url "freelancer:find_work" %}"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-                        {% if request.resolver_match.url_name == '#' %}
+                        {% if request.resolver_match.url_name == 'find_work' %}
                             bg-indigo-600 text-white
                         {% else %}
                             text-slate-400 hover:text-white hover:bg-slate-800
@@ -169,6 +169,7 @@
 
             
             {% block subscriptions  %}{% endblock %}
+            {% block find_work %}{% endblock find_work %}
         </div>
     </body>
     {% block cropper_js %}

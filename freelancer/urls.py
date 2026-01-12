@@ -17,6 +17,9 @@ urlpatterns = [
     path('subscription-success',views.subscription_success,name = 'subscription_success'),
     
     
+    path('find-work',views.find_work,name = 'find_work'),
+    
+    
 
 ]
 

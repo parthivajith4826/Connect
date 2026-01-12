@@ -507,3 +507,8 @@ def stripe_webhook_subscription(request):
 
 def subscription_success(request):
     return render(request,"freelancer/subscription_success.html")
+
+
+
+def find_work(request):
+    return render(request,"freelancer/find_work.html")
