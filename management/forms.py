@@ -299,7 +299,6 @@ class EditPlanTypeForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get("name")
-        print(name)
         if not name:
             raise ValidationError("Plan type name is required.")
 
@@ -316,7 +315,6 @@ class EditPlanTypeForm(forms.ModelForm):
     
     def clean_description(self):
         description = self.cleaned_data.get("description")
-        print(description)
 
         # Description is optional
         if not description:

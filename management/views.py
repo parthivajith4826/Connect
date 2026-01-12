@@ -8,6 +8,8 @@ from django.http import Http404
 from .forms import CategoryForm,SubscriptionForm,PlanTypeForm,EditSubscriptionForm,EditPlanTypeForm
 from .models import Plantype,SubscriptionPack
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+
 
 
 # Create your views here.
@@ -452,7 +454,9 @@ def delete_subscription(request,slug):
     
 def edit_plantype(request):
     plantype_id = request.POST.get("id")
-   
+    # print(request.POST)
+    # print(plantype_id)
+    plantype = Plantype.objects.get(id = plantype_id)
 
     form = EditPlanTypeForm(request.POST, instance=plantype)
 
@@ -468,6 +472,28 @@ def edit_plantype(request):
         "success": False,
         "errors": form.errors,
     }, status=400)
+    
+
+def delete_plantype(request,name):
+    plantype = get_object_or_404(Plantype,name = name)
+    next_url = request.POST.get("next")
+    plantype.delete()
+    return redirect(next_url)
+    
+
+def enable_plantype(request,name):
+    plantype = get_object_or_404(Plantype,name = name)
+    next_url = request.POST.get("next")
+    plantype.is_active = True
+    plantype.save()
+    return redirect(next_url)
+
+def disable_plantype(request,name):
+    plantype = get_object_or_404(Plantype,name = name)
+    next_url = request.POST.get("next")
+    plantype.is_active = False
+    plantype.save()
+    return redirect(next_url)
     
     
 

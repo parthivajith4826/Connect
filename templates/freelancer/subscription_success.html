@@ -1,0 +1,51 @@
+{% extends "freelancer/freelancer_base.html" %}
+{% block subscriptions %}
+
+<div class="flex-1 flex items-center justify-center px-4 py-20">
+    <div class="w-full max-w-md bg-[#1d1d1f] rounded-3xl p-10 shadow-2xl border border-gray-800 text-center">
+
+        <!-- SUCCESS ICON -->
+        <div class="flex items-center justify-center mb-6">
+            <div class="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center">
+                <svg
+                    class="w-8 h-8 text-green-400"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- TITLE -->
+        <h2 class="text-2xl font-semibold text-white mb-2">
+            Subscription Activated
+        </h2>
+
+        <!-- MESSAGE -->
+        <p class="text-gray-400 text-sm leading-relaxed mb-8">
+            Your subscription has been successfully activated.
+            You now have access to all features included in your plan.
+        </p>
+
+        <!-- ACTION BUTTON -->
+        <a
+            href="{% url 'freelancer:home' %}"
+            class="inline-flex items-center justify-center w-full py-3 rounded-2xl
+                   bg-indigo-500 text-white font-semibold text-sm
+                   hover:bg-indigo-400 transition shadow-lg shadow-indigo-500/30"
+        >
+            Go to Dashboard
+        </a>
+
+        <!-- FOOTER NOTE -->
+        <p class="text-[11px] text-gray-500 mt-6">
+            Thank you for choosing our platform 🚀
+        </p>
+    </div>
+</div>
+
+{% endblock %}

@@ -32,7 +32,7 @@
                         <!-- Create Button (Only visible for Subscription Packs) -->
                         <div class="flex-shrink-0" id="create-btn-container">
                             <a
-                                href="edit-subscription.html"
+                                href="{% url "control_panel:create_subscriptions" %}"
                                 class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center px-4 py-2"
                             >
                                 Create New Subscription Pack
@@ -45,7 +45,8 @@
                         SUBSCRIPTION PACKS CONTENT
                         Shown when 'subscription' tab is active
                         -->
-                <div id="subscription-section">
+                <div id="subscription-section" class="hidden">
+
                     <div class="flex flex-col">
                         <div class="overflow-x-auto rounded-lg">
                             <div class="align-middle inline-block min-w-full">
@@ -159,7 +160,7 @@
                                                         >
                                                             Delete
                                                         </button>
-                                                        </button>
+                                        
                                                     </form>
 
                                                 </td>
@@ -248,16 +249,45 @@
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button
-                                                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
-                                                    >
-                                                        Disable
-                                                    </button>
-                                                    <button
-                                                        class="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
-                                                    >
-                                                        Delete
-                                                    </button>
+                                                    
+                                                    {% if plantype.is_active %} 
+                                                    <form method="POST" action="{% url "control_panel:disable_plantype" plantype.name %}" class="inline">
+                                                        <!-- where to go AFTER disabling -->
+                                                        <input type="hidden" name="next" value="{%url "control_panel:subscriptions" %}">
+                                                        {% csrf_token %}
+                                                        <button
+                                                            type="submit"
+                                                            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                        >
+                                                            Disable
+                                                        </button>
+                                                    </form>
+                                                    {% else %} 
+                                                    <form method="POST" action="{% url "control_panel:enable_plantype" plantype.name %}" class="inline">
+                                                        <!-- where to go AFTER disabling -->
+                                                        <input type="hidden" name="next" value="{% url "control_panel:subscriptions" %}">
+                                                        {% csrf_token %}
+                                                        <button
+                                                            type="submit"
+                                                            class="text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                        >
+                                                            Enable
+                                                        </button>
+                                                    </form>
+                                                    {% endif %}
+
+                                                    <form method="POST" action="{% url "control_panel:delete_plantype" plantype.name %}" class="inline">
+                                                        <!-- where to go AFTER deleting -->
+                                                        <input type="hidden" name="next" value="{% url "control_panel:subscriptions" %}">
+                                                        {% csrf_token %}
+                                                        <button
+                                                            class="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-2 text-center"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                        </button>
+                                                    </form>
+
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -369,7 +399,6 @@
 
 
                     {% csrf_token %}
-                    <input type="hidden" name="id" id="plantypeId">
 
                     {% if plantype_form.non_field_errors %}
                         <p class="text-red-600 text-sm">{{ plantype_form.non_field_errors }}</p>
@@ -420,8 +449,10 @@
         </div>
     </main>
 </div>
-
+{% comment %} Script1 {% endcomment %}
 <script>
+    document.documentElement.classList.add("no-transition");
+
     const sidebar = document.getElementById("sidebar");
     const sidebarBackdrop = document.getElementById("sidebarBackdrop");
     const toggleSidebarMobile = document.getElementById("toggleSidebarMobile");
@@ -446,54 +477,57 @@
 
     /* 
     ---------------------------------------------
-    TAB SWITCHING LOGIC
+    TAB SWITCHING LOGIC (WITH PERSISTENCE)
     ---------------------------------------------
     */
     function switchTab(tab) {
-        // Content Sections
         const subSection = document.getElementById("subscription-section");
         const planSection = document.getElementById("plan-types-section");
 
-        // Tab Buttons
         const subTab = document.getElementById("tab-subscription");
         const planTab = document.getElementById("tab-planTypes");
 
+        // ✅ SAVE ACTIVE TAB
+        localStorage.setItem("activeTab", tab);
+
         if (tab === "subscription") {
-            // Show Subscription Section, Hide Plan Types
             subSection.classList.remove("hidden");
             planSection.classList.add("hidden");
 
-            // Update Tab Styles
             subTab.classList.add("text-cyan-600", "bg-cyan-50", "border-b-2", "border-cyan-600");
             subTab.classList.remove("text-gray-500", "hover:text-gray-700", "hover:bg-gray-50", "hover:border-gray-300");
 
             planTab.classList.remove("text-cyan-600", "bg-cyan-50", "border-b-2", "border-cyan-600");
             planTab.classList.add("text-gray-500", "hover:text-gray-700", "hover:bg-gray-50", "hover:border-gray-300");
 
-            // Show Create Button only on Subscriptions tab
             document.getElementById("create-btn-container").classList.remove("hidden");
         } else {
-            // Show Plan Types Section, Hide Subscriptions
             subSection.classList.add("hidden");
             planSection.classList.remove("hidden");
 
-            // Update Tab Styles
             subTab.classList.remove("text-cyan-600", "bg-cyan-50", "border-b-2", "border-cyan-600");
             subTab.classList.add("text-gray-500", "hover:text-gray-700", "hover:bg-gray-50", "hover:border-gray-300");
 
             planTab.classList.add("text-cyan-600", "bg-cyan-50", "border-b-2", "border-cyan-600");
             planTab.classList.remove("text-gray-500", "hover:text-gray-700", "hover:bg-gray-50", "hover:border-gray-300");
 
-            // Hide Create Button on Plan Types tab
             document.getElementById("create-btn-container").classList.add("hidden");
         }
     }
 
-    /* 
-    ---------------------------------------------
-    MODAL VISIBILITY HANDLING
-    ---------------------------------------------
-    */
+    // ✅ RESTORE TAB ON PAGE LOAD
+    document.addEventListener("DOMContentLoaded", function () {
+    const savedTab = localStorage.getItem("activeTab") || "subscription";
+
+    switchTab(savedTab);
+
+    // 🔓 Re-enable transitions after first paint
+    requestAnimationFrame(() => {
+        document.documentElement.classList.remove("no-transition");
+    });
+});
+
+
     function openModal(modalId) {
         document.getElementById(modalId).classList.remove("hidden");
         document.getElementById(modalId).classList.add("flex");
@@ -504,16 +538,10 @@
         document.getElementById(modalId).classList.remove("flex");
     }
 
-    /* 
-    ---------------------------------------------
-    DATA POPULATION: VIEW SUBSCRIPTION
-    ---------------------------------------------
-    */
     function openViewModal(btn) {
         const row = btn.closest("tr");
         const data = row.dataset;
 
-        // Populate fields by ID
         document.getElementById("view_title").innerText = data.title;
         document.getElementById("view_plantype").innerText = data.plantype;
         document.getElementById("view_price").innerText = "₹" + data.price;
@@ -527,96 +555,87 @@
 
         openModal("viewSubscriptionModal");
     }
-
 </script>
+
+
+{% comment %} script2 {% endcomment %}
 <script>
-document.getElementById("plantypeForm").addEventListener("submit", function (e) {
-    e.preventDefault(); // 🚫 stop page reload
+    let currentPlanTypeRow = null;
 
-    const form = e.target;
-    const formData = new FormData(form);
+    document.getElementById("plantypeForm").addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    // clear old errors
-    document.getElementById("nameError").innerText = "";
-    document.getElementById("descriptionError").innerText = "";
+        const form = e.target;
+        const formData = new FormData(form);
 
-    fetch("{% url 'control_panel:edit_plantype' %}", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
-        },
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
+        document.getElementById("nameError").innerText = "";
+        document.getElementById("descriptionError").innerText = "";
 
-        // ❌ VALIDATION ERRORS
-        if (!data.success) {
-            console.log(data)
-            if (data.errors.name) {
-                document.getElementById("nameError").innerText =
-                    data.errors.name[0];
+        fetch("{% url 'control_panel:edit_plantype' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (!data.success) {
+                if (data.errors.name) {
+                    document.getElementById("nameError").innerText = data.errors.name[0];
+                }
+                if (data.errors.description) {
+                    document.getElementById("descriptionError").innerText = data.errors.description[0];
+                }
+                return;
             }
-            if (data.errors.description) {
-                document.getElementById("descriptionError").innerText =
-                    data.errors.description[0];
-            }
-            return;
-        }
 
-        // ✅ SUCCESS
-        const select = document.getElementById("plantype");
-        const option = document.createElement("option");
-        option.value = data.id;
-        option.text = data.name;
-        option.selected = true;
-        select.appendChild(option);
+            // ✅ UPDATE TABLE ROW
+            currentPlanTypeRow.dataset.name = data.name;
+            currentPlanTypeRow.dataset.desc =
+                document.querySelector("textarea[name='description']").value;
 
-        closePlanTypeModal();
-        form.reset();
-    });
-});
-</script>
-<script>
-function openPlanTypeModal() {
-    document.getElementById("plantypeModal").classList.remove("hidden");
-    document.getElementById("plantypeModal").classList.add("flex");
-}
+            currentPlanTypeRow.querySelector("td:nth-child(1)").innerText = data.name;
+            currentPlanTypeRow.querySelector("td:nth-child(2)").innerText =
+                document.querySelector("textarea[name='description']").value;
 
-function closePlanTypeModal() {
-    document.getElementById("plantypeModal").classList.add("hidden");
-}
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const openBtn = document.getElementById("openPlanTypeBtn");
-
-    if (openBtn) {
-        openBtn.addEventListener("click", function () {
-            openPlanTypeModal();
+            closePlanTypeModal();
+            form.reset();
+            currentPlanTypeRow = null;
         });
-    }
-});
+    });
 </script>
+
+{% comment %} script3 {% endcomment %}
 <script>
-function openEditPlanTypeModal(btn) {
-    const row = btn.closest("tr");
+    function openPlanTypeModal() {
+        document.getElementById("plantypeModal").classList.remove("hidden");
+        document.getElementById("plantypeModal").classList.add("flex");
+    }
 
-    const id = row.dataset.id;
-    const name = row.dataset.name;
-    const desc = row.dataset.desc;
-
-    // Fill form fields
-    document.querySelector("#plantypeId").value = id;
-    document.querySelector("#plantypeForm input[name='name']").value = name;
-    document.querySelector("#plantypeForm textarea[name='description']").value = desc;
-
-    // Clear old errors
-    document.getElementById("nameError").innerText = "";
-    document.getElementById("descriptionError").innerText = "";
-
-    openPlanTypeModal();
-}
+    function closePlanTypeModal() {
+        document.getElementById("plantypeModal").classList.add("hidden");
+    }
 </script>
 
+{% comment %} script4 {% endcomment %}
+<script>
+    function openEditPlanTypeModal(btn) {
+        currentPlanTypeRow = btn.closest("tr");
+
+        const id = currentPlanTypeRow.dataset.id;
+        const name = currentPlanTypeRow.dataset.name;
+        const desc = currentPlanTypeRow.dataset.desc;
+
+        document.querySelector("#plantypeId").value = id;
+        document.querySelector("#plantypeForm input[name='name']").value = name;
+        document.querySelector("#plantypeForm textarea[name='description']").value = desc;
+
+        document.getElementById("nameError").innerText = "";
+        document.getElementById("descriptionError").innerText = "";
+
+        openPlanTypeModal();
+    }
+</script>
 {% endblock general%}

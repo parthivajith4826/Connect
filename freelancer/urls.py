@@ -12,6 +12,10 @@ urlpatterns = [
     path('edit-gig/<str:slug>',views.edit_gig,name = 'edit_gig'),
     path('close-gig/<str:slug>',views.close_gig,name = 'close_gig'),
     
+    path('subscriptions/',views.subscriptions,name = 'subscriptions'),
+    path('subscribe-start/<slug:slug>',views.subscribe_start,name = 'subscribe_start'),
+    path('subscription-success',views.subscription_success,name = 'subscription_success'),
+    
     
 
 ]

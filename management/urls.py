@@ -57,5 +57,9 @@ urlpatterns = [
     path("delete-subscription/<slug:slug>",views.delete_subscription,name = "delete_subscription"),
     
     path("edit-plantype/",views.edit_plantype,name = "edit_plantype"),    
+    path("delete-plantype/<str:name>",views.delete_plantype,name = "delete_plantype"),    
+    path("enable-plantype/<str:name>",views.enable_plantype,name = "enable_plantype"),    
+    path("disable-plantype/<str:name>",views.disable_plantype,name = "disable_plantype"),    
+    path("disable-plantype/<str:name>",views.disable_plantype,name = "disable_plantype"),    
     
    ] 

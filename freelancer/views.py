@@ -3,6 +3,7 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
 from client.models import User
 from .models import Freelancer_Profile,Gig,GigImages
+from management.models import SubscriptionPack,UserSubscription,SubscriptionTransaction
 from client.models import Categories
 from.forms import ProfileForm,ContactForm,CreategigForm
 
@@ -287,6 +288,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from datetime import timedelta
+from django.utils import timezone
 
 @csrf_exempt
 def quill_image_upload(request):
@@ -304,3 +307,208 @@ def quill_image_upload(request):
 
     return JsonResponse({"success": False}, status=400)
 
+
+
+def subscriptions(request):
+    subscriptions = SubscriptionPack.objects.all()[1:]
+    freeplan = SubscriptionPack.objects.all()[0]
+    
+    return render(request,"freelancer/subscriptions.html",{"subscriptions":subscriptions,"freeplan":freeplan})
+
+import stripe
+from django.conf import settings
+from django.shortcuts import render, get_object_or_404, redirect
+
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+
+def subscribe_start(request, slug):
+    
+    #for to give in subscriptions.html (subscriptions,freeplan,pack)
+    subscriptions = SubscriptionPack.objects.all()[1:]
+    freeplan = SubscriptionPack.objects.all()[0]
+    pack = get_object_or_404(SubscriptionPack, slug=slug, is_active=True)
+    
+    user1 = request.user
+    usersubscription = UserSubscription.objects.filter(user = user1).first()
+    
+    if usersubscription :
+        if usersubscription.subscription_pack.plantype.name == "Free" or not usersubscription.is_active :
+            if not usersubscription.is_active:
+                usersubscription.delete()
+            # ✅ Create PaymentIntent
+            intent = stripe.PaymentIntent.create(
+                amount=int(pack.price * 100),
+                currency="inr",
+                automatic_payment_methods={
+                "enabled": True,},
+                metadata={
+                    "user_id": request.user.id,
+                    "subscription_pack_id": pack.id,
+                    "purpose" : "subscription",
+                }
+            )
+
+            return render(request, "freelancer/subscribe_pay.html", {
+                "client_secret": intent.client_secret,
+                "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+                "pack": pack,
+                "success_url": request.build_absolute_uri(
+                        "/freelancer/subscription-success"
+                    ),
+            })
+        
+        else :
+            return render(request,"freelancer/subscriptions.html",{"error":"You already have a Subscription,Wait until for an expiry for next subscription","subscriptions":subscriptions,"freeplan":freeplan})
+    
+    else :
+        print("usersubscription illa")
+        intent = stripe.PaymentIntent.create(
+                amount=int(pack.price * 100),
+                currency="inr",
+                automatic_payment_methods={
+                "enabled": True,},
+                metadata={
+                    "user_id": request.user.id,
+                    "subscription_pack_id": pack.id,
+                    "purpose" : "subscription",
+                }
+            )
+
+        return render(request, "freelancer/subscribe_pay.html", {
+            "client_secret": intent.client_secret,
+            "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+            "pack": pack,
+            "success_url": request.build_absolute_uri(
+                    "/freelancer/subscription-success"
+                ),
+        })
+        
+        
+        
+    
+    
+    # return HttpResponse("Subscriptions")
+
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from django.conf import settings
+from decimal import Decimal
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+@csrf_exempt
+def stripe_webhook_subscription(request):
+    print("webhook reached")
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            settings.STRIPE_SUBSCRIPTION_WEBHOOK_SECRET
+        )
+    except (ValueError, stripe.error.SignatureVerificationError):
+        return HttpResponse(status=400)
+
+    event_type = event["type"]
+    print(f"event type = {event_type}")
+    
+    intent = event["data"]["object"]
+    metadata = intent.get("metadata", {})
+    print(metadata)
+
+    print(f"Purpose = {metadata.get("purpose")}")
+    # 🔐 Validate this webhook is for subscriptions
+    if metadata.get("purpose") != "subscription":
+        return HttpResponse(status=200)
+    print(f"Purpose = {metadata.get("purpose")}")
+
+    user_id = metadata.get("user_id")
+    print(f"userid = {user_id}")
+    pack_id = metadata.get("subscription_pack_id")
+    print(f"pack id = {pack_id}")
+
+    if not user_id or not pack_id:
+        return HttpResponse(status=200)
+
+    # 🔐 Validate user & pack
+    try:
+        user = User.objects.get(id=user_id)
+        pack = SubscriptionPack.objects.get(id=pack_id, is_active=True)
+        print(f"pack = {pack}")
+    except (User.DoesNotExist, SubscriptionPack.DoesNotExist):
+        return HttpResponse(status=200)
+
+    amount = Decimal(intent["amount"]) / Decimal("100")
+
+    # =====================================================
+    # ✅ PAYMENT SUCCEEDED → CREATE SUBSCRIPTION
+    # =====================================================
+    if event_type == "payment_intent.succeeded":
+        print("success ayittund")
+
+        
+
+        start_date = timezone.now()
+        end_date = start_date + timedelta(days=pack.duration_days)
+
+        subscription, _ = UserSubscription.objects.update_or_create(
+            user=user,
+            defaults={
+                "subscription_pack": pack,
+                "start_date": start_date,
+                "end_date": end_date,
+            }
+        )
+        print("User subscription updated")
+        SubscriptionTransaction.objects.get_or_create(
+            stripe_payment_intent_id=intent["id"],
+            defaults={
+                "user": user,
+                "user_subscription": subscription,
+                "amount": amount,
+                "payment_status": "succeeded",
+            }
+        )
+        print("transactions also updated")
+
+    # =====================================================
+    # ❌ PAYMENT FAILED → RECORD FAILURE
+    # =====================================================
+    elif event_type == "payment_intent.payment_failed":
+
+        SubscriptionTransaction.objects.get_or_create(
+            stripe_payment_intent_id=intent["id"],
+            defaults={
+                "user": user,
+                "user_subscription": None,
+                "amount": amount,
+                "payment_status": "failed",
+            }
+        )
+
+    # =====================================================
+    # 🚫 PAYMENT CANCELED → RECORD CANCELLATION
+    # =====================================================
+    elif event_type == "payment_intent.canceled":
+
+        SubscriptionTransaction.objects.get_or_create(
+            stripe_payment_intent_id=intent["id"],
+            defaults={
+                "user": user,
+                "user_subscription": None,
+                "amount": amount,
+                "payment_status": "canceled",
+            }
+        )
+
+    return HttpResponse(status=200)
+
+def subscription_success(request):
+    return render(request,"freelancer/subscription_success.html")

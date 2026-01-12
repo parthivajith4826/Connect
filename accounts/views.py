@@ -2,9 +2,14 @@ from django.shortcuts import render,redirect
 from .forms import SignupForm, Reset_passwordForm
 from django.contrib.auth import authenticate
 from .models import User, Otp
+from management.models import UserSubscription,SubscriptionPack
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import login
+
+from django.utils import timezone
+from datetime import timedelta
+
 
 from accounts.tasks import send_verification_email,send_verification_otp,resend_verification_otp
 
@@ -196,25 +201,27 @@ def role(request):
     #         return redirect('client:home')
     
     
-    
+    subscriptionPack = SubscriptionPack.objects.get(title = "Free Starter")
     if request.method == 'POST':
+        
         print("role select ")
         email = request.session.get('email')
-        print("Email : ")
-        print(email)
-        # email_social = request.user.email
-        
-        # #alteration
-        # del request.session['email']
         
         #This is the normal case of role selection when user sign up with email and passowrd
         if email:
             
             user = User.objects.filter(email = email).first()
             role = request.POST.get('role')
-            user.role = role
-            user.save()
-            
+            if role == "freelancer":
+                UserSubscription.objects.create(user = user,
+                subscription_pack = subscriptionPack)
+                
+                user.role = role
+                user.save()
+                
+            else :
+                user.role = role
+                user.save()
             
             request.session['user_email'] = email
             
@@ -228,16 +235,30 @@ def role(request):
         # trying to sign up with google.
         #in this case in order to get the email , that is used for social sign up we are using request.user.email.
         else:
+            print("social user saving enter ayi")
             if request.user.email :
+                print(f"email = {request.user.email}")
                 # return redirect('accounts:role')
                 #request.user.email is email that is used when sign up with google
                 user = User.objects.filter(email = request.user.email).first()
                 # del request.session['email_social']
                 role = request.POST.get('role')
-                user.role = role
-                user.is_verified = True
-                user.save()
+                print(f"role = {role}")
+                
+                if role == "freelancer":
+                    print("cheyyan thudangi")
+                    UserSubscription.objects.create(user = user,
+                    subscription_pack = subscriptionPack)
+                    print("cheythu")
+                    user.role = role
+                    user.is_verified = True
+                    user.save()
+                else :
+                    user.role = role
+                    user.is_verified = True
+                    user.save()
                 print("socail role saved")
+                
                 request.session['user_email'] = request.user.email
                 
                 return redirect('accounts:signin')

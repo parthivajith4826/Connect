@@ -304,14 +304,17 @@ def stripe_webhook(request):
         event = stripe.Webhook.construct_event(
             payload,
             sig_header,
-            settings.STRIPE_WEBHOOK_SECRET
+            settings.STRIPE_WALLET_WEBHOOK_SECRET
         )
     except (ValueError, stripe.error.SignatureVerificationError):
         return HttpResponse(status=400)
 
     event_type = event["type"]
     data_object = event["data"]["object"]
-
+    metadata = data_object.get("metadata", {})
+    
+    if metadata.get("purpose") != "wallet_topup":
+        return HttpResponse(status=200)
    
 
     if event_type.startswith("payment_intent"):
@@ -322,7 +325,7 @@ def stripe_webhook(request):
             return HttpResponse(status=200)
 
         amount = Decimal(intent["amount"]) / Decimal("100")
-        wallet = Wallet.objects.get(user_id=user_id)
+        wallet, _ = Wallet.objects.get_or_create(user_id=user_id)
 
         
         if event_type == "payment_intent.succeeded":

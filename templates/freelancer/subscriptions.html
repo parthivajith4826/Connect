@@ -1,0 +1,155 @@
+{% extends "freelancer\freelancer_base.html" %} {% block subscriptions %}
+<style>
+            body {
+                font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            }
+            a {
+                text-decoration: none !important;
+            }
+            .antialiased {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+            /* Clean scrollbar hiding for both axes */
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        </style>
+<!-- Scrollable Vertical Area -->
+                <div class="flex-1 overflow-y-auto no-scrollbar">
+                    <div class="max-w-full pl-6 md:pl-12 py-12">
+                        <div class="mb-8 pr-6 md:pr-12">
+                            <h2 class="text-3xl font-semibold text-[#1d1d1f] tracking-tight">Choose your plan.</h2>
+                            <p class="text-[#86868b] mt-2 font-medium">
+                                Swipe to explore tools for every stage of your career.
+                            </p>
+                        </div>
+
+                        <!-- 
+                          Horizontal Scroll Container 
+                          - overflow-x-auto: Enables horizontal scroll
+                          - snap-x: Enables snapping
+                          - no-scrollbar: Hides the bar
+                          - pr-12: Right padding so the last card isn't flush against the edge
+                          - Added pt-4 to accommodate floating badges
+                        -->
+                          {{ error }}
+                        <div
+                            class="flex gap-6 overflow-x-auto snap-x snap-mandatory pt-4 pb-12 no-scrollbar px-1 pr-6 md:pr-12 items-stretch"
+                        >
+                            <!-- Card 1: Starter -->
+                            <div
+                                class="snap-start flex-shrink-0 w-[90vw] sm:w-[400px] bg-white rounded-3xl p-6 flex flex-col shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-300"
+                            >
+                                <div class="mb-5">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="font-semibold text-[#1d1d1f] text-xl">{{ freeplan.title }}</h3>
+                                        
+                                    </div>
+                                    <p class="text-[#86868b] text-sm leading-relaxed">
+                                        {{ freeplan.plantype.description }}
+                                    </p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-6 flex-1 mb-6 content-start">
+                                    <div>
+                                        <p class="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold mb-1">
+                                            Active Gigs
+                                        </p>
+                                        <p class="font-semibold text-[#1d1d1f] text-base">{{ freeplan.max_gigs }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold mb-1">
+                                            Images / Gig
+                                        </p>
+                                        <p class="font-semibold text-[#1d1d1f] text-base">{{ freeplan.max_images_per_gig }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold mb-1">
+                                            Connections
+                                        </p>
+                                        <p class="font-semibold text-[#1d1d1f] text-base">{{ freeplan.connection_limit }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold mb-1">
+                                            Duration
+                                        </p>
+                                        <p class="font-semibold text-[#1d1d1f] text-base">{{ freeplan.duration_days }}</p>
+                                    </div>
+                                </div>
+                                <div class="mb-6 flex items-baseline gap-1">
+                                    <span class="text-3xl font-bold text-[#1d1d1f] tracking-tight">₹{{ freeplan.price }}</span>
+                                </div>
+                            </div>
+                            {% for subscription in subscriptions %}
+                            <!-- Card 3: Standard (Popular) -->
+                            <div
+                                class="snap-start flex-shrink-0 w-[90vw] sm:w-[400px] bg-[#1d1d1f] rounded-3xl p-6 flex flex-col shadow-2xl relative border border-gray-800"
+                            >
+                                <div
+                                    class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] uppercase font-bold px-3 py-1 rounded-full shadow-lg z-10"
+                                >
+                                    {{ subscription.title }}
+                                </div>
+                                <div class="mb-5">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="font-semibold text-white text-xl">{{ subscription.plantype.name }}</h3>
+                                    </div>
+                                    <p class="text-gray-400 text-sm leading-relaxed">
+                                        {{ subscription.plantype.description }}
+                                    </p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-6 flex-1 mb-6 content-start">
+                                    <div>
+                                        <p class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
+                                            Active Gigs
+                                        </p>
+                                        <p class="font-semibold text-white text-base">{{ subscription.max_gigs }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
+                                            Images / Gig
+                                        </p>
+                                        <p class="font-semibold text-white text-base">{{ subscription.max_images_per_gig }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
+                                            Connections
+                                        </p>
+                                        <p class="font-semibold text-white text-base">{{ subscription.connection_limit }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
+                                            Duration
+                                        </p>
+                                        <p class="font-semibold text-white text-base">{{ subscription.duration_days }} Days</p>
+                                    </div>
+                                </div>
+                                <div class="mb-6 flex items-baseline gap-1">
+                                    <span class="text-3xl font-bold text-white tracking-tight">₹{{ subscription.price }}</span>
+                                </div>
+                                <form action="{% url "freelancer:subscribe_start" subscription.slug %}">
+                                <button
+                                    class="w-full py-3 rounded-2xl bg-indigo-500 text-white font-semibold text-sm hover:bg-indigo-400 transition-colors shadow-lg shadow-indigo-500/30"
+                                >
+                                    Subscribe
+                                </button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Footnote -->
+                        <div class="mt-4 text-center pb-8 pr-6 md:pr-12">
+                            <p class="text-[#86868b] text-xs max-w-3xl mx-auto font-medium">
+                                Subscription auto-renews monthly unless cancelled.
+                                <a href="#" class="text-[#0071e3] hover:underline">Terms & Conditions apply.</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+{% endblock subscriptions %}

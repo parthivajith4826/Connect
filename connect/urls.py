@@ -39,7 +39,8 @@ urlpatterns = [
     
 
 
-    path("stripe/webhook/", stripe_webhook, name="stripe_webhook"),
+    path("stripe/webhook/wallet/", stripe_webhook, name="stripe_webhook"),
+    path("stripe/webhook/subscription/", views.stripe_webhook_subscription, name="stripe_webhook_subscription"),
     
     path("quill/upload-image/", views.quill_image_upload, name="quill_image_upload"),
 

@@ -1,0 +1,94 @@
+{% extends "freelancer/freelancer_base.html" %}
+{% block subscriptions %}
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<div class="flex-1 flex items-center justify-center py-16 px-4">
+    <div class="w-full max-w-md bg-[#1d1d1f] rounded-3xl p-8 shadow-2xl border border-gray-800">
+
+        <!-- HEADER -->
+        <div class="mb-6 text-center">
+            <h2 class="text-2xl font-semibold text-white">
+                Subscribe to {{ pack.title }}
+            </h2>
+            <p class="text-gray-400 text-sm mt-1">
+                {{ pack.plantype.description }}
+            </p>
+        </div>
+
+        <!-- PRICE -->
+        <div class="text-center mb-6">
+            <span class="text-4xl font-bold text-white">
+                ₹{{ pack.price }}
+            </span>
+            <p class="text-xs text-gray-400 mt-1">
+                {{ pack.duration_days }} days access
+            </p>
+        </div>
+
+        <!-- PAYMENT ELEMENT -->
+        <div
+            id="payment-element"
+            class="p-4 rounded-xl bg-white mb-4"
+        ></div>
+
+        <!-- ERROR MESSAGE -->
+        <div
+            id="payment-error"
+            class="hidden text-sm text-red-400 mb-4"
+        ></div>
+
+        <!-- PAY BUTTON -->
+        <button
+            id="payBtn"
+            class="w-full py-3 rounded-2xl bg-indigo-500 text-white font-semibold text-sm hover:bg-indigo-400 transition disabled:opacity-60"
+        >
+            Pay Now
+        </button>
+
+        <!-- FOOTER -->
+        <p class="text-[11px] text-gray-500 text-center mt-6">
+            Secure payment powered by Stripe
+        </p>
+    </div>
+</div>
+
+<script>
+const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+
+const elements = stripe.elements({
+    clientSecret: "{{ client_secret }}",
+});
+
+const paymentElement = elements.create("payment", {
+    layout: "tabs"
+});
+
+paymentElement.mount("#payment-element");
+
+const payBtn = document.getElementById("payBtn");
+const errorBox = document.getElementById("payment-error");
+
+payBtn.addEventListener("click", async () => {
+    payBtn.disabled = true;
+    payBtn.innerText = "Processing...";
+    errorBox.classList.add("hidden");
+    errorBox.innerText = "";
+
+    const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+            return_url: "{{ success_url }}",
+        },
+    });
+
+    if (error) {
+        errorBox.innerText = error.message;
+        errorBox.classList.remove("hidden");
+        payBtn.disabled = false;
+        payBtn.innerText = "Pay Now";
+    }
+});
+</script>
+
+{% endblock %}
