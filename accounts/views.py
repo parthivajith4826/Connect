@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from .forms import SignupForm, Reset_passwordForm
 from django.contrib.auth import authenticate
 from .models import User, Otp
-from management.models import UserSubscription,SubscriptionPack
+from management.models import UserSubscription,SubscriptionPack,Total_pack
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import login
@@ -215,6 +215,7 @@ def role(request):
             if role == "freelancer":
                 UserSubscription.objects.create(user = user,
                 subscription_pack = subscriptionPack)
+                Total_pack.objects.create(user = user)
                 
                 user.role = role
                 user.save()
@@ -249,6 +250,7 @@ def role(request):
                     print("cheyyan thudangi")
                     UserSubscription.objects.create(user = user,
                     subscription_pack = subscriptionPack)
+                    Total_pack.objects.create(user = user)
                     print("cheythu")
                     user.role = role
                     user.is_verified = True

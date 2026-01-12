@@ -116,28 +116,7 @@
                 </p>
                 {% endif %}
             </div>
-            
-
-            <div>
-                <label for="max_images_per_gig" class="block mb-2 text-sm font-medium text-gray-900"
-                    >Max Images per Gig</label
-                >
-                <input
-                    value="{{ form.max_images_per_gig.value }}"
-                    name="max_images_per_gig"
-                    type="number"
-                    id="max_images_per_gig"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                    placeholder="5"
-                />
-                {% if form.max_images_per_gig.errors %}
-                <p class="text-red-600 text-sm mt-1">
-                    {{ form.max_images_per_gig.errors.0 }}
-                </p>
-                {% endif %}
-            </div>
-            
-
+        
             <div>
                 <label for="connection_limit" class="block mb-2 text-sm font-medium text-gray-900">Connection Limit</label>
                 <input

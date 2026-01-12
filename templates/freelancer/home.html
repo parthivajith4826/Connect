@@ -68,8 +68,10 @@
 
         <!-- My Gigs Section -->
         <div>
+            <a href=""></a>
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-lg md:text-xl font-bold text-slate-800">My Gigs</h2>
+                <p>{{ error|safe }}</p>
                 <a href="{% url 'freelancer:add_gig' %}" class="text-indigo-600 hover:text-indigo-700 font-medium text-sm flex items-center gap-1">
                     Add New
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

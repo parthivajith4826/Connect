@@ -3,7 +3,7 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
 from client.models import User
 from .models import Freelancer_Profile,Gig,GigImages
-from management.models import SubscriptionPack,UserSubscription,SubscriptionTransaction
+from management.models import SubscriptionPack,UserSubscription,SubscriptionTransaction,Total_pack
 from client.models import Categories
 from.forms import ProfileForm,ContactForm,CreategigForm
 
@@ -88,78 +88,104 @@ def profile(request):
 #     return render(request,'freelancer/gig_list.html',{"gigs":gigs})
 
 
+from django.urls import reverse
 @never_cache
 def add_gig(request):
     user = request.user
     # print(user)
     if not user.is_authenticated: 
        return redirect('accounts:landing_page')
+   
+    usersubscription = UserSubscription.objects.filter(user = user,is_active = True)
+    total_pack = Total_pack.objects.filter(user = user).first()
     
-    
-    categories = Categories.objects.all()
-    if request.method == 'POST':
-        form =CreategigForm(request.POST,request.FILES)
-        images = request.FILES.getlist("images")
+    #check the user have a subscription or not
+    if usersubscription :
+    #if they have, can make the gigs for themselves
 
-        
-        is_form_valid = form.is_valid()
+        if not total_pack.gig_count == 0 : #checking the gig_count,gig creation is only possible if it is greater than 0
+            categories = Categories.objects.all()
+            if request.method == 'POST':
+                form =CreategigForm(request.POST,request.FILES)
+                images = request.FILES.getlist("images")
 
-        
-        if images:
-            if len(images) > 3:
-                form.add_error(None, "You can upload a maximum of 3 images only.")
-                is_form_valid = False
+                
+                is_form_valid = form.is_valid()
 
-            allowed_types = ["image/jpeg", "image/png"]
-            for img in images:
-                if img.content_type not in allowed_types:
-                    form.add_error(
-                        None, "Only JPG and PNG images are allowed."
-                    )
-                    is_form_valid = False
+                
+                if images:
+                    if len(images) > 3:
+                        form.add_error(None, "You can upload a maximum of 3 images only.")
+                        is_form_valid = False
+
+                    allowed_types = ["image/jpeg", "image/png"]
+                    for img in images:
+                        if img.content_type not in allowed_types:
+                            form.add_error(
+                                None, "Only JPG and PNG images are allowed."
+                            )
+                            is_form_valid = False
 
 
-        
-        if is_form_valid:
+                
+                if is_form_valid:
+                    
+                    # category = request.POST.get("categories")
+                    # category = category.split(',') if category else []
+                    # category_ids = list(map(int,category))
+                    
+                    gig = form.save(commit=False)
+                    gig.freelancer_id = request.user
+                    
+                    gig.save()
+                    
+                    # gig = Gig.objects.get(id = gig.id)
+                    # gig.categories.set(category_ids)
+
+                    # gig = Gig.objects.get(id = gig.id)
+                    # print(gig)
+                    for img in images:
+                        GigImages.objects.create(
+                            gig_id=gig,
+                            image=img
+                        )
+                        
+                    #After the gig creation decrease the number of gig_count,gig_image_count,connection_limit
+                    gig_count = total_pack.gig_count 
+                    if not gig_count == 0 :
+                        gig_count = gig_count - 1
+                        total_pack.gig_count = gig_count
+                        total_pack.save()
+
+                    return redirect("freelancer:home")
+                    
+                else :
+                    
+                    
+                    return render(request,'freelancer/add_gig.html',{'categories':categories,'form':form})
             
             # category = request.POST.get("categories")
             # category = category.split(',') if category else []
             # category_ids = list(map(int,category))
-            
-            gig = form.save(commit=False)
-            gig.freelancer_id = request.user
-            
-            gig.save()
-            
-            # gig = Gig.objects.get(id = gig.id)
-            # gig.categories.set(category_ids)
-
-            # gig = Gig.objects.get(id = gig.id)
-            # print(gig)
-            for img in images:
-                GigImages.objects.create(
-                    gig_id=gig,
-                    image=img
-                )
-
-            return redirect("freelancer:home")
-            
-        else :
-            
-            
-            return render(request,'freelancer/add_gig.html',{'categories':categories,'form':form})
+            # categories = Categories.objects.filter(id__in=category_ids)
+            # print(categories)
+        
+            # print(request.POST)
+            # print(request.POST.getlist('categories'))
+            # categories = request.POST.getlist('categories').split(",")
+            form = CreategigForm()
+            return render(request,'freelancer/add_gig.html',{'form':form,'categories':categories})
     
-    # category = request.POST.get("categories")
-    # category = category.split(',') if category else []
-    # category_ids = list(map(int,category))
-    # categories = Categories.objects.filter(id__in=category_ids)
-    # print(categories)
-   
-    # print(request.POST)
-    # print(request.POST.getlist('categories'))
-    # categories = request.POST.getlist('categories').split(",")
-    form = CreategigForm()
-    return render(request,'freelancer/add_gig.html',{'form':form,'categories':categories})
+        else :
+            gigs = Gig.objects.all()
+            upgrade_url = reverse("freelancer:subscriptions")
+            error = f'You’ve reached your gig limit.<a href="{upgrade_url}">Please upgrade your subscription</a> to create more gigs.'
+            return render(request,"freelancer/home.html",{"gigs":gigs,"error":error})            
+            
+    else :
+        gigs = Gig.objects.all()
+        error = "User doesn't have an active Subscription"
+        return render(request,"freelancer/home.html",{"gigs":gigs,"error":error})
 
 
 @never_cache
@@ -331,66 +357,32 @@ def subscribe_start(request, slug):
     freeplan = SubscriptionPack.objects.all()[0]
     pack = get_object_or_404(SubscriptionPack, slug=slug, is_active=True)
     
-    user1 = request.user
-    usersubscription = UserSubscription.objects.filter(user = user1).first()
     
-    if usersubscription :
-        if usersubscription.subscription_pack.plantype.name == "Free" or not usersubscription.is_active :
-            if not usersubscription.is_active:
-                usersubscription.delete()
-            # ✅ Create PaymentIntent
-            intent = stripe.PaymentIntent.create(
-                amount=int(pack.price * 100),
-                currency="inr",
-                automatic_payment_methods={
-                "enabled": True,},
-                metadata={
-                    "user_id": request.user.id,
-                    "subscription_pack_id": pack.id,
-                    "purpose" : "subscription",
-                }
-            )
+    # ✅ Create PaymentIntent
+    intent = stripe.PaymentIntent.create(
+        amount=int(pack.price * 100),
+        currency="inr",
+        automatic_payment_methods={
+        "enabled": True,},
+        metadata={
+            "user_id": request.user.id,
+            "subscription_pack_id": pack.id,
+            "purpose" : "subscription",
+        }
+    )
 
-            return render(request, "freelancer/subscribe_pay.html", {
-                "client_secret": intent.client_secret,
-                "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-                "pack": pack,
-                "success_url": request.build_absolute_uri(
-                        "/freelancer/subscription-success"
-                    ),
-            })
-        
-        else :
-            return render(request,"freelancer/subscriptions.html",{"error":"You already have a Subscription,Wait until for an expiry for next subscription","subscriptions":subscriptions,"freeplan":freeplan})
+    return render(request, "freelancer/subscribe_pay.html", {
+        "client_secret": intent.client_secret,
+        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+        "pack": pack,
+        "success_url": request.build_absolute_uri(
+                "/freelancer/subscription-success"
+            ),
+    })
     
-    else :
-        print("usersubscription illa")
-        intent = stripe.PaymentIntent.create(
-                amount=int(pack.price * 100),
-                currency="inr",
-                automatic_payment_methods={
-                "enabled": True,},
-                metadata={
-                    "user_id": request.user.id,
-                    "subscription_pack_id": pack.id,
-                    "purpose" : "subscription",
-                }
-            )
+    
+        
 
-        return render(request, "freelancer/subscribe_pay.html", {
-            "client_secret": intent.client_secret,
-            "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-            "pack": pack,
-            "success_url": request.build_absolute_uri(
-                    "/freelancer/subscription-success"
-                ),
-        })
-        
-        
-        
-    
-    
-    # return HttpResponse("Subscriptions")
 
 
 
@@ -403,7 +395,6 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @csrf_exempt
 def stripe_webhook_subscription(request):
-    print("webhook reached")
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
 
@@ -417,22 +408,16 @@ def stripe_webhook_subscription(request):
         return HttpResponse(status=400)
 
     event_type = event["type"]
-    print(f"event type = {event_type}")
     
     intent = event["data"]["object"]
     metadata = intent.get("metadata", {})
-    print(metadata)
 
-    print(f"Purpose = {metadata.get("purpose")}")
     # 🔐 Validate this webhook is for subscriptions
     if metadata.get("purpose") != "subscription":
         return HttpResponse(status=200)
-    print(f"Purpose = {metadata.get("purpose")}")
 
     user_id = metadata.get("user_id")
-    print(f"userid = {user_id}")
     pack_id = metadata.get("subscription_pack_id")
-    print(f"pack id = {pack_id}")
 
     if not user_id or not pack_id:
         return HttpResponse(status=200)
@@ -451,9 +436,6 @@ def stripe_webhook_subscription(request):
     # ✅ PAYMENT SUCCEEDED → CREATE SUBSCRIPTION
     # =====================================================
     if event_type == "payment_intent.succeeded":
-        print("success ayittund")
-
-        
 
         start_date = timezone.now()
         end_date = start_date + timedelta(days=pack.duration_days)
@@ -466,6 +448,17 @@ def stripe_webhook_subscription(request):
                 "end_date": end_date,
             }
         )
+        total_pack = get_object_or_404(Total_pack,user = user)
+        gig_count = total_pack.gig_count + pack.max_gigs
+        connection_limit = total_pack.connection_limit + pack.connection_limit
+        
+        total_pack, _ = Total_pack.objects.update_or_create(
+            user=user,
+            defaults={
+                "gig_count": gig_count,
+                "connection_limit": connection_limit})
+        
+        
         print("User subscription updated")
         SubscriptionTransaction.objects.get_or_create(
             stripe_payment_intent_id=intent["id"],
@@ -474,8 +467,10 @@ def stripe_webhook_subscription(request):
                 "user_subscription": subscription,
                 "amount": amount,
                 "payment_status": "succeeded",
+                
             }
         )
+        
         print("transactions also updated")
 
     # =====================================================

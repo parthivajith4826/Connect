@@ -89,7 +89,7 @@
                                                 data-title="{{ subscription.title }}"
                                                 data-price="{{ subscription.price }}"
                                                 data-maxgigs="{{ subscription.max_gigs }}"
-                                                data-maximg="{{ subscription.max_images_per_gig }}"
+                                                {% comment %} data-maximg="{{ subscription.max_images_per_gig }}" {% endcomment %}
                                                 data-conn="{{ subscription.connection_limit }}"
                                                 data-days="{{ subscription.duration_days }}"
                                                 data-created="{{ subscription.created_at|date:'Y-m-d' }}"
@@ -349,10 +349,7 @@
                                         <span class="font-medium">Max Gigs:</span>
                                         <span id="view_max_gigs"></span>
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="font-medium">Images/Gig:</span>
-                                        <span id="view_max_images"></span>
-                                    </div>
+                                    
                                     <div class="flex justify-between">
                                         <span class="font-medium">Connections:</span>
                                         <span id="view_connections"></span>
@@ -547,7 +544,6 @@
         document.getElementById("view_price").innerText = "₹" + data.price;
         document.getElementById("view_duration").innerText = data.days + " Days";
         document.getElementById("view_max_gigs").innerText = data.maxgigs;
-        document.getElementById("view_max_images").innerText = data.maximg;
         document.getElementById("view_connections").innerText = data.conn;
         document.getElementById("view_is_free").innerText = data.free === "true" ? "Yes" : "No";
         document.getElementById("view_is_active").innerText = data.active === "true" ? "Active" : "Inactive";

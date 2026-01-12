@@ -33,7 +33,7 @@ class CategoryForm(forms.ModelForm):
 class SubscriptionForm(forms.ModelForm):
     class Meta:
         model = SubscriptionPack
-        fields = ["title","plantype","max_gigs","max_images_per_gig","connection_limit","duration_days","price","is_free"]
+        fields = ["title","plantype","max_gigs","connection_limit","duration_days","price","is_free"]
         
         
     def clean_title(self):
@@ -67,14 +67,6 @@ class SubscriptionForm(forms.ModelForm):
 
         if value is None or value < 1:
             raise ValidationError("Max gigs must be at least 1.")
-
-        return value
-
-    def clean_max_images_per_gig(self):
-        value = self.cleaned_data.get("max_images_per_gig")
-
-        if value is None or value < 1:
-            raise ValidationError("Max images per gig must be at least 1.")
 
         return value
 
