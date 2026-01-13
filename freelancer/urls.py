@@ -18,6 +18,7 @@ urlpatterns = [
     
     
     path('find-work',views.find_work,name = 'find_work'),
+    path('work-details/<slug:slug>',views.card_details,name = 'work_details')
     
     
 

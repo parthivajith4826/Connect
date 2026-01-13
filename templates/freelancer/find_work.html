@@ -42,15 +42,15 @@
         animation-delay: 0.3s;
     }
 </style>
+
 <!-- Main Content Area -->
-<main class="flex-1 overflow-y-auto h-screen bg-[#f5f5f7]">
-    <!-- Top Header with Search and Filters -->
+<main class="flex-1 overflow-y-auto h-screen bg-[#f5f5f7] flex flex-col">
+    <!-- Top Header with Search -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-20">
-        <!-- Search Bar Row -->
         <div class="px-8 py-4 flex items-center justify-between">
             <h1 class="text-xl font-bold text-[#1d1d1f]">Find Work</h1>
             <div class="flex-1 max-w-2xl mx-8 relative">
-                <div class="relative group">
+                <form id="searchForm" class="relative group" method="GET" action="">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg
                             class="h-5 w-5 text-gray-400 group-focus-within:text-[#0071e3] transition-colors"
@@ -67,12 +67,20 @@
                         </svg>
                     </div>
                     <input
+                        id="searchInput"
                         type="text"
+                        name="q"
                         class="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-full text-sm placeholder-gray-500 focus:bg-white focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3] focus:outline-none transition-all shadow-sm"
                         placeholder="Search by category, skill, or keyword..."
+                        autocomplete="off"
+                        value="{{ request.GET.q|default:'' }}"
                     />
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <button class="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
+                        <button
+                            type="button"
+                            id="clearSearch"
+                            class="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 hidden"
+                        >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     stroke-linecap="round"
@@ -83,82 +91,236 @@
                             </svg>
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
             <div class="w-20"></div>
-            <!-- Spacer balance -->
         </div>
 
-        <!-- Filters Row -->
-        <div class="px-8 pb-4 flex items-center gap-3 overflow-x-auto no-scrollbar">
+        <!-- Filters Row (Hidden Initially) -->
+        <form id="filterRow" class="hidden px-8 pb-4 items-center gap-3 overflow-visible animate-fade-in-up" method="GET">
+            <input type="hidden" name="q" value="{{ request.GET.q }}" />
+
             <!-- Category Filter -->
-            <div class="relative group">
+            <div class="relative group" id="categoryFilter">
                 <button
-                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-[#0071e3] hover:text-[#0071e3] transition-colors"
+                    type="button"
+                    onclick="toggleDropdown('categoryDropdown')"
+                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:border-[#0071e3] transition-colors text-sm font-semibold text-gray-700"
                 >
                     Category
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
-            </div>
-
-            <!-- Skills Filter -->
-            <div class="relative group">
-                <button
-                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-[#0071e3] hover:text-[#0071e3] transition-colors"
+                <div
+                    id="categoryDropdown"
+                    class="hidden absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 p-4 z-50"
                 >
-                    Skills
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
+                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                        {% for category in categories %}
+                        <label class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <input
+                                type="checkbox"
+                                name="category"
+                                value="{{ category.id }}"
+                                class="w-4 h-4 text-[#0071e3] rounded border-gray-300 focus:ring-[#0071e3]"
+                            />
+                            <span class="text-sm text-gray-700">{{ category.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="pt-3 mt-2 border-t border-gray-100 flex justify-end">
+                        <button type="submit" class="text-sm font-bold text-[#0071e3] hover:underline">Apply</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Budget Filter -->
+            <!-- Skills Filter (Mini Search Bar) -->
             <div class="relative group">
+                <input
+                    type="text"
+                    name="skills"
+                    placeholder="Search skills..."
+                    class="px-4 py-2 bg-white border border-gray-300 rounded text-sm text-gray-700 placeholder-gray-500 focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3] outline-none w-48 transition-all"
+                />
+            </div>
+
+            <!-- Price Filter -->
+            <div class="relative group" id="priceFilter">
                 <button
-                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-[#0071e3] hover:text-[#0071e3] transition-colors"
+                    type="button"
+                    onclick="toggleDropdown('priceDropdown')"
+                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:border-[#0071e3] transition-colors text-sm font-semibold text-gray-700"
                 >
                     Price
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
+                <div
+                    id="priceDropdown"
+                    class="hidden absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-100 p-6 z-50"
+                >
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="border rounded px-3 py-1">
+                            <span class="text-xs text-gray-500 block">MIN</span>
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-700">₹</span>
+                                <input
+                                    type="number"
+                                    name="min_price"
+                                    value="0"
+                                    class="w-16 text-sm outline-none font-bold"
+                                    min="0"
+                                    max="500000"
+                                />
+                            </div>
+                        </div>
+                        <span class="text-gray-300">-</span>
+                        <div class="border rounded px-3 py-1">
+                            <span class="text-xs text-gray-500 block">MAX</span>
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-700">₹</span>
+                                <input
+                                    type="number"
+                                    name="max_price"
+                                    id="maxPriceInput"
+                                    value="500000"
+                                    class="w-16 text-sm outline-none font-bold"
+                                    min="0"
+                                    max="500000"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Visual Slider with Buttons -->
+                    <div class="flex items-center gap-4 mb-4">
+                        <button
+                            type="button"
+                            onclick="adjustPrice(-1000)"
+                            class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-50 text-xl font-bold"
+                        >
+                            -
+                        </button>
+                        <div class="flex-1 h-2 bg-gray-100 rounded-full relative">
+                            <!-- Visual Bar -->
+                            <div
+                                id="priceBar"
+                                class="absolute left-0 top-0 h-full bg-[#0071e3] rounded-full"
+                                style="width: 10%"
+                            ></div>
+                            <!-- Invisible Range Input for Dragging -->
+                            <input
+                                type="range"
+                                id="priceRange"
+                                min="0"
+                                max="500000"
+                                step="1000"
+                                value="50000"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            onclick="adjustPrice(1000)"
+                            class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-50 text-xl font-bold"
+                        >
+                            +
+                        </button>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end">
+                        <button type="submit" class="text-sm font-bold text-[#0071e3] hover:underline">Apply</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Timeline Filter -->
-            <div class="relative group">
+            <div class="relative group" id="timelineFilter">
                 <button
-                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-[#0071e3] hover:text-[#0071e3] transition-colors"
+                    type="button"
+                    onclick="toggleDropdown('timelineDropdown')"
+                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:border-[#0071e3] transition-colors text-sm font-semibold text-gray-700"
                 >
                     Timeline
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
+                <div
+                    id="timelineDropdown"
+                    class="hidden absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 p-4 z-50"
+                >
+                    <div class="space-y-2">
+
+                        <label class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <input
+                                type="radio"
+                                name="timeline"
+                                value="Less than 1 week"
+                                {% if request.GET.timeline == "Less than 1 week" %}checked{% endif %}
+                                class="w-4 h-4 text-[#0071e3] border-gray-300 focus:ring-[#0071e3]"
+                            />
+                            <span class="text-sm text-gray-700">Less than 1 week</span>
+                        </label>
+
+                        <label class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <input
+                                type="radio"
+                                name="timeline"
+                                value="1 to 4 weeks"
+                                {% if request.GET.timeline == "1 to 4 weeks" %}checked{% endif %}
+                                class="w-4 h-4 text-[#0071e3] border-gray-300 focus:ring-[#0071e3]"
+                            />
+                            <span class="text-sm text-gray-700">1 to 4 weeks</span>
+                        </label>
+
+                        <label class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <input
+                                type="radio"
+                                name="timeline"
+                                value="1 to 3 months"
+                                {% if request.GET.timeline == "1 to 3 months" %}checked{% endif %}
+                                class="w-4 h-4 text-[#0071e3] border-gray-300 focus:ring-[#0071e3]"
+                            />
+                            <span class="text-sm text-gray-700">1 to 3 months</span>
+                        </label>
+
+                        <label class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                            <input
+                                type="radio"
+                                name="timeline"
+                                value="More than 3 months"
+                                {% if request.GET.timeline == "More than 3 months" %}checked{% endif %}
+                                class="w-4 h-4 text-[#0071e3] border-gray-300 focus:ring-[#0071e3]"
+                            />
+                            <span class="text-sm text-gray-700">More than 3 months</span>
+                        </label>
+
+                    </div>
+
+                    <div class="pt-3 mt-2 border-t border-gray-100 flex justify-end">
+                        <button type="submit" class="text-sm font-bold text-[#0071e3] hover:underline">Apply</button>
+                    </div>
+                </div>
             </div>
 
             <div class="h-6 w-px bg-gray-300 mx-2"></div>
 
-            <!-- Quick Filters (Pills) -->
+            <!-- Newest Toggle -->
             <button
-                class="px-4 py-2 rounded-full bg-gray-100 text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors"
+                type="submit"
+                name="newest"
+                value=True
+                class="px-4 py-2 rounded-full border border-transparent bg-gray-100 text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors"
             >
                 Newest
             </button>
-            <button
-                class="px-4 py-2 rounded-full bg-gray-100 text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors"
-            >
-                Best Match
-            </button>
-        </div>
+        </form>
     </header>
 
-    <!-- Hero Section (Content Placeholder) -->
-    <div class="flex-1 flex items-center justify-center p-8 min-h-[calc(100vh-12rem)]">
+    <!-- Hero Section (Default View) -->
+    <div id="heroSection" class="flex-1 flex flex-col items-center justify-center p-8 min-h-[calc(100vh-12rem)]">
         <div class="text-center max-w-2xl mx-auto space-y-8 animate-fade-in-up">
-            <!-- Inspirational Quote/Heading -->
             <div class="space-y-4">
                 <h2 class="text-4xl md:text-5xl font-bold text-[#1d1d1f] tracking-tight leading-tight">
                     Find your next <br />
@@ -173,8 +335,6 @@
                     Explore thousands of opportunities, connect with top clients, and take your career to new heights.
                 </p>
             </div>
-
-            <!-- Minimal Illustration/Icon -->
             <div
                 class="relative w-64 h-64 mx-auto delay-200 animate-fade-in-up opacity-0"
                 style="animation-fill-mode: forwards"
@@ -186,23 +346,376 @@
                     class="relative z-10 w-full h-full object-contain filter drop-shadow-xl hover:scale-105 transition-transform duration-500"
                 />
             </div>
-
-            <!-- CTA Hint -->
             <div class="delay-300 animate-fade-in-up opacity-0" style="animation-fill-mode: forwards">
                 <p class="text-sm text-slate-400 font-medium uppercase tracking-widest">Start by searching above</p>
                 <div class="mt-4 mx-auto w-1 h-12 bg-gradient-to-b from-slate-200 to-transparent rounded-full"></div>
             </div>
         </div>
     </div>
+
+    <!-- Results Section (Hidden Initially) -->
+    <div id="resultsSection" class="hidden flex-col p-8 gap-8 animate-fade-in-up">
+        <!-- Cards Grid -->
+        <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for card in cards %}
+            <div
+                class="group bg-white rounded border border-gray-200 hover:shadow-lg transition-all duration-300 flex flex-col h-full relative cursor-pointer"
+            >
+                <!-- Image Carousel -->
+                <div class="relative h-[180px] w-full bg-gray-100 overflow-hidden group/slider">
+                    <!-- Carousel Wrapper -->
+                    <div
+                        class="flex h-full overflow-x-auto snap-x snap-mandatory no-scrollbar"
+                        style="scroll-behavior: smooth"
+                        id="carousel-{{ forloop.counter }}"
+                    >
+                        {% for image in card.image.all %}
+                        <img
+                            src="{{ image.image.url }}?auto=format&fit=crop&w=600&q=80"
+                            alt="Gig Image 1"
+                            class="w-full h-full object-cover flex-shrink-0 snap-center"
+                        />
+                        {% endfor %}
+                    </div>
+
+                    <!-- Navigation Arrows (Hidden by default, shown on hover of slider group) -->
+                    <button
+                        onclick="event.preventDefault(); document.getElementById('carousel-{{ forloop.counter }}').scrollBy({left: -300, behavior: 'smooth'})"
+                        class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-700 opacity-0 group-hover/slider:opacity-100 transition-opacity z-10"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 19l-7-7 7-7"
+                            ></path>
+                        </svg>
+                    </button>
+                    <button
+                        onclick="event.preventDefault(); document.getElementById('carousel-{{ forloop.counter }}').scrollBy({left: 300, behavior: 'smooth'})"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-700 opacity-0 group-hover/slider:opacity-100 transition-opacity z-10"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Card Content -->
+                <div class="p-3 flex flex-col flex-1 gap-2">
+                    <!-- Seller Info -->
+                    <div class="flex items-center gap-2 mb-1">
+                        <!-- Random Avatar from Unsplash -->
+                        <img
+                            src="{{ card.client_id.profile_photo.url }}"
+                            alt="Seller"
+                            class="w-6 h-6 rounded-full object-cover"
+                        />
+                        <div class="flex flex-col leading-none">
+                            <span class="font-bold text-[#1d1d1f] text-sm hover:underline cursor-pointer"
+                                >{{ card.client_id.Profile_name }}</span
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Title -->
+                    <a
+                        href="{% url "freelancer:work_details" card.slug %}"
+                        class="text-[#404145] text-[15px] leading-snug line-clamp-2 hover:underline hover:text-[#1d1d1f] transition-colors"
+                    >
+                        {{ card.title }}
+                    </a>
+
+                    <!-- Rating -->
+                    <div class="flex items-center gap-1 mt-1">
+                        <svg class="w-3.5 h-3.5 text-[#ffbe5b]" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                            ></path>
+                        </svg>
+                        <span class="text-sm font-bold text-gray-700">5.0</span>
+                        <span class="text-sm text-gray-400">(1k+)</span>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-3 py-2 border-t border-gray-100 flex items-center justify-between bg-white rounded-b">
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
+                            />
+                        </svg>
+                    </button>
+                    <div class="text-right flex flex-col items-end">
+                        <span class="text-[10px] uppercase font-bold text-gray-400 leading-tight">Starting at</span>
+                        <span class="text-lg font-medium text-[#1d1d1f] leading-tight">₹{{ card.min_budget }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <!-- JavaScript Pagination Container -->
+        <div id="paginationContainer" class="flex justify-center mt-8">
+            <nav aria-label="Page navigation">
+                <ul id="paginationList" class="inline-flex items-center space-x-2">
+                    <!-- Buttons injected by JS -->
+                </ul>
+            </nav>
+        </div>
+    </div>
 </main>
+
 <script>
-    // Simple script to mimic "search" functionality
-    const searchInput = document.querySelector('input[type="text"]');
-    searchInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            // Redirect to the listing page on Enter
-            window.location.href = "find_work.html";
+    // Elements
+    const heroSection = document.getElementById("heroSection");
+    const resultsSection = document.getElementById("resultsSection");
+    const filterRow = document.getElementById("filterRow");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearch");
+
+    function init() {
+        // Init visual state based on URL
+        const params = new URLSearchParams(window.location.search);
+        const query = params.get("q");
+
+        // If there is a query, show results view (User will populate data via backend)
+        // Note: For DTL testing without backend logic, this toggle purely controls visibility.
+        if (query && query.trim() !== "") {
+            showResults();
+        } else {
+            showHero();
+        }
+    }
+
+    function showHero() {
+        if (heroSection) heroSection.classList.remove("hidden");
+        if (resultsSection) resultsSection.classList.add("hidden");
+        if (filterRow) {
+            filterRow.classList.add("hidden");
+            filterRow.classList.remove("flex");
+        }
+        if (clearSearchBtn) clearSearchBtn.classList.add("hidden");
+    }
+
+    function showResults() {
+        if (heroSection) heroSection.classList.add("hidden");
+        if (resultsSection) {
+            resultsSection.classList.remove("hidden");
+            resultsSection.classList.add("flex");
+        }
+        if (filterRow) {
+            filterRow.classList.remove("hidden");
+            filterRow.classList.add("flex");
+        }
+        if (clearSearchBtn) clearSearchBtn.classList.remove("hidden");
+    }
+
+    // Filter Logic
+    let activeDropdown = null;
+
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+
+        // Close current if different
+        if (activeDropdown && activeDropdown !== id) {
+            document.getElementById(activeDropdown).classList.add("hidden");
+        }
+
+        if (dropdown.classList.contains("hidden")) {
+            dropdown.classList.remove("hidden");
+            activeDropdown = id;
+        } else {
+            dropdown.classList.add("hidden");
+            activeDropdown = null;
+        }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener("click", (e) => {
+        // Check if the click target is inside an active dropdown or a button that toggles a dropdown
+        const isClickInsideDropdown = activeDropdown && document.getElementById(activeDropdown).contains(e.target);
+        const isClickOnDropdownButton = e.target.closest('[onclick*="toggleDropdown"]');
+
+        if (activeDropdown && !isClickInsideDropdown && !isClickOnDropdownButton) {
+            document.getElementById(activeDropdown).classList.add("hidden");
+            activeDropdown = null;
         }
     });
+
+    // Price Logic
+    const maxPriceLimit = 500000;
+    const maxPriceInput = document.getElementById("maxPriceInput");
+    const priceBar = document.getElementById("priceBar");
+    const priceRange = document.getElementById("priceRange");
+
+    function syncPrice(source) {
+        if (!maxPriceInput || !priceRange || !priceBar) return;
+
+        let val = 0;
+        if (source === "range") {
+            val = parseInt(priceRange.value);
+            maxPriceInput.value = val;
+        } else {
+            val = parseInt(maxPriceInput.value) || 0;
+            // Clamp
+            if (val > maxPriceLimit) val = maxPriceLimit;
+            if (val < 0) val = 0;
+
+            priceRange.value = val;
+        }
+
+        // Update Visuals
+        const width = (val / maxPriceLimit) * 100;
+        priceBar.style.width = Math.min(width, 100) + "%";
+    }
+
+    function adjustPrice(amount) {
+        if (!maxPriceInput) return;
+        let current = parseInt(maxPriceInput.value) || 0;
+        maxPriceInput.value = current + amount;
+        syncPrice("input");
+    }
+
+    // Pagination Logic
+    const CARDS_PER_PAGE = 8;
+    let currentPage = 1;
+
+    function initPagination() {
+        // Since this is client-side pagination over server-rendered list (for now),
+        // we select all cards and toggle display.
+        const cardsGrid = document.getElementById("cardsGrid");
+        if (!cardsGrid) return;
+
+        const allCards = Array.from(cardsGrid.children);
+        const totalCards = allCards.length;
+        const totalPages = Math.ceil(totalCards / CARDS_PER_PAGE);
+
+        // Ensure we handle case where user might have refresed:
+        // We always start at Page 1 visually as per request "when user refreshes, page should be in 1st page"
+        // (Since no URL param is stored for JS pagination state)
+        currentPage = 1;
+
+        renderEffectivePage(allCards, totalPages);
+    }
+
+    function renderEffectivePage(allCards, totalPages) {
+        // 1. Show/Hide Cards
+        const start = (currentPage - 1) * CARDS_PER_PAGE;
+        const end = start + CARDS_PER_PAGE;
+
+        allCards.forEach((card, index) => {
+            if (index >= start && index < end) {
+                card.style.display = "flex"; // Restore flex (as defined in class)
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        // 2. Render Buttons
+        renderPaginationControls(totalPages, allCards);
+    }
+
+    function renderPaginationControls(totalPages, allCards) {
+        const list = document.getElementById("paginationList");
+        if (!list) return;
+        list.innerHTML = ""; // Clear
+
+        if (totalPages <= 1) return; // No pagination needed
+
+        // Prev Button
+        if (currentPage > 1) {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <button onclick="changePage(${
+                    currentPage - 1
+                })" class="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-500 hover:bg-gray-100 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+            `;
+            list.appendChild(li);
+        }
+
+        // Page Numbers
+        for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement("li");
+            if (i === currentPage) {
+                li.innerHTML = `
+                    <button class="flex items-center justify-center w-8 h-8 rounded-full bg-[#0071e3] text-white border border-[#0071e3] text-sm font-medium cursor-default">
+                        ${i}
+                    </button>
+                `;
+            } else {
+                li.innerHTML = `
+                    <button onclick="changePage(${i})" class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 text-sm font-medium transition-colors">
+                        ${i}
+                    </button>
+                `;
+            }
+            list.appendChild(li);
+        }
+
+        // Next Button
+        if (currentPage < totalPages) {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <button onclick="changePage(${
+                    currentPage + 1
+                })" class="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-500 hover:bg-gray-100 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            `;
+            list.appendChild(li);
+        }
+    }
+
+    // Expose to global scope for onclick attributes
+    window.changePage = function (pageNum) {
+        const cardsGrid = document.getElementById("cardsGrid");
+        const allCards = Array.from(cardsGrid.children);
+        const totalPages = Math.ceil(allCards.length / CARDS_PER_PAGE);
+
+        if (pageNum < 1 || pageNum > totalPages) return;
+
+        currentPage = pageNum;
+        renderEffectivePage(allCards, totalPages);
+
+        // Scroll to top of results
+        const resultsSection = document.getElementById("resultsSection");
+        if (resultsSection) resultsSection.scrollIntoView({ behavior: "smooth" });
+    };
+
+    // Init Price Bar on Load & Add Listeners
+    window.addEventListener("DOMContentLoaded", () => {
+        init();
+        initPagination();
+
+        if (priceRange && maxPriceInput) {
+            // Sync on Drag
+            priceRange.addEventListener("input", () => syncPrice("range"));
+
+            // Sync on Manual Entry
+            maxPriceInput.addEventListener("input", () => syncPrice("input"));
+
+            // Initial Sync
+            syncPrice("input");
+        }
+    });
+
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener("click", () => {
+            // Clear search param
+            const url = new URL(window.location);
+            url.searchParams.delete("q");
+            url.searchParams.delete("page");
+            window.location.href = url.toString();
+        });
+    }
+
+    // Initialize on load
+    window.addEventListener("DOMContentLoaded", init);
 </script>
 {% endblock find_work %}

@@ -509,6 +509,45 @@ def subscription_success(request):
     return render(request,"freelancer/subscription_success.html")
 
 
-
+from client.models import Card,Categories
 def find_work(request):
-    return render(request,"freelancer/find_work.html")
+    print(request.GET)
+    categories = Categories.objects.all()
+    search_keyword = request.GET.get("q")
+    category = request.GET.get("category")
+    skills = request.GET.get("skills")
+    minimum_price = request.GET.get("min_price")
+    maximum_price = request.GET.get("max_price")
+    timeline = request.GET.get("timeline")
+    
+    
+    cards = Card.objects.none()
+    if search_keyword :
+        cards = Card.objects.filter(title__icontains = search_keyword, is_blocked = False )
+        # cards = cards.filter(is_active = )
+    if category :
+        cards = cards.filter(category_id = category )
+    if skills :
+        cards = cards.filter(skills_required__icontains = skills)
+    
+    if minimum_price is not None and maximum_price is not None:
+        cards = cards.filter(
+            min_budget__gte = minimum_price,
+            max_budget__lte=maximum_price
+        )
+    
+    if timeline :
+        cards = cards.filter(time_line__icontains = timeline)
+        
+    if request.GET.get("newest"):
+        cards = cards.order_by("-created_at")
+
+
+    return render(request,"freelancer/find_work.html",{"cards":cards,"categories":categories})
+
+
+
+def card_details(request,slug):
+    card = get_object_or_404(Card,slug = slug)
+    skill_list = card.skills_required.split(",")
+    return render(request,"freelancer\card_details.html",{"card":card,"skill_list":skill_list})
