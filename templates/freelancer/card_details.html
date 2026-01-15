@@ -6,6 +6,12 @@
             <div class="lg:col-span-2 space-y-8">
                 <!-- Header Info -->
                 <div class="border-b border-slate-100 pb-8">
+                    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-4 group">
+                        <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <span class="font-medium">Back</span>
+                    </a>
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <h2 class="text-3xl font-bold text-slate-900 mb-2">
@@ -72,13 +78,24 @@
             <!-- Right Column: Sidebar -->
             <div class="space-y-6">
                 <!-- Connect Card -->
+                
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <a href="{% url "freelancer:show_gigs" card.slug %}">
                     <button
                         class="block w-full py-3 px-4 bg-[#0071e3] text-white text-center font-bold rounded-xl hover:bg-[#0077ED] transition-colors shadow-lg shadow-blue-500/20 mb-3"
                     >
                         Connect Now
                     </button>
+                    </a>
                 </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
 
                 <!-- Client Info -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">

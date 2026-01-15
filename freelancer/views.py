@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
 from client.models import User
-from .models import Freelancer_Profile,Gig,GigImages
+from .models import Freelancer_Profile,Gig,GigImages,Connections
 from management.models import SubscriptionPack,UserSubscription,SubscriptionTransaction,Total_pack
 from client.models import Categories
 from.forms import ProfileForm,ContactForm,CreategigForm
@@ -550,4 +550,58 @@ def find_work(request):
 def card_details(request,slug):
     card = get_object_or_404(Card,slug = slug)
     skill_list = card.skills_required.split(",")
-    return render(request,"freelancer\card_details.html",{"card":card,"skill_list":skill_list})
+    return render(request,"freelancer/card_details.html",{"card":card,"skill_list":skill_list})
+
+
+def show_gigs(request,card_slug=None):
+    card = get_object_or_404(Card,slug = card_slug)
+    gigs = Gig.objects.filter(freelancer_id = request.user)
+    gig_count = gigs.count()
+    return render(request,"freelancer/show-gigs.html",{"gigs":gigs,"gig_count":gig_count,"card":card})
+
+def show_gig_details(request,slug):
+    gig = get_object_or_404(Gig,slug = slug)
+    skill_list = gig.skills.split(",")
+    print(gig.images.all())
+    for image in gig.images.all():
+        print(image)
+    return render(request,"freelancer/show_gig_details.html",{"gig":gig,"skill_list":skill_list})
+
+
+
+
+
+from django.contrib import messages
+def create_connection(request, card_slug):
+    card = get_object_or_404(Card, slug=card_slug)
+
+    gig_slug = request.POST.get("gig_slug")
+    gig = get_object_or_404(Gig,slug=gig_slug,freelancer_id=request.user)
+
+    connection, created = Connections.objects.get_or_create(
+        card=card,
+        gig=gig
+    )
+    if not created:
+        # Already exists → respect status
+        if connection.status == "pending":
+            gigs = Gig.objects.all()
+            gig_count = gigs.count()
+            messages.warning(request, "Connection request already pending.")
+            return render(request,"freelancer/show-gigs.html",{"gigs":gigs,"gig_count":gig_count,"card":card})
+        elif connection.status == "accepted":
+            gigs = Gig.objects.all()
+            gig_count = gigs.count()
+            messages.info(request, "You are already connected.")
+            return render(request,"freelancer/show-gigs.html",{"gigs":gigs,"gig_count":gig_count,"card":card})
+        elif connection.status == "rejected":
+            gigs = Gig.objects.all()
+            gig_count = gigs.count()
+            messages.error(request, "This request was rejected earlier.")
+            return render(request,"freelancer/show-gigs.html",{"gigs":gigs,"gig_count":gig_count,"card":card})
+
+    else:
+        messages.success(request, "Connection request sent successfully.")
+
+
+    return redirect('freelancer:work_details', card.slug)

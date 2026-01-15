@@ -1,0 +1,293 @@
+{% extends "freelancer\freelancer_base.html" %} {% block show_gig_details %}
+{% load static %}
+<style>
+    body {
+        font-family: "Inter", sans-serif;
+    }
+    a {
+        text-decoration: none !important;
+    }
+    .gig-slide {
+        /* transition removed for instant wheel response */
+        will-change: transform;
+    }
+</style>
+<main class="flex-1 overflow-y-auto h-screen bg-gray-50">
+    <!-- Topbar -->
+    <header
+        class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 sticky top-0 z-10 shadow-sm"
+    >
+        <div class="flex items-center gap-4">
+            <a href="#" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                </svg>
+            </a>
+            <h1 class="text-lg md:text-xl font-bold text-slate-800">Gig Details</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-slate-700 hidden md:block">{{ user.Profile_name }}</span>
+            <img
+                {% if user.profile_photo %}
+                src="{{ user.profile_photo.url }}"
+                {% else %}
+                src="{% static 'images/user.png' %}"
+                {% endif %} 
+                alt="Profile"
+                class="w-9 h-9 rounded-full border border-slate-200"
+            />
+        </div>
+    </header>
+
+    <div class="p-6 max-w-6xl mx-auto space-y-6">
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Main Column: Image & Details -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Image Slider -->
+                <div class="relative overflow-hidden h-56 md:h-64 rounded-xl bg-slate-900 group">
+                    <div class="w-full h-full overflow-hidden">
+                        {% for image in gig.images.all %}
+                        <img
+                            src="{{ image.image.url }}"
+                            class="gig-slide absolute inset-0 w-full h-full object-contain origin-center {% if not forloop.first %}hidden{% endif %}"
+                        />
+                        {% endfor %}
+                    </div>
+
+                    <!-- Controls -->
+                    <button
+                        onclick="prevSlide()"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100 z-10"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 19l-7-7 7-7"
+                            ></path>
+                        </svg>
+                    </button>
+                    <button
+                        onclick="nextSlide()"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 transition-all opacity-0 group-hover:opacity-100 z-10"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+
+
+                </div>
+
+                <!-- Zoom Hint Overlay -->
+                <!-- Wrapper to position relative to carousel -->
+                <div class="relative -mt-[14rem] md:-mt-[16rem] h-0 z-20 pointer-events-none flex justify-center">
+                     <div id="zoom-hint" class="bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium transition-opacity duration-500">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                        </svg>
+                        <span>Scroll / Pinch to Zoom</span>
+                    </div>
+                </div>
+
+                <!-- Details Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mt-64">
+                    <div class="flex justify-between items-start mb-6">
+                        <h2 class="text-2xl font-bold text-slate-900 leading-tight">
+                            {{ gig.title }}
+                        </h2>
+                        {% if not gig.is_blocked %}
+                        <span
+                            class="flex-shrink-0 px-3 py-1 bg-green-50 text-green-700 text-xs font-bold uppercase tracking-wider rounded-full border border-green-100"
+                            >Active</span
+                        >
+                        {% else %}
+                        <span
+                            class="flex-shrink-0 px-3 py-1 bg-red-50 text-red-700 text-xs font-bold uppercase tracking-wider rounded-full border border-red-100"
+                            >Not Active</span
+                        >
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center gap-5 text-sm text-slate-500 mb-8 pb-6 border-b border-slate-100">
+                        <span class="flex items-center gap-2">
+                            <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                                    ></path>
+                                </svg>
+                            </span>
+                            {{ gig.categories }}
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="p-1.5 bg-slate-50 text-slate-500 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    ></path>
+                                </svg>
+                            </span>
+                            Created {{ gig.created_at|timesince }} ago
+                        </span>
+                    </div>
+
+                    <div class="prose prose-slate max-w-none text-slate-600 mb-8">
+                        {{ gig.description|safe }}
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3">Skills & Tools</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for skill in skill_list %}
+                            <span
+                                class="px-3 py-1.5 bg-slate-50 text-slate-700 rounded-lg text-sm font-medium border border-slate-100"
+                                >{{ skill }}</span
+                            >
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Info -->
+            <div class="space-y-6">
+                <!-- Pricing Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-24">
+                    <h3 class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Price Range</h3>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-3xl font-bold text-slate-900">₹{{ gig.price_min }}</span>
+                        <span class="text-slate-400 font-medium mx-1">-</span>
+                        <span class="text-3xl font-bold text-slate-900">₹1{{ gig.price_max }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+let index = 0;
+let currentScale = 1;
+const slides = document.querySelectorAll(".gig-slide");
+const container = document.querySelector(".relative.overflow-hidden.h-56"); 
+const hint = document.getElementById("zoom-hint"); // Select hint element
+let isZooming = false;
+let hasInteracted = false; // Flag to track first interaction
+
+function getCoverScale(img) {
+    if (!container || !img) return 1;
+    const cW = container.clientWidth;
+    const cH = container.clientHeight;
+    const iW = img.naturalWidth || cW; 
+    const iH = img.naturalHeight || cH;
+
+    if (iW === 0 || iH === 0) return 1;
+
+    const containerRatio = cW / cH;
+    const imgRatio = iW / iH;
+
+    // Calculate scale needed to cover
+    if (imgRatio > containerRatio) {
+        // Image is wider than container: Scale by height ratio
+        // scale = (cH / displayedHeight) where displayedHeight = cW / imgRatio -- wait, simpler:
+        // Contain fits width (cW). Height is cW/imgRatio.
+        // We need height to be cH.
+        // Scale = cH / (cW / imgRatio) = (cH * imgRatio) / cW = imgRatio / containerRatio
+        return imgRatio / containerRatio;
+    } else {
+        // Image is taller: Scale by width ratio
+        return containerRatio / imgRatio;
+    }
+}
+
+function updateZoom() {
+    if (slides[index]) {
+        slides[index].style.transform = `scale(${currentScale})`;
+    }
+    isZooming = false;
+}
+
+function initializeSlide(i) {
+    const img = slides[i];
+    if (img.complete) {
+        currentScale = getCoverScale(img);
+        updateZoom();
+    } else {
+        img.onload = () => {
+            if (index === i) {
+                currentScale = getCoverScale(img);
+                updateZoom();
+            }
+        };
+    }
+}
+
+// Initialize first slide
+initializeSlide(0);
+
+// Add wheel event listener for zoom
+if (container) {
+    container.addEventListener('wheel', function(e) {
+        e.preventDefault(); // Prevent page scroll
+        
+        // Hide hint on first scroll/zoom
+        if (!hasInteracted && hint) {
+            hint.style.opacity = '0';
+            setTimeout(() => {
+                if(hint.parentNode) hint.parentNode.removeChild(hint);
+            }, 500); // Remove from DOM after fade
+            hasInteracted = true;
+        }
+
+        // Smoother zoom factor
+        const delta = e.deltaY * -0.002;
+        currentScale += delta;
+        
+        // Limits: Min 1 (contain), Max 10
+        if (currentScale > 10) currentScale = 10;
+        if (currentScale < 1) currentScale = 1; 
+
+        if (!isZooming) {
+            window.requestAnimationFrame(updateZoom);
+            isZooming = true;
+        }
+    }, { passive: false });
+}
+
+function showSlide(i) {
+    if(slides[index]) {
+        slides[index].classList.add("hidden");
+    }
+    
+    index = i;
+    
+    if(slides[index]) {
+        slides[index].classList.remove("hidden");
+        // Reset to cover scale for new slide
+        initializeSlide(index);
+    }
+}
+
+function nextSlide() {
+    let nextIndex = (index + 1) % slides.length;
+    showSlide(nextIndex);
+}
+
+function prevSlide() {
+    let prevIndex = (index - 1 + slides.length) % slides.length;
+    showSlide(prevIndex);
+}
+</script>
+{% endblock show_gig_details %}

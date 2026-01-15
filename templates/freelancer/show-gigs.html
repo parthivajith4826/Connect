@@ -1,0 +1,89 @@
+{% extends "freelancer\freelancer_base.html" %} {% block show_gigs %}
+{% load static %}
+<main class="flex-1 overflow-y-auto h-screen bg-gray-50">
+    <!-- Topbar (Dashboard Header) -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+        <div class="flex items-center gap-4">
+            <a href="javascript:history.back()" class="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors group">
+                <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span class="font-medium">Back</span>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">{{ user.Profile_name }}'s Gigs</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                {% if user.profile_photo %}
+                <img
+                    src="{{ user.profile_photo.url }}"
+                    alt="Profile"
+                    class="w-8 h-8 rounded-full"
+                />
+                {% else %}
+                <img
+                    src="{% static 'images/user.png' %}"
+                    alt="Profile"
+                    class="w-8 h-8 rounded-full"
+                />
+                {% endif %}
+                <span class="font-medium text-slate-700">{{ user.Profile_name }}</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-8 max-w-7xl mx-auto">
+        <!-- Stats Grid (Copied from Dashboard) -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <!-- Gig List (Dashboard Style) -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-900">Select a Gig to Connect</h2>
+                {% if gig_count == 1 %}
+                <span class="text-sm text-slate-500">Showing {{ gig_count }} active gig</span>
+                {% else %}
+                <span class="text-sm text-slate-500">Showing {{ gig_count }} active gigs</span>
+                {% endif %}
+            </div>
+            <div class="divide-y divide-slate-100">
+                {% for gig in gigs %}
+                <!-- Gig 1 -->
+                <div class="p-6 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-1">{{ gig.title }}</h3>
+                        <p class="text-sm text-slate-500">
+                            Posted {{ gig.created_at|timesince }} ago • {{ gig.categories }}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <a
+                            href="{% url "freelancer:show_gig_details" gig.slug %}"
+                            class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 font-medium text-sm transition-all"
+                        >
+                            View Details
+                        </a>
+                        <form action="{% url "freelancer:create_connection" card.slug %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="gig_slug" value="{{ gig.slug }}">
+                        <button
+                            class="px-4 py-2 bg-[#0071e3] text-white rounded-lg hover:bg-[#0077ED] font-bold text-sm transition-all shadow-sm"
+                        >
+                            Select & Connect
+                        </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock show_gigs %}

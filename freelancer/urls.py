@@ -18,7 +18,11 @@ urlpatterns = [
     
     
     path('find-work',views.find_work,name = 'find_work'),
-    path('work-details/<slug:slug>',views.card_details,name = 'work_details')
+    path('work-details/<slug:slug>',views.card_details,name = 'work_details'),
+    
+    path('show-gigs/<slug:card_slug>',views.show_gigs,name = 'show_gigs'),
+    path('create-connection/<slug:card_slug>', views.create_connection, name='create_connection'),
+    path('show-gig-details/<slug:slug>',views.show_gig_details,name = 'show_gig_details'),
     
     
 

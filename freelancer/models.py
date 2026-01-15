@@ -1,5 +1,6 @@
 from django.db import models
-from client.models import User,Categories
+from client.models import Categories,Card
+from accounts.models import User
 from autoslug import AutoSlugField
 # Create your models here.
 
@@ -27,7 +28,40 @@ class GigImages(models.Model):
     image = models.ImageField(upload_to="gig_images/")
     created_at = models.DateTimeField(auto_now_add=True)
     
+
     
+    
+    
+class Connections(models.Model):
+    card = models.ForeignKey(
+        Card,
+        on_delete=models.CASCADE,
+        related_name="connections"
+    )
+    
+    gig = models.ForeignKey(
+        Gig,
+        on_delete=models.CASCADE,
+        related_name="connections"
+    )
+
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('card', 'gig')  # prevent duplicate requests
+
     
     
     

@@ -5,6 +5,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -64,6 +65,9 @@ class User(AbstractUser):
 class Otp(models.Model):
     user_id = models.ForeignKey( User , on_delete=models.CASCADE, related_name='otps')
     otp = models.IntegerField()
+    
+
+    
     
 
     
