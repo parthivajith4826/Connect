@@ -449,7 +449,7 @@ def stripe_webhook_subscription(request):
                     "end_date": end_date,
                 }
             )
-            total_pack = get_object_or_404(Total_pack,user = user)
+            total_pack = Total_pack.objects.select_for_update().get(user=user)
             gig_count = total_pack.gig_count + pack.max_gigs
             connection_limit = total_pack.connection_limit + pack.connection_limit
             
