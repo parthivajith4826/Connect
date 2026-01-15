@@ -24,6 +24,10 @@ urlpatterns = [
     path('create-connection/<slug:card_slug>', views.create_connection, name='create_connection'),
     path('show-gig-details/<slug:slug>',views.show_gig_details,name = 'show_gig_details'),
     
+    path('subscription-details/',views.subscription_details,name = 'subscription_details'),
+    
+    
+    
     
 
 ]

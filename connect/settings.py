@@ -256,3 +256,5 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+ACCOUNT_ADAPTER = "freelancer.adapters.NoMessageAccountAdapter"

@@ -28,16 +28,18 @@ def home(request):
     #     return redirect('accounts:landing_page')
     else :
     
-        if user.is_authenticated:
-            if not user.profile_completed:
-                return render(request,'freelancer/errors/profile_error.html')
-            else :
-                gigs = Gig.objects.filter(freelancer_id = user) 
-        
-        
-            return render(request,'freelancer/home.html',{'gigs':gigs})
+        if not user.profile_completed:
+            return render(request,'freelancer/errors/profile_error.html')
         else :
-            return redirect('accounts:signin')
+            gigs = Gig.objects.filter(freelancer_id = user) 
+            connections_count = Connections.objects.all().count()
+            connections_accepted = Connections.objects.filter(status = 'accepted').count()
+            connections_pending = Connections.objects.filter(status = 'pending').count()
+            connections_rejected = Connections.objects.filter(status = 'rejected').count()
+            
+    
+        return render(request,'freelancer/home.html',{'gigs':gigs,'connections_count':connections_count,'connections_accepted':connections_accepted,'connections_pending':connections_pending,'connections_rejected':connections_rejected})
+
     
     
     
@@ -356,6 +358,7 @@ def subscribe_start(request, slug):
     # subscriptions = SubscriptionPack.objects.all()[1:]
     # freeplan = SubscriptionPack.objects.all()[0]
     pack = get_object_or_404(SubscriptionPack, slug=slug, is_active=True)
+                                                  
     
     
     # ✅ Create PaymentIntent
@@ -427,7 +430,7 @@ def stripe_webhook_subscription(request):
     try:
         user = User.objects.get(id=user_id)
         pack = SubscriptionPack.objects.get(id=pack_id, is_active=True)
-        print(f"pack = {pack}")
+        print(f"pack = {pack.connection_limit}")
     except (User.DoesNotExist, SubscriptionPack.DoesNotExist):
         return HttpResponse(status=200)
 
@@ -441,13 +444,11 @@ def stripe_webhook_subscription(request):
             start_date = timezone.now()
             end_date = start_date + timedelta(days=pack.duration_days)
 
-            subscription, _ = UserSubscription.objects.update_or_create(
+            subscription= UserSubscription.objects.create(
                 user=user,
-                defaults={
-                    "subscription_pack": pack,
-                    "start_date": start_date,
-                    "end_date": end_date,
-                }
+                subscription_pack=pack,
+                start_date=start_date,
+                end_date=end_date
             )
             total_pack = Total_pack.objects.select_for_update().get(user=user)
             gig_count = total_pack.gig_count + pack.max_gigs
@@ -584,7 +585,15 @@ def show_gigs(request,card_slug=None):
     card = get_object_or_404(Card,slug = card_slug)
     gigs = Gig.objects.filter(freelancer_id = request.user)
     gig_count = gigs.count()
-    return render(request,"freelancer/show-gigs.html",{"gigs":gigs,"gig_count":gig_count,"card":card})
+    usersubscription = UserSubscription.objects.filter(user = request.user,is_active = True)
+    if not usersubscription :
+        messages.error(request, "No active subscriptions. Unable to establish a connection.")
+        return redirect('freelancer:show_gigs',card.slug)
+    
+    total_pack = Total_pack.objects.get(user=request.user)
+    if total_pack.connection_limit == 0:
+        messages.error(request, "Connection limit reached (0). No new connections can be established.")
+    return render(request,"freelancer/show-gigs.html",{"gigs":gigs,"gig_count":gig_count,"card":card,"total_pack":total_pack})
 
 def show_gig_details(request,slug):
     gig = get_object_or_404(Gig,slug = slug)
@@ -599,16 +608,35 @@ def show_gig_details(request,slug):
 
 
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 def create_connection(request, card_slug):
+    #this is created for , when creating connection object
     card = get_object_or_404(Card, slug=card_slug)
 
     gig_slug = request.POST.get("gig_slug")
     gig = get_object_or_404(Gig,slug=gig_slug,freelancer_id=request.user)
-
-    connection, created = Connections.objects.get_or_create(
-        card=card,
-        gig=gig
-    )
+    
+    
+    try :
+        total_pack = Total_pack.objects.select_for_update().get(user=request.user) 
+    except Total_pack.DoesNotExist:
+        raise PermissionDenied("No Active Subsciption")
+        #this will auto open the 403.html
+        
+        
+    with transaction.atomic():
+        connection, created = Connections.objects.get_or_create(
+            card=card,
+            gig=gig
+        )
+        
+        if created :
+            connection_limit = total_pack.connection_limit - 1
+                
+            total_pack.connection_limit = connection_limit
+            total_pack.save()
+        
+    
     if not created:
         # Already exists → respect status
         if connection.status == "pending":
@@ -632,3 +660,8 @@ def create_connection(request, card_slug):
 
 
     return redirect('freelancer:work_details', card.slug)
+
+def subscription_details(request):
+    subscriptions = UserSubscription.objects.filter(user = request.user).order_by("-created_at")
+    total_pack = get_object_or_404(Total_pack,user = request.user)
+    return render(request,'freelancer/subscription_status.html',{"subscriptions":subscriptions,"total_pack":total_pack})

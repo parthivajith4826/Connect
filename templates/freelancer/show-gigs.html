@@ -74,7 +74,13 @@
                         {% csrf_token %}
                         <input type="hidden" name="gig_slug" value="{{ gig.slug }}">
                         <button
-                            class="px-4 py-2 bg-[#0071e3] text-white rounded-lg hover:bg-[#0077ED] font-bold text-sm transition-all shadow-sm"
+                            {% if total_pack.connection_limit == 0 %}disabled{% endif %}
+                            class="px-4 py-2 bg-[#0071e3] text-white rounded-lg font-bold text-sm shadow-sm transition-all
+                                {% if total_pack.connection_limit == 0 %}
+                                opacity-50 cursor-not-allowed
+                                {% else %}
+                                hover:bg-[#0077ED]
+                                {% endif %}"
                         >
                             Select & Connect
                         </button>
