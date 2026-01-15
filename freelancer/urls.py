@@ -14,7 +14,7 @@ urlpatterns = [
     
     path('subscriptions/',views.subscriptions,name = 'subscriptions'),
     path('subscribe-start/<slug:slug>',views.subscribe_start,name = 'subscribe_start'),
-    path('subscription-success',views.subscription_success,name = 'subscription_success'),
+    path('subscription/result/',views.subscription_result,name = 'subscription_result'),
     
     
     path('find-work',views.find_work,name = 'find_work'),

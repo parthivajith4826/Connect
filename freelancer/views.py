@@ -352,9 +352,9 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def subscribe_start(request, slug):
     
-    #for to give in subscriptions.html (subscriptions,freeplan,pack)
-    subscriptions = SubscriptionPack.objects.all()[1:]
-    freeplan = SubscriptionPack.objects.all()[0]
+    #for give in subscriptions.html (subscriptions,freeplan,pack)
+    # subscriptions = SubscriptionPack.objects.all()[1:]
+    # freeplan = SubscriptionPack.objects.all()[0]
     pack = get_object_or_404(SubscriptionPack, slug=slug, is_active=True)
     
     
@@ -376,7 +376,7 @@ def subscribe_start(request, slug):
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
         "pack": pack,
         "success_url": request.build_absolute_uri(
-                "/freelancer/subscription-success"
+                "/freelancer/subscription/result/"
             ),
     })
     
@@ -391,6 +391,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from decimal import Decimal
 import stripe
+from django.db import transaction
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @csrf_exempt
@@ -412,7 +413,7 @@ def stripe_webhook_subscription(request):
     intent = event["data"]["object"]
     metadata = intent.get("metadata", {})
 
-    # 🔐 Validate this webhook is for subscriptions
+    # Validate this webhook is for subscriptions
     if metadata.get("purpose") != "subscription":
         return HttpResponse(status=200)
 
@@ -422,7 +423,7 @@ def stripe_webhook_subscription(request):
     if not user_id or not pack_id:
         return HttpResponse(status=200)
 
-    # 🔐 Validate user & pack
+    # Validate user & pack
     try:
         user = User.objects.get(id=user_id)
         pack = SubscriptionPack.objects.get(id=pack_id, is_active=True)
@@ -432,50 +433,48 @@ def stripe_webhook_subscription(request):
 
     amount = Decimal(intent["amount"]) / Decimal("100")
 
-    # =====================================================
-    # ✅ PAYMENT SUCCEEDED → CREATE SUBSCRIPTION
-    # =====================================================
+    # payment Successful
     if event_type == "payment_intent.succeeded":
+        
+        with transaction.atomic():
 
-        start_date = timezone.now()
-        end_date = start_date + timedelta(days=pack.duration_days)
+            start_date = timezone.now()
+            end_date = start_date + timedelta(days=pack.duration_days)
 
-        subscription, _ = UserSubscription.objects.update_or_create(
-            user=user,
-            defaults={
-                "subscription_pack": pack,
-                "start_date": start_date,
-                "end_date": end_date,
-            }
-        )
-        total_pack = get_object_or_404(Total_pack,user = user)
-        gig_count = total_pack.gig_count + pack.max_gigs
-        connection_limit = total_pack.connection_limit + pack.connection_limit
-        
-        total_pack, _ = Total_pack.objects.update_or_create(
-            user=user,
-            defaults={
-                "gig_count": gig_count,
-                "connection_limit": connection_limit})
-        
-        
-        print("User subscription updated")
-        SubscriptionTransaction.objects.get_or_create(
-            stripe_payment_intent_id=intent["id"],
-            defaults={
-                "user": user,
-                "user_subscription": subscription,
-                "amount": amount,
-                "payment_status": "succeeded",
-                
-            }
-        )
-        
-        print("transactions also updated")
+            subscription, _ = UserSubscription.objects.update_or_create(
+                user=user,
+                defaults={
+                    "subscription_pack": pack,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                }
+            )
+            total_pack = get_object_or_404(Total_pack,user = user)
+            gig_count = total_pack.gig_count + pack.max_gigs
+            connection_limit = total_pack.connection_limit + pack.connection_limit
+            
+            total_pack, _ = Total_pack.objects.update_or_create(
+                user=user,
+                defaults={
+                    "gig_count": gig_count,
+                    "connection_limit": connection_limit})
+            
+            
+            print("User subscription updated")
+            SubscriptionTransaction.objects.get_or_create(
+                stripe_payment_intent_id=intent["id"],
+                defaults={
+                    "user": user,
+                    "user_subscription": subscription,
+                    "amount": amount,
+                    "payment_status": "succeeded",
+                    
+                }
+            )
+            
+            print("transactions also updated")
 
-    # =====================================================
-    # ❌ PAYMENT FAILED → RECORD FAILURE
-    # =====================================================
+    #Payment Failed
     elif event_type == "payment_intent.payment_failed":
 
         SubscriptionTransaction.objects.get_or_create(
@@ -488,9 +487,7 @@ def stripe_webhook_subscription(request):
             }
         )
 
-    # =====================================================
-    # 🚫 PAYMENT CANCELED → RECORD CANCELLATION
-    # =====================================================
+    #Payment Cancelled logiv
     elif event_type == "payment_intent.canceled":
 
         SubscriptionTransaction.objects.get_or_create(
@@ -505,8 +502,38 @@ def stripe_webhook_subscription(request):
 
     return HttpResponse(status=200)
 
-def subscription_success(request):
-    return render(request,"freelancer/subscription_success.html")
+
+
+
+
+def subscription_result(request):
+    intent_id = request.GET.get("payment_intent")
+
+    if not intent_id:
+        return redirect("freelancer:subscriptions")
+
+    tx = SubscriptionTransaction.objects.filter(
+        stripe_payment_intent_id=intent_id
+    ).first()
+
+    if not tx:
+        # webhook has NOT arrived yet
+        return render(request, "freelancer/subscription_pending.html")
+
+    if tx.payment_status == "succeeded":
+        return render(request, "freelancer/subscription_success.html")
+
+    if tx.payment_status == "failed":
+        return render(request, "freelancer/subscription_failed.html")
+
+    if tx.payment_status == "canceled":
+        return render(request, "freelancer/subscription_canceled.html")
+
+    return render(request, "freelancer/subscription_pending.html")
+
+
+
+
 
 
 from client.models import Card,Categories
