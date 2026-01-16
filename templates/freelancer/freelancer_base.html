@@ -156,6 +156,36 @@
                         Sign Out
                     </a>
                 </div>
+                
+                <!-- Animated SVG Footer -->
+                <div class="p-6 mt-auto flex justify-center opacity-80 hover:opacity-100 transition-opacity">
+                    <svg width="150" height="120" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <style>
+                            @keyframes float {
+                                0%, 100% { transform: translateY(0); }
+                                50% { transform: translateY(-5px); }
+                            }
+                            @keyframes pulse-screen {
+                                0%, 100% { opacity: 0.6; }
+                                50% { opacity: 1; }
+                            }
+                            .floating { animation: float 3s ease-in-out infinite; }
+                            .screen-glow { animation: pulse-screen 2s ease-in-out infinite; }
+                        </style>
+                        <!-- Desk -->
+                        <path d="M20 130 H180" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Laptop Base -->
+                        <path d="M50 120 L150 120 L160 130 H40 L50 120Z" fill="#334155"/>
+                        <!-- Laptop Screen -->
+                        <rect x="60" y="50" width="80" height="70" rx="4" fill="#1e293b" class="floating"/>
+                        <rect x="65" y="55" width="70" height="60" rx="2" fill="#3b82f6" class="screen-glow floating"/>
+                        <!-- Person/Blob -->
+                        <circle cx="100" cy="100" r="20" fill="#64748b" class="floating" style="animation-delay: 0.5s"/>
+                        <!-- Coffee Cup -->
+                        <path d="M160 115 V125 H170 V115 Z" fill="#f59e0b" />
+                        <path d="M170 118 H173 C175 118 175 122 173 122 H170" stroke="#f59e0b" stroke-width="2"/>
+                    </svg>
+                </div>
             </aside>
             {% block home %} 
             {% endblock %}

@@ -10,25 +10,6 @@
 <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
 
 
-<style>
-    /* Styling for Django's default error list */
-    .errorlist {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .errorlist li {
-        color: #dc2626; /* red-600 */
-        font-size: 0.875rem; /* text-sm */
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .errorlist li::before {
-        content: "⚠️";
-        font-size: 1rem;
-    }
-</style>
 
 <!-- Main Content -->
 <main class="flex-1 overflow-y-auto h-screen">
@@ -45,7 +26,7 @@
                     ></path>
                 </svg>
             </a>
-            <h1 class="text-lg md:text-xl font-bold text-slate-800">Add New Gig</h1>
+            <h1 class="text-lg md:text-xl font-bold text-slate-800">Edit Gig</h1>
         </div>
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-3">
@@ -85,12 +66,12 @@
                         <input
                             type="text"
                             {% comment %} value= "{{ gig.title }}" {% endcomment %}
-                            value="{{ form.title.value|default_if_none:'' }}"
+                            value="{{ form.title.value }}"
                             name = "title"
                             placeholder="I will do..."
                             class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                         />
-                        <div class="mt-2">
+                        <div class="mt-1 text-sm text-red-500">
                             {{ form.title.errors }}
                         </div>
                     </div>
@@ -113,17 +94,30 @@
                             <label class="block text-sm font-medium text-slate-700 mb-1">Skills (comma separated)</label>
                             <input
                                 {% comment %} value = "{{ gig.skills }}" {% endcomment %}
-                                value="{{ form.skills.value|default_if_none:'' }}"
+                                value="{{ form.skills.value }}"
                                 name = "skills"
                                 type="text"
                                 placeholder="React, Python, etc."
                                 class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                             />
-                            <div class="mt-2">
+                            <div class="mt-1 text-sm text-red-500">
                                 {{ form.skills.errors }}
                             </div>
                         </div>
                     </div>
+
+                    {% comment %} <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Description</label> {% endcomment %}
+                        {% comment %} <textarea
+                            rows="6"
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Describe your service in detail..."
+                        ></textarea> {% endcomment %}
+                       
+                        {% comment %} <input type="hidden" name="content" id="editor-content">
+                    </div> {% endcomment %}
+
+                    {% comment %} Quill {% endcomment %}
                     <div>
     <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
 
@@ -166,13 +160,12 @@
          class="bg-white border border-slate-300 rounded-lg"
          style="min-height: 200px;">
     
-    {{ gig.description|safe }} 
- 
+    {{ gig.description|safe }}  
     </div>
 
     <!-- Hidden input sent to Django -->
     <input type="hidden" name="description" id="description" >
-    <div class="mt-2">
+    <div class="mt-1 text-sm text-red-500">
         {{ form.description.errors }}
     </div>
 </div>
@@ -196,7 +189,7 @@
                                 class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                             />
                             
-                            <div class="mt-2">
+                            <div class="mt-1 text-sm text-red-500">
                                 {{ form.price_min.errors }}
                             </div>
                         </div>
@@ -210,10 +203,15 @@
                                 class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                             />
                             
-                            <div class="mt-2">
+                            <div class="mt-1 text-sm text-red-500">
                                 {{ form.price_max.errors }}
                             </div>
                         </div>
+                        {% comment %} {% if form.non_field_errors %}
+                            <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %} {% endcomment %}
                         
                     </div>
 
@@ -221,17 +219,50 @@
                         <label class="block text-sm font-medium text-slate-700 mb-1">Portfolio Link</label>
                         <input
                             {% comment %} value = "{{ gig.portfolio }}" {% endcomment %}
-                            value="{{ form.portfolio.value|default_if_none:'' }}"
+                            value="{{ form.portfolio.value }}"
                             name = "portfolio"
                             type="url"
                             placeholder="https://..."
                             class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                         />
-                        <div class="mt-2">
+                        <div class="mt-1 text-sm text-red-500">
                             {{ form.portfolio.errors }}
                         </div>
                     </div>
 
+                    {% comment %} <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Cover Image</label>
+                        <div
+                            class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-lg"
+                        >
+                            <div class="space-y-1 text-center">
+                                <svg
+                                    class="mx-auto h-12 w-12 text-slate-400"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    viewBox="0 0 48 48"
+                                >
+                                    <path
+                                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                                <div class="flex text-sm text-slate-600">
+                                    <label
+                                        for="file-upload"
+                                        class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                                    >
+                                        <span>Upload a file</span>
+                                        <input id="file-upload" name="file-upload" type="file" class="sr-only" />
+                                    </label>
+                                    <p class="pl-1">or drag and drop</p>
+                                </div>
+                                <p class="text-xs text-slate-500">PNG, JPG, GIF up to 10MB</p>
+                            </div>
+                        </div>
+                    </div> {% endcomment %}
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Attachments</label>
                         <div
@@ -312,6 +343,49 @@
         </form>
     </div>
 </main>
+{% comment %} <script>
+    const openBtn = document.getElementById("open-category-modal");
+    const modal = document.getElementById("category-modal");
+    const closeBtn = document.getElementById("close-modal");
+    const saveBtn = document.getElementById("save-categories");
+    const options = document.querySelectorAll(".category-option");
+    const selectedContainer = document.getElementById("selected-container");
+    const hiddenInput = document.getElementById("selected-categories");
+
+    let selected = {}; // {id: name}
+
+    openBtn.onclick = () => modal.classList.remove("hidden");
+    closeBtn.onclick = () => modal.classList.add("hidden");
+
+    options.forEach((opt) => {
+        opt.addEventListener("click", () => {
+            const id = opt.dataset.id;
+            const name = opt.dataset.name;
+
+            if (selected[id]) {
+                delete selected[id];
+                opt.classList.remove("bg-indigo-600", "text-white", "border-indigo-600");
+            } else {
+                selected[id] = name;
+                opt.classList.add("bg-indigo-600", "text-white", "border-indigo-600");
+            }
+        });
+    });
+
+    saveBtn.onclick = () => {
+        selectedContainer.innerHTML = "";
+
+        Object.entries(selected).forEach(([id, name]) => {
+            const pill = document.createElement("span");
+            pill.className = "px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium";
+            pill.innerText = name;
+            selectedContainer.appendChild(pill);
+        });
+
+        hiddenInput.value = Object.keys(selected).join(",");
+        modal.classList.add("hidden");
+    };
+</script> {% endcomment %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -485,6 +559,12 @@ document.addEventListener("DOMContentLoaded", function () {
         renderNewPreviews();
     });
 </script>
+
+
+
+
+
+
 {% endblock create_gig %}
 
 

@@ -1,4 +1,17 @@
 {% extends "freelancer\freelancer_base.html" %} {% block view_card %}
+<style>
+    /* Professional Alert Styles */
+    .alert-debug, .alert-info { @apply bg-blue-50 text-blue-800 border-blue-200; }
+    .alert-success { @apply bg-green-50 text-green-800 border-green-200; }
+    .alert-warning { @apply bg-yellow-50 text-yellow-800 border-yellow-200; }
+    .alert-error, .alert-danger { @apply bg-red-50 text-red-800 border-red-200; }
+    
+    /* Fallback if Tailwind @apply isn't available/configured perfectly in this context, use raw CSS */
+    .alert-info { background-color: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+    .alert-success { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+    .alert-warning { background-color: #fefce8; color: #854d0e; border-color: #fde047; }
+    .alert-error, .alert-danger { background-color: #fef2f2; color: #991b1b; border-color: #fecaca; }
+</style>
 <main class="flex-1 overflow-y-auto h-screen bg-gray-50">
     <div class="p-8 max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -89,12 +102,20 @@
                     </a>
                 </div>
                 {% if messages %}
+                    <div class="space-y-3 mb-4">
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="alert alert-{{ message.tags }} flex items-center justify-between p-4 rounded-lg text-sm font-medium border shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <!-- Icons based on tag types (handled via CSS/JS or generic icon) -->
+                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>{{ message }}</span>
+                            </div>
+                            <button type="button" class="text-current opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
                         </div>
                     {% endfor %}
+                    </div>
                 {% endif %}
 
                 <!-- Client Info -->

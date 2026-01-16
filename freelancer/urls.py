@@ -30,6 +30,9 @@ urlpatterns = [
     #My connections
     path('my-connections/',views.my_connections,name = 'my_connections'),
     
+    #gig preview
+    path('gig-preview/<slug:slug>',views.gig_preview,name = 'gig_preview'),
+    
     
     
     

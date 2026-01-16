@@ -274,11 +274,11 @@ def edit_gig(request,slug):
         else :
             print("valid alla")
 
-            return render(request,"freelancer/add_gig.html",{"form": form,"categories": categories,"Gig":gig,"images":images_db})
+            return render(request,"freelancer/edit_gig.html",{"form": form,"categories": categories,"Gig":gig,"images":images_db})
 
 
     form = CreategigForm(instance = gig)
-    return render(request,"freelancer/add_gig.html",{"form": form,"categories": categories,"gig":gig,"images":images_db})
+    return render(request,"freelancer/edit_gig.html",{"form": form,"categories": categories,"gig":gig,"images":images_db})
 
 @never_cache
 def close_gig(request,slug):
@@ -672,3 +672,10 @@ def my_connections(request):
     connections = Connections.objects.filter(user = request.user)
     connections_count = connections.count()
     return render(request,"freelancer/my_connections.html",{"connections":connections,"connections_count":connections_count})
+
+
+def gig_preview(request,slug):
+    gig = Gig.objects.filter(slug = slug).first()
+    skills = gig.skills
+    skills = skills.split(",")    
+    return render(request,"freelancer/gig_preview.html",{"gig":gig,"skills":skills})

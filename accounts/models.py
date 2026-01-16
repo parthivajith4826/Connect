@@ -36,7 +36,7 @@ class User(AbstractUser):
     username = None
     Profile_name = models.CharField(max_length=255, unique=True,blank=True , null=True)
     email = models.EmailField(unique=True)
-    profile_photo = models.ImageField(upload_to='profile_photo', null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='profile_photo/',default='profile_photo/user.png',blank=True)
     is_verified = models.BooleanField(default=False)
     email_verification_token = models.UUIDField(default=uuid.uuid4, unique=True,null=True,blank=True)
     

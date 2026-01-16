@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <title>Freelance Connect</title>
+        <style>
+            /* --- Reset & Base --- */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            }
+            body {
+                background-color: #f8f9fa;
+                color: #1f2937;
+                line-height: 1.4;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: clamp(10px, 3vw, 24px); /* Fluid padding */
+            }
+
+            /* --- Animation Keyframes --- */
+            @keyframes fadeUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* --- Layout Container --- */
+            .container {
+                width: 100%;
+                max-width: 1100px; /* Increased from 900px */
+                margin: 0 auto;
+            }
+
+            /* --- Gig Card --- */
+            .gig-card {
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+                border: 1px solid #e2e8f0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                /* Animation: Page Load */
+                animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+                /* Interaction: Hover Lift */
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                will-change: transform, box-shadow;
+            }
+
+            .gig-card:hover {
+                transform: translateY(-2px); /* Subtle lift */
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Smoother shadow */
+            }
+
+            @media (min-width: 768px) {
+                .gig-card {
+                    flex-direction: row;
+                    /* Responsive height: 600px max, but shrinks if viewport is short */
+                    height: clamp(500px, 85vh, 600px);
+                }
+            }
+
+            /* --- Image Carousel --- */
+            .carousel-section {
+                width: 100%;
+                height: 250px;
+                position: relative;
+                background-color: #f1f5f9;
+                overflow: hidden;
+            }
+
+            @media (min-width: 768px) {
+                .carousel-section {
+                    width: 40%; /* Reduced from 45% to give more room to details */
+                    height: 100%;
+                }
+            }
+
+            .carousel-inner {
+                width: 100%;
+                height: 100%;
+                position: relative;
+            }
+
+            .carousel-item {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                /* Animation: Smooth Crossfade */
+                transition: opacity 0.8s ease-in-out;
+                will-change: opacity;
+                display: flex;
+                z-index: 0;
+            }
+
+            .carousel-item.active {
+                opacity: 1;
+                z-index: 1;
+            }
+
+            .carousel-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            /* Carousel Indicators */
+            .carousel-dots {
+                position: absolute;
+                bottom: 15px;
+                left: 0;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                z-index: 2;
+            }
+
+            .dot {
+                width: 8px;
+                height: 8px;
+                background-color: rgba(255, 255, 255, 0.5);
+                border-radius: 50%;
+                cursor: pointer;
+                transition: background-color 0.3s, transform 0.3s;
+            }
+
+            .dot.active {
+                background-color: white;
+                transform: scale(1.2);
+            }
+
+            .wave-decoration {
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                width: 100%;
+                line-height: 0;
+                z-index: 1;
+                fill: white;
+                opacity: 0.9;
+            }
+            @media (min-width: 768px) {
+                .wave-decoration {
+                    display: none;
+                }
+            }
+
+            /* --- Details Section --- */
+            .details-section {
+                width: 100%;
+                padding: 24px;
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                background-color: #fff;
+            }
+
+            @media (min-width: 768px) {
+                .details-section {
+                    width: 60%;
+                    padding: clamp(20px, 3vw, 32px); /* Fluid padding */
+                }
+            }
+
+            .category-pill {
+                display: inline-block;
+                background: #eff6ff;
+                color: #2563eb;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                padding: 4px 10px;
+                border-radius: 20px;
+                margin-bottom: 12px;
+                letter-spacing: 0.5px;
+                align-self: flex-start;
+            }
+
+            .gig-title {
+                font-size: clamp(18px, 4vw, 24px); /* Fluid font size */
+                line-height: 1.25;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 12px;
+            }
+
+            .freelancer-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-right: 12px;
+                border: 1px solid #e5e7eb;
+            }
+
+            .freelancer-meta {
+                display: flex;
+                flex-direction: column;
+            }
+            .f-name {
+                font-size: 14px;
+                font-weight: 600;
+                color: #374151;
+            }
+            .f-role {
+                font-size: 12px;
+                color: #6b7280;
+            }
+
+            /* --- Description Animation --- */
+            .description-box {
+                margin-bottom: 24px;
+                flex: 1;
+            }
+
+            /* Changed from p to div to allow inner HTML */
+            .desc-text {
+                font-size: 14px;
+                color: #4b5563;
+                line-height: 1.6;
+                /* Animation: Max Height for Smooth Expand */
+                max-height: 80px; /* Start slightly taller */
+                overflow: hidden;
+                transition: max-height 0.4s ease-out; /* Smoother easing */
+                will-change: max-height;
+                position: relative;
+            }
+
+            /* Ensure inner paragraphs have spacing */
+            .desc-text p {
+                margin-bottom: 0.8em;
+            }
+            .desc-text p:last-child {
+                margin-bottom: 0;
+            }
+
+            /* Fix broken/overflowing images in description */
+            .desc-text img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 8px;
+                margin: 12px 0;
+                display: block;
+            }
+
+            /* Optional commercial touch: Fade mask for collapsed state */
+            .desc-text:not(.expanded)::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 40px; /* Taller fade */
+                background: linear-gradient(to bottom, transparent, white);
+                pointer-events: none;
+            }
+
+            .desc-text.expanded {
+                max-height: 800px; /* Sensible limit */
+            }
+
+            .desc-text.expanded::after {
+                display: none;
+            }
+
+            .read-more-btn {
+                background: none;
+                border: none;
+                color: #2563eb;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                margin-top: 8px;
+                padding: 0;
+                transition: opacity 0.2s;
+            }
+            .read-more-btn:hover {
+                opacity: 0.8;
+                text-decoration: underline;
+            }
+
+            .price-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                background: #f9fafb;
+                padding: 16px;
+                border-radius: 10px;
+                border: 1px solid #f3f4f6;
+            }
+            .price-label {
+                font-size: 13px;
+                color: #6b7280;
+                font-weight: 500;
+            }
+            .price-value {
+                font-size: clamp(18px, 3vw, 22px); /* Fluid price size */
+                font-weight: 700;
+                color: #111827;
+                white-space: nowrap; /* Prevent wrapping */
+            }
+
+            .skills {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 24px;
+            }
+            .skill-tag {
+                background: #f3f4f6;
+                color: #4b5563;
+                font-size: 12px;
+                font-weight: 500;
+                padding: 6px 12px;
+                border-radius: 6px;
+                transition: background-color 0.2s;
+            }
+            .skill-tag:hover {
+                background-color: #e5e7eb;
+            }
+
+            /* --- CTA Animation --- */
+            .cta-btn {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                background-color: #2563eb;
+                color: white;
+                font-size: 15px;
+                font-weight: 600;
+                padding: 14px;
+                border-radius: 10px;
+                text-decoration: none;
+                /* Interaction: Smooth Hover */
+                transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+                will-change: transform;
+                box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+            }
+            .cta-btn:hover {
+                background-color: #1d4ed8;
+                transform: translateY(-1px);
+                box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+            }
+            .cta-btn:active {
+                transform: translateY(1px);
+            }
+
+            .bg-accents {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                pointer-events: none;
+                opacity: 0.6;
+                background-image: radial-gradient(circle at 10% 10%, #eff6ff 0%, transparent 20%),
+                    radial-gradient(circle at 90% 90%, #eff6ff 0%, transparent 20%);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="bg-accents"></div>
+
+        <div class="container">
+            <!-- Main Card with FadeInUp -->
+            <div class="gig-card">
+                <div class="carousel-section" id="carousel">
+                    <div class="carousel-inner">
+                        {% for image in gig.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.image.url }}" alt="Gig Image" loading="lazy" />
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="carousel-dots">
+                        {% for image in gig.images.all %}
+                        <span
+                            class="dot {% if forloop.first %}active{% endif %}"
+                            onclick="goToSlide({{ forloop.counter0 }})"
+                        ></span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="wave-decoration">
+                        <svg
+                            viewBox="0 0 1440 320"
+                            preserveAspectRatio="none"
+                            style="height: 40px; width: 100%; display: block"
+                        >
+                            <path
+                                fill="#ffffff"
+                                fill-opacity="1"
+                                d="M0,256L80,229.3C160,203,320,149,480,149.3C640,149,800,203,960,218.7C1120,235,1280,213,1360,202.7L1440,192L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"
+                            ></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start">
+                        <span class="category-pill">{{ gig.categories }}</span>
+                        <span style="font-size: 11px; color: #9ca3af; display: flex; align-items: center; gap: 4px">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                ></path>
+                            </svg>
+                            {{ gig.created_at|timesince }} ago
+                        </span>
+                    </div>
+
+                    <h1 class="gig-title">{{ gig.title }}</h1>
+
+                    <div class="freelancer-row">
+                        <img src="{{ gig.freelancer_id.profile_photo.url }}" alt="Avatar" class="avatar" />
+                        <div class="freelancer-meta">
+                            <span class="f-name">{{ gig.freelancer_id.Profile_name }}</span>
+                            <span class="f-role">Freelancer</span>
+                        </div>
+                    </div>
+
+                    <div class="description-box">
+                        <!-- Changed wrapper to DIV to handle DTL safe HTML content correctly -->
+                        <div class="desc-text" id="descText">{{ gig.description|safe }}</div>
+                        <button class="read-more-btn" id="readMoreBtn" onclick="toggleDescription()">Read more</button>
+                    </div>
+
+                    <div class="price-row">
+                        <span class="price-label">Project Budget</span>
+                        <span class="price-value">₹{{ gig.price_min }} - ₹{{ gig.price_max }}</span>
+                    </div>
+
+                    <div class="skills">
+                        {% for skill in skills %}
+                        <span class="skill-tag">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <a href="{% url 'accounts:landing_page' %}" class="cta-btn">View Full Details & Hire</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            /* --- Carousel Logic --- */
+            let currentSlide = 0;
+            const slides = document.querySelectorAll(".carousel-item");
+            const dots = document.querySelectorAll(".dot");
+            const totalSlides = slides.length;
+            let slideInterval;
+
+            function goToSlide(n) {
+                // Safety check
+                if (slides.length === 0) return;
+
+                slides[currentSlide].classList.remove("active");
+                if (dots[currentSlide]) dots[currentSlide].classList.remove("active");
+
+                currentSlide = (n + totalSlides) % totalSlides;
+
+                slides[currentSlide].classList.add("active");
+                if (dots[currentSlide]) dots[currentSlide].classList.add("active");
+            }
+
+            function nextSlide() {
+                goToSlide(currentSlide + 1);
+            }
+
+            function startAutoSlide() {
+                // Gentle easing auto-slide: 4s interval
+                if (slides.length > 1) {
+                    slideInterval = setInterval(nextSlide, 4000);
+                }
+            }
+
+            function stopAutoSlide() {
+                clearInterval(slideInterval);
+            }
+
+            startAutoSlide();
+
+            const carousel = document.getElementById("carousel");
+            carousel.addEventListener("mouseenter", stopAutoSlide);
+            carousel.addEventListener("mouseleave", startAutoSlide);
+
+            /* --- Description Toggle Logic --- */
+            function toggleDescription() {
+                const desc = document.getElementById("descText");
+                const btn = document.getElementById("readMoreBtn");
+
+                if (desc.classList.contains("expanded")) {
+                    desc.classList.remove("expanded");
+                    btn.textContent = "Read more";
+                } else {
+                    desc.classList.add("expanded");
+                    btn.textContent = "Show less";
+                }
+            }
+        </script>
+    </body>
+</html>
