@@ -46,10 +46,20 @@
 <!-- Main Content Area -->
 <main class="flex-1 overflow-y-auto h-screen bg-[#f5f5f7] flex flex-col">
     <!-- Top Header with Search -->
+    <!-- Top Header with Search -->
     <header class="bg-white sticky top-0 z-20">
-        <div class="px-8 py-4 flex items-center justify-between">
-            <h1 class="text-xl font-bold text-[#1d1d1f]">Find Work</h1>
-            <div class="flex-1 max-w-2xl mx-8 relative">
+        <div class="px-4 md:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl font-bold text-[#1d1d1f]">Find Work</h1>
+            </div>
+            
+            <div class="flex-1 max-w-2xl mx-4 md:mx-8 relative">
                 <form id="searchForm" class="relative group" method="GET" action="">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg
@@ -71,7 +81,7 @@
                         type="text"
                         name="q"
                         class="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-full text-sm placeholder-gray-500 focus:bg-white focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3] focus:outline-none transition-all shadow-sm"
-                        placeholder="Search by category, skill, or keyword..."
+                        placeholder="Search..."
                         autocomplete="off"
                         value="{{ request.GET.q|default:'' }}"
                     />
@@ -93,11 +103,11 @@
                     </div>
                 </form>
             </div>
-            <div class="w-20"></div>
+            <div class="w-0 md:w-20"></div>
         </div>
 
         <!-- Filters Row (Hidden Initially) -->
-        <form id="filterRow" class="hidden px-8 pb-4 items-center gap-3 overflow-visible animate-fade-in-up" method="GET">
+        <form id="filterRow" class="hidden px-4 md:px-8 pb-4 flex-wrap items-center gap-3 overflow-visible animate-fade-in-up" method="GET">
             <input type="hidden" name="q" value="{{ request.GET.q }}" />
 
             <!-- Category Filter -->

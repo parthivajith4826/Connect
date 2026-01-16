@@ -21,16 +21,31 @@
         {% endblock %}
     </head>
     <body class="bg-gray-50 text-slate-800">
-        <div class="h-screen w-full flex flex-col md:flex-row overflow-hidden">
+        <div class="h-screen w-full flex overflow-hidden relative bg-gray-50">
+            
+            <!-- Mobile Sidebar Overlay -->
+            <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
             <!-- Sidebar -->
-            <aside class="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 overflow-y-auto">
-                <div class="p-4 flex items-center gap-2 border-b border-slate-800">
+            <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out shadow-xl md:shadow-none h-full">
+                
+                <!-- Mobile Close Button -->
+                <button onclick="toggleSidebar()" class="md:hidden absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                <!-- Logo Area -->
+                <div class="p-4 flex items-center gap-2 border-b border-slate-800 flex-shrink-0">
                     <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
                         <span class="text-white font-bold text-xl">F</span>
                     </div>
                     <span class="font-bold text-xl">FreelanceConnect</span>
                 </div>
-                <nav class="p-4 space-y-2">
+                
+                <!-- Navigation -->
+                <nav class="p-4 space-y-2 flex-1 overflow-y-auto custom-scrollbar">
                     <a href="{% url 'freelancer:home' %}"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors {% if request.resolver_match.url_name == 'home' %} bg-indigo-600 text-white {% else %} text-slate-400 hover:text-white hover:bg-slate-800 {% endif %}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,7 +151,9 @@
                         Profile
                     </a>
                 </nav>
-                <div class="p-4 border-t border-slate-800 mt-auto">
+                
+                <!-- Bottom Sign Out -->
+                <div class="p-4 border-t border-slate-800 mt-auto flex-shrink-0">
                     <a
                         href="{% url 'freelancer:signout' %}"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
@@ -157,8 +174,8 @@
                     </a>
                 </div>
                 
-                <!-- Animated SVG Footer -->
-                <div class="p-6 mt-auto flex justify-center opacity-80 hover:opacity-100 transition-opacity">
+                <!-- Animated SVG Footer (Desktop Only) -->
+                <div class="p-6 flex-shrink-0 flex justify-center opacity-80 hover:opacity-100 transition-opacity hidden md:flex">
                     <svg width="150" height="120" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <style>
                             @keyframes float {
@@ -172,43 +189,53 @@
                             .floating { animation: float 3s ease-in-out infinite; }
                             .screen-glow { animation: pulse-screen 2s ease-in-out infinite; }
                         </style>
-                        <!-- Desk -->
                         <path d="M20 130 H180" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
-                        <!-- Laptop Base -->
                         <path d="M50 120 L150 120 L160 130 H40 L50 120Z" fill="#334155"/>
-                        <!-- Laptop Screen -->
                         <rect x="60" y="50" width="80" height="70" rx="4" fill="#1e293b" class="floating"/>
                         <rect x="65" y="55" width="70" height="60" rx="2" fill="#3b82f6" class="screen-glow floating"/>
-                        <!-- Person/Blob -->
                         <circle cx="100" cy="100" r="20" fill="#64748b" class="floating" style="animation-delay: 0.5s"/>
-                        <!-- Coffee Cup -->
                         <path d="M160 115 V125 H170 V115 Z" fill="#f59e0b" />
                         <path d="M170 118 H173 C175 118 175 122 173 122 H170" stroke="#f59e0b" stroke-width="2"/>
                     </svg>
                 </div>
             </aside>
-            {% block home %} 
-            {% endblock %}
-            {% block profile %}
-            {% endblock %}
-            {% block gig_list %}
-            {% endblock %}
-            {% block create_gig %}
-            {% endblock create_gig %}
-            {% block gig_view  %}{% endblock %}
 
-            
-            {% block subscriptions  %}{% endblock %}
-            {% block find_work %}{% endblock find_work %}
-            {% block view_card %}{% endblock view_card %}
-            {% block show_gigs %}{% endblock show_gigs %}
-            {% block show_gig_details %}{% endblock show_gig_details %}
-            {% block my_connections %}{% endblock my_connections %}
-
-            
-
+            <!-- Main Content Area -->
+            <div class="flex-1 flex flex-col h-full w-full overflow-hidden relative">
+                {% block home %}{% endblock %}
+                {% block profile %}{% endblock %}
+                {% block gig_list %}{% endblock %}
+                {% block create_gig %}{% endblock create_gig %}
+                {% block gig_view  %}{% endblock %}
+                {% block subscriptions  %}{% endblock %}
+                {% block find_work %}{% endblock find_work %}
+                {% block view_card %}{% endblock view_card %}
+                {% block show_gigs %}{% endblock show_gigs %}
+                {% block show_gig_details %}{% endblock show_gig_details %}
+                {% block my_connections %}{% endblock my_connections %}
+            </div>
 
         </div>
+
+        <!-- Sidebar Script -->
+        <script>
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    // Open
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                } else {
+                    // Close
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => overlay.classList.add('hidden'), 300);
+                }
+            }
+        </script>
     </body>
     {% block cropper_js %}
     {% endblock %}
