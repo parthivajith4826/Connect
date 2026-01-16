@@ -1,0 +1,220 @@
+{% extends 'freelancer/freelancer_base.html' %} {% load static %} {% block my_connections %}
+<div class="flex-1 flex flex-col h-full overflow-hidden">
+    <!-- Topbar (Fixed) -->
+    <header
+        class="bg-white border-b border-slate-200 h-16 flex-shrink-0 flex items-center justify-between px-4 md:px-8 z-10 w-full"
+    >
+        <h1 class="text-lg md:text-xl font-bold text-slate-800">My Connections</h1>
+        <div class="flex items-center gap-4">
+            <button class="p-2 text-slate-400 hover:text-indigo-600 transition-colors relative">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    ></path>
+                </svg>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <div class="flex items-center gap-3">
+                <img
+                    {%
+                    if
+                    user.profile_photo
+                    %}
+                    src="{{ user.profile_photo.url }}"
+                    {%
+                    else
+                    %}
+                    src="{% static 'images/user.png' %}"
+                    {%
+                    endif
+                    %}
+                    alt="Profile"
+                    class="w-8 h-8 rounded-full"
+                />
+                <span class="font-medium text-slate-700">{{ user.Profile_name|default:"User" }}</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content (Scrollable) -->
+    <main class="flex-1 overflow-y-auto bg-gray-50/50 p-4 md:p-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Total Connections Stats -->
+            <div id="stats-section" class="mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 max-w-sm">
+                    <div class="text-slate-500 text-sm font-medium uppercase tracking-wide">Total Connections</div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <div class="text-3xl font-bold text-slate-900">{{ connections_count }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connections Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="p-6 border-b border-slate-100">
+                    <h2 class="text-lg font-bold text-slate-800">Connection History</h2>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-slate-500 border-b border-slate-100 bg-slate-50/50">
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Gig Name</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Card Name</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Client Name</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="connections-table-body" class="divide-y divide-slate-100">
+                            <!-- Helper Function: Dummy Rows Generation via Backend Loop Recommended, but using Hardcoded for Prototype -->
+
+                            {% for connection in connections %}
+                            <tr class="connection-row hover:bg-slate-50/80 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="font-medium text-slate-900">{{ connection.gig.title }}</div>
+                                </td>
+                                <td class="px-6 py-4"><div class="text-slate-600">{{ connection.card.title }}</div></td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="text-slate-700">{{ connection.card.client_id.Profile_name }}</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    {% if connection.status == "accepted" %}
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100"
+                                        >Accepted</span
+                                    >
+                                    {% elif connection.status == "pending" %}
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100"
+                                        >Pending</span
+                                    >
+                                    {% else %}
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100"
+                                        >Cancelled</span
+                                    >
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div id="pagination-controls" class="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+                    <!-- JS will populate this -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript Pagination Logic -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const rowsPerPage = 8;
+            const tableBody = document.getElementById("connections-table-body");
+            const rows = Array.from(tableBody.getElementsByClassName("connection-row"));
+            const paginationContainer = document.getElementById("pagination-controls");
+            const statsSection = document.getElementById("stats-section");
+            const totalRows = rows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            let currentPage = 1;
+
+            function showPage(page) {
+                if (page < 1 || (page > totalPages && totalPages > 0)) return;
+                currentPage = page;
+
+                // 1. Conditional Stats Display (Only on Page 1)
+                if (statsSection) {
+                    if (currentPage === 1) {
+                        statsSection.style.display = "block";
+                    } else {
+                        statsSection.style.display = "none";
+                    }
+                }
+
+                // 2. Filter Rows
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+
+                rows.forEach((row, index) => {
+                    if (index >= start && index < end) {
+                        row.style.display = ""; // or 'table-row'
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+
+                // 3. Render Controls
+                renderPagination();
+            }
+
+            function renderPagination() {
+                if (!paginationContainer) return;
+
+                // Info Text
+                const start = (currentPage - 1) * rowsPerPage + 1;
+                const end = Math.min(currentPage * rowsPerPage, totalRows);
+
+                let html = `
+                    <p class="text-sm text-slate-500">
+                        Showing <span class="font-medium text-slate-900">${totalRows > 0 ? start : 0}</span> to 
+                        <span class="font-medium text-slate-900">${end}</span> of 
+                        <span class="font-medium text-slate-900">${totalRows}</span> results
+                    </p>
+                    <div class="flex gap-2">
+                `;
+
+                // Prev Button
+                const prevDisabled = currentPage === 1;
+                html += `
+                    <button onclick="changePage(${currentPage - 1})" 
+                        class="p-2 border border-slate-200 rounded-lg transition-colors ${
+                            prevDisabled
+                                ? "text-slate-300 cursor-not-allowed"
+                                : "text-slate-600 hover:text-slate-800 hover:bg-slate-50"
+                        }" 
+                        ${prevDisabled ? "disabled" : ""}>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                `;
+
+                // Next Button
+                const nextDisabled = currentPage === totalPages || totalPages === 0;
+                html += `
+                    <button onclick="changePage(${currentPage + 1})" 
+                        class="p-2 border border-slate-200 rounded-lg transition-colors ${
+                            nextDisabled
+                                ? "text-slate-300 cursor-not-allowed"
+                                : "text-slate-600 hover:text-slate-800 hover:bg-slate-50"
+                        }" 
+                        ${nextDisabled ? "disabled" : ""}>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                    </div>
+                `;
+
+                paginationContainer.innerHTML = html;
+            }
+
+            // Expose function to global scope properly for inline onclick
+            window.changePage = function (page) {
+                showPage(page);
+            };
+
+            // Init
+            showPage(1);
+        });
+    </script>
+</div>
+{% endblock %}

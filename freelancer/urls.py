@@ -27,6 +27,11 @@ urlpatterns = [
     path('subscription-details/',views.subscription_details,name = 'subscription_details'),
     
     
+    #My connections
+    path('my-connections/',views.my_connections,name = 'my_connections'),
+    
+    
+    
     
     
 

@@ -62,9 +62,9 @@
                         Find Work
                     </a>
                     <a
-                        href="#"
+                        href="{% url "freelancer:my_connections" %}"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-                        {% if request.resolver_match.url_name == 'create_card' %}
+                        {% if request.resolver_match.url_name == 'my_connections' %}
                             bg-indigo-600 text-white
                         {% else %}
                             text-slate-400 hover:text-white hover:bg-slate-800
@@ -79,7 +79,7 @@
                         </svg>
                         My Connections
                     </a>
-                    {% comment %} <a
+                    {% comment %}<a
                         href="{% url 'freelancer:gigs' %}"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
                         {% if request.resolver_match.url_name == 'gigs' %}
@@ -103,7 +103,7 @@
                     <a
                         href="{% url "freelancer:subscriptions" %}"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-                        {% if request.resolver_match.url_name == '#' %}
+                        {% if request.resolver_match.url_name == 'subscriptions' %}
                             bg-indigo-600 text-white
                         {% else %}
                             text-slate-400 hover:text-white hover:bg-slate-800
@@ -173,6 +173,7 @@
             {% block view_card %}{% endblock view_card %}
             {% block show_gigs %}{% endblock show_gigs %}
             {% block show_gig_details %}{% endblock show_gig_details %}
+            {% block my_connections %}{% endblock my_connections %}
 
             
 

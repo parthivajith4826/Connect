@@ -618,7 +618,7 @@ def create_connection(request, card_slug):
     
     
     try :
-        total_pack = Total_pack.objects.select_for_update().get(user=request.user) 
+        total_pack = Total_pack.objects.get(user=request.user) 
     except Total_pack.DoesNotExist:
         raise PermissionDenied("No Active Subsciption")
         #this will auto open the 403.html
@@ -626,6 +626,7 @@ def create_connection(request, card_slug):
         
     with transaction.atomic():
         connection, created = Connections.objects.get_or_create(
+            user = request.user,
             card=card,
             gig=gig
         )
@@ -665,3 +666,9 @@ def subscription_details(request):
     subscriptions = UserSubscription.objects.filter(user = request.user).order_by("-created_at")
     total_pack = get_object_or_404(Total_pack,user = request.user)
     return render(request,'freelancer/subscription_status.html',{"subscriptions":subscriptions,"total_pack":total_pack})
+
+
+def my_connections(request):
+    connections = Connections.objects.filter(user = request.user)
+    connections_count = connections.count()
+    return render(request,"freelancer/my_connections.html",{"connections":connections,"connections_count":connections_count})
