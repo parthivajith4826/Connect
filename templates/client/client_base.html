@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -14,15 +14,8 @@
                 font-family: "Inter", sans-serif;
             }
         </style>
-        {% block static %}
-        {% endblock %}
-
-        {% block cropper %}
-        {% endblock %}
-        {% comment %} {% block ckeditor_script %}
-        {% endblock %} {% endcomment %}
-
-
+        {% block static %} {% endblock %} {% block cropper %} {% endblock %} {% comment %} {% block ckeditor_script %} {%
+        endblock %} {% endcomment %}
     </head>
     <body class="bg-gray-50 text-slate-800">
         <div class="min-h-screen flex flex-col md:flex-row">
@@ -51,12 +44,8 @@
                     </a>
                     <a
                         href="{% url 'client:create_card' %}"
-class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-   {% if request.resolver_match.url_name == 'create_card' %}
-       bg-indigo-600 text-white
-   {% else %}
-       text-slate-400 hover:text-white hover:bg-slate-800
-   {% endif %}"                    >
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors {% if request.resolver_match.url_name == 'create_card' %} bg-indigo-600 text-white {% else %} text-slate-400 hover:text-white hover:bg-slate-800 {% endif %}"
+                    >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
@@ -64,12 +53,9 @@ class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
                     </a>
                     <a
                         href="{% url 'client:wallet' %}"
-class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-   {% if request.resolver_match.url_name == 'wallet' %}
-       bg-indigo-600 text-white
-   {% else %}
-       text-slate-400 hover:text-white hover:bg-slate-800
-   {% endif %}">                    >
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors {% if request.resolver_match.url_name == 'wallet' %} bg-indigo-600 text-white {% else %} text-slate-400 hover:text-white hover:bg-slate-800 {% endif %}"
+                    >
+                        >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 stroke-linecap="round"
@@ -82,12 +68,8 @@ class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
                     </a>
                     <a
                         href="{% url 'client:profile' %}"
-class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-   {% if request.resolver_match.url_name == 'profile' %}
-       bg-indigo-600 text-white
-   {% else %}
-       text-slate-400 hover:text-white hover:bg-slate-800
-   {% endif %}"                    >
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors {% if request.resolver_match.url_name == 'profile' %} bg-indigo-600 text-white {% else %} text-slate-400 hover:text-white hover:bg-slate-800 {% endif %}"
+                    >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 stroke-linecap="round"
@@ -116,29 +98,14 @@ class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
                     </a>
                 </div>
             </aside>
-
-            {% block home %} 
-            {% endblock %}
-            
-            {% block profile %} 
-            {% endblock %} 
-            
-            {% block wallet %} 
-            {% endblock %} 
-            
-            {% block create_card %} 
-            {% endblock %}
-
-            {% block profile_error %} 
-            {% endblock %}
-
-            
+            {% block general %}{% endblock general %}
+            {% block home %} {% endblock %} 
+            {% block profile %} {% endblock %} 
+            {% block wallet %} {% endblock %} 
+            {% block create_card %} {% endblock %} 
+            {% block profile_error %} {% endblock %}
         </div>
     </body>
 
-    {% block cropper_js %}
-    {% endblock %}
-    {% block ckeditor_js %}
-    {% endblock %}
-
+    {% block cropper_js %} {% endblock %} {% block ckeditor_js %} {% endblock %}
 </html>

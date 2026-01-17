@@ -1,0 +1,400 @@
+{% extends 'client/client_base.html' %} {% block home %}
+<style>
+    @keyframes bounce-slow {
+        0%,
+        100% {
+            transform: translateY(-15%);
+            animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+        }
+        50% {
+            transform: translateY(0);
+            animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
+    }
+    .animate-bounce-slow {
+        animation: bounce-slow 2s infinite;
+    }
+
+    /* Star Rating Styling */
+    .star-rating {
+        display: inline-flex;
+        flex-direction: row-reverse; /* Allows hover effects to cascade from right to left visually */
+    }
+    .star-rating input {
+        display: none;
+    }
+    .star-rating label {
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        color: #e2e8f0; /* slate-200 */
+        transition: color 0.2s;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+        color: #fbbf24; /* amber-400 */
+    }
+    .star-rating label svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+    }
+</style>
+
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto h-screen bg-gray-50">
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+        <div class="flex items-center gap-4">
+            <a
+                href="{% url "client:manage_proposals" card.slug %}"
+                class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+                title="Back"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Proposal Details</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 border-l border-slate-200 pl-4">
+                <img src="{{ user.profile_photo.url }}" alt="Profile" class="w-8 h-8 rounded-full" />
+                <span class="font-medium text-slate-700">{{ user.Profile_name }}</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-8 max-w-6xl mx-auto">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Main Info -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Image Carousel -->
+                <div class="relative overflow-hidden h-80 rounded-2xl shadow-sm group">
+                    {% for image in gig.images.all %}
+                    <!-- Dummy Images -->
+                    <img
+                        src="{{ image.image.url }}"
+                        class="gig-slide absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        alt="Gig Image 1"
+                    />
+                    {% endfor %}
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
+
+                    <!-- Controls -->
+                    <button
+                        onclick="prevSlide()"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white p-2 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 19l-7-7 7-7"
+                            ></path>
+                        </svg>
+                    </button>
+                    <button
+                        onclick="nextSlide()"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white p-2 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Gig Description & Details -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900 mb-2">
+                                {{ gig.title }}
+                            </h2>
+                            <div class="flex items-center gap-4 text-sm text-slate-500">
+                                <span
+                                    class="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full border border-slate-100"
+                                >
+                                    <svg
+                                        class="w-4 h-4 text-indigo-500"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                                        ></path>
+                                    </svg>
+                                    {{ gig.categories }}
+                                </span>
+                                <span
+                                    class="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full border border-slate-100"
+                                >
+                                    <svg
+                                        class="w-4 h-4 text-indigo-500"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        ></path>
+                                    </svg>
+                                    {{ gig.created_at|timesince }} ago
+                                </span>
+                            </div>
+                        </div>
+                        <!-- Profile Moved to Sidebar -->
+                    </div>
+
+                    <div class="prose prose-slate max-w-none text-slate-600 mb-8">
+                        {{ gig.description|safe }}
+                    </div>
+
+                    <div class="pt-8 border-t border-slate-100">
+                        <h3 class="text-lg font-bold text-slate-900 mb-4">Skills</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for skill in skills %}
+                            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium"
+                                >{{ skill }}</span
+                            >
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact & Review Sections (Visible by default as requested via DTL logic later) -->
+
+                {% if connection.status == "accepted" %}
+                <!-- Contact Details -->
+                <div id="contact-section" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                    <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                            ></path>
+                        </svg>
+                        Customer Contact Details
+                    </h3>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <!-- WhatsApp -->
+                        <a
+                            href="https://wa.me/91{{ gig.freelancer_id.profile.phone_number }}?text={{ 'Hi, I am interested in your gig \"'|add:gig.title|add:'\". I found your profile on FreelanceConnect and I would like to discuss my project with you.'|urlencode }}"
+                            target="_blank"
+                            class="flex items-center gap-4 p-4 rounded-xl border border-slate-100 hover:border-green-200 hover:bg-green-50 transition-all group"
+                        >
+                            <div
+                                class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center group-hover:scale-110 transition-transform"
+                            >
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-slate-900">WhatsApp</div>
+                                <div class="text-sm text-slate-500">Chat directly</div>
+                            </div>
+                        </a>
+                        <!-- Telegram -->
+                        <a
+                            href="https://t.me/{{ gig.freelancer_id.profile.T_user_name }}?text={{ 'Hi, I found your profile on FreelanceConnect and I’d like to discuss a project with you.'|urlencode }}"
+                            target="_blank"
+                            class="flex items-center gap-4 p-4 rounded-xl border border-slate-100 hover:border-sky-200 hover:bg-sky-50 transition-all group"
+                        >
+                            <div
+                                class="w-12 h-12 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center group-hover:scale-110 transition-transform"
+                            >
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-slate-900">Telegram</div>
+                                <div class="text-sm text-slate-500">Message now</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+
+                <!-- Review Section -->
+                <div id="review-section" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+                    <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                            ></path>
+                        </svg>
+                        Review Freelancer
+                    </h3>
+                    <div class="flex flex-col items-center justify-center p-8 bg-slate-50 rounded-xl">
+                        <p class="text-slate-600 mb-4 font-medium">How was your experience working with Alex?</p>
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars"
+                                ><svg viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                    ></path></svg
+                            ></label>
+                            <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars"
+                                ><svg viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                    ></path></svg
+                            ></label>
+                            <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars"
+                                ><svg viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                    ></path></svg
+                            ></label>
+                            <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars"
+                                ><svg viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                    ></path></svg
+                            ></label>
+                            <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star"
+                                ><svg viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                    ></path></svg
+                            ></label>
+                        </div>
+                        <button
+                            class="mt-4 px-6 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium text-sm"
+                        >
+                            Submit Review
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar Info -->
+            <div class="space-y-6">
+                <!-- Freelancer Profile Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">About The Freelancer</h3>
+                    <div class="flex items-center gap-4">
+                        <img
+                            src="{{ gig.freelancer_id.profile_photo.url }}"
+                            alt="Freelancer"
+                            class="w-14 h-14 rounded-full border-2 border-slate-100 shadow-sm"
+                        />
+                        <div>
+                            <div class="font-bold text-slate-900 text-lg">{{ gig.freelancer_id.Profile_name }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Pricing</h3>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-3xl font-bold text-slate-900">₹{{ gig.price_min }}</span>
+                        <span class="text-slate-500"> - </span>
+                        <span class="text-3xl font-bold text-slate-900">₹{{ gig.price_max }}</span>
+                    </div>
+
+                    
+                </div>
+
+                <!-- Action Buttons (Accept/Reject) -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Actions</h3>
+                    
+                    <div class="space-y-3">
+                        <!-- ACCEPT FORM -->
+                        <form action="{% url 'client:connections' %}" method="POST">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="action" value="accept">
+                            <input type="hidden" name="card_slug" value="{{ card.slug }}">
+                            <input type="hidden" name="gig_slug" value="{{ gig.slug }}">
+
+                            <button type="submit"
+                                class="w-full py-3 bg-green-600 text-white rounded-xl
+                                {% if connection.status == 'accepted' or connection.status == 'rejected' %}
+                                opacity-50 cursor-not-allowed
+                                {% endif %}"
+                                {% if connection.status == 'accepted' or connection.status == 'rejected' %}disabled{% endif %}>
+                                Accept Proposal
+                            </button>
+                        </form>
+
+                        <!-- REJECT FORM -->
+                        <form action="{% url 'client:connections' %}" method="POST">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="action" value="reject">
+                            <input type="hidden" name="card_slug" value="{{ card.slug }}">
+                            <input type="hidden" name="gig_slug" value="{{ gig.slug }}">
+
+                            <button type="submit"
+                                class="w-full py-3 bg-red-600 text-white rounded-xl
+                                {% if connection.status == 'accepted' or connection.status == 'rejected' %}
+                                opacity-50 cursor-not-allowed
+                                {% endif %}"
+                                {% if connection.status == 'accepted' or connection.status == 'rejected' %}disabled{% endif %}>
+                                Reject Proposal
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Image Slider
+    let index = 0;
+    const slides = document.querySelectorAll(".gig-slide");
+
+    function showSlide(i) {
+        slides.forEach((s) => s.classList.add("hidden"));
+        slides[i].classList.remove("hidden");
+    }
+
+    function nextSlide() {
+        index = (index + 1) % slides.length;
+        showSlide(index);
+    }
+
+    function prevSlide() {
+        index = (index - 1 + slides.length) % slides.length;
+        showSlide(index);
+    }
+
+    // Star Rating Logic (Visual Only - Backend Integration Needed)
+    document.querySelectorAll(".star-rating input").forEach((radio) => {
+        radio.addEventListener("change", function () {
+            console.log(`Rated: ${this.value} stars`);
+            // Add animation class or extra logic here if desired
+        });
+    });
+</script>
+{% endblock %}

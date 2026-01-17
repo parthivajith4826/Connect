@@ -1,0 +1,170 @@
+{% extends 'client/client_base.html' %} {% block home %}
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto h-screen bg-gray-50">
+    <!-- Topbar -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+        <div class="flex items-center gap-4">
+            <a
+                href="{% url "client:home" %}"
+                class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+                title="Back"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Manage Proposals</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <a
+                href="{% url "client:home" %}"
+                class="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
+                title="Home"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    ></path>
+                </svg>
+            </a>
+            <div class="flex items-center gap-3 border-l border-slate-200 pl-4">
+                <img src="{{ user.profile_photo.url }}" alt="Profile" class="w-8 h-8 rounded-full" />
+                <span class="font-medium text-slate-700">{{ user.Profile_name }}</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-8 max-w-7xl mx-auto">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-100">
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Card Name</th>
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Gig Name</th>
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Freelancer</th>
+                            <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="proposals-table-body" class="divide-y divide-slate-100 text-sm">
+                        <!-- Row 1 -->
+                        {% for connection in connections %}
+                        <tr class="proposal-row hover:bg-slate-50 transition-colors">
+                            <td class="p-4 font-medium text-slate-900">{{ connection.card.title }}</td>
+                            <td class="p-4">
+                                <a href="{% url "client:gig_details" gig_slug=connection.gig.slug card_slug=connection.card.slug %}" class="group flex items-center justify-between gap-2 max-w-[220px] px-3 py-2 bg-slate-50 hover:bg-white border border-slate-200 hover:border-indigo-300 rounded-lg transition-all shadow-sm hover:shadow-md" title="{{ connection.gig.title }}">
+                                    <span class="truncate text-sm font-medium text-slate-700 group-hover:text-indigo-600">{{ connection.gig.title }}</span>
+                                    <svg class="flex-shrink-0 w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <img
+                                        src="{{ connection.gig.freelancer_id.profile_photo.url }}"
+                                        alt=""
+                                        class="w-8 h-8 rounded-full"
+                                    />
+                                    <span class="font-medium text-slate-900">{{ connection.gig.freelancer_id.Profile_name }}</span>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                {% if connection.status == "accepted" %}
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full"
+                                    >Accepted</span
+                                >
+                                {% elif connection.status == "pending"  %}
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full"
+                                    >Pending</span
+                                >
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div
+                id="table-pagination"
+                class="p-4 border-t border-slate-100 flex justify-center items-center gap-2 bg-white"
+            >
+                <!-- JS will inject controls here -->
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".proposal-row");
+        const itemsPerPage = 10;
+        const totalPages = Math.ceil(rows.length / itemsPerPage);
+        const paginationContainer = document.getElementById("table-pagination");
+
+        // Ensure only active/needed rows are shown
+        function showPage(page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+
+            rows.forEach((row, index) => {
+                row.style.display = index >= start && index < end ? "table-row" : "none";
+            });
+
+            renderControls(page);
+        }
+
+        function renderControls(currentPage) {
+            paginationContainer.innerHTML = "";
+
+            // Previous Button
+            const prevBtn = document.createElement("button");
+            prevBtn.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            `;
+            prevBtn.className = `p-2 rounded-lg transition-colors ${currentPage === 1 ? "text-slate-300 cursor-not-allowed" : "text-slate-600 hover:bg-slate-100"}`;
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => showPage(currentPage - 1);
+            paginationContainer.appendChild(prevBtn);
+
+            // Page Numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("button");
+                btn.innerText = i;
+                btn.className = `w-8 h-8 rounded-lg text-sm font-medium transition-colors ${i === currentPage ? "bg-indigo-600 text-white shadow-md shadow-indigo-200" : "text-slate-600 hover:bg-slate-100"}`;
+                btn.onclick = () => showPage(i);
+                paginationContainer.appendChild(btn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement("button");
+            nextBtn.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            `;
+            nextBtn.className = `p-2 rounded-lg transition-colors ${currentPage === totalPages ? "text-slate-300 cursor-not-allowed" : "text-slate-600 hover:bg-slate-100"}`;
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => showPage(currentPage + 1);
+            paginationContainer.appendChild(nextBtn);
+        }
+
+        // Initialize
+        if (rows.length > 0) {
+            showPage(1);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,5 +1,4 @@
-{% extends 'client/client_base.html' %} 
-{% block home %}
+{% extends 'client/client_base.html' %} {% block home %}
 <!-- Main Content -->
 <main class="flex-1 overflow-y-auto h-screen">
     <!-- Topbar -->
@@ -13,11 +12,7 @@
                 + Post New Job
             </a>
             <div class="flex items-center gap-3">
-                <img
-                    src="{{ user.profile_photo.url }}"
-                    alt="Profile"
-                    class="w-8 h-8 rounded-full"
-                />
+                <img src="{{ user.profile_photo.url }}" alt="Profile" class="w-8 h-8 rounded-full" />
                 <span class="font-medium text-slate-700">{{ user.Profile_name }}</span>
             </div>
         </div>
@@ -25,127 +20,214 @@
 
     <div class="p-8 max-w-7xl mx-auto">
         <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div id="top-stats-section" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Requests Stats -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                <div class="text-slate-500 text-sm font-medium uppercase tracking-wide">Active Jobs</div>
-                <div class="mt-2 text-3xl font-bold text-slate-900">{{ count }}</div>
-                <div class="mt-2 text-sm text-green-600 flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                        ></path>
-                    </svg>
-                    <span>1 new application</span>
+                <div class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Request Status</div>
+                <div class="grid grid-cols-3 gap-2 text-center divide-x divide-slate-100">
+                    <div>
+                        <div class="text-2xl font-bold text-orange-500">0</div>
+                        <div class="text-xs text-slate-400 mt-1">Pending</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-green-500">0</div>
+                        <div class="text-xs text-slate-400 mt-1">Accepted</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-red-500">0</div>
+                        <div class="text-xs text-slate-400 mt-1">Cancelled</div>
+                    </div>
                 </div>
             </div>
+
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
                 <div class="text-slate-500 text-sm font-medium uppercase tracking-wide">Total Spent</div>
-                <div class="mt-2 text-3xl font-bold text-slate-900">$12,450</div>
+                <div class="mt-2 text-3xl font-bold text-slate-900">₹12,450</div>
                 <div class="mt-2 text-sm text-slate-400">Lifetime</div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
                 <div class="text-slate-500 text-sm font-medium uppercase tracking-wide">Wallet Balance</div>
-                <div class="mt-2 text-3xl font-bold text-indigo-600">$2,500</div>
+                <div class="mt-2 text-3xl font-bold text-indigo-600">₹{{ wallet.balance }}</div>
                 <div class="mt-2 text-sm text-slate-400">Available funds</div>
             </div>
         </div>
 
         <!-- Active Jobs List -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+        <div class="bg-transparent">
+            <div class="p-6 pl-0 border-b border-transparent flex justify-between items-center mb-4">
                 <h2 class="text-lg font-bold text-slate-900">Your Job Postings</h2>
-                <a href="#" class="text-indigo-600 hover:text-indigo-700 text-sm font-medium">View All</a>
             </div>
-            <div class="divide-y divide-slate-100">
-                <!-- Job 1 -->
-                {% for card in card %}
-                <a href="{% url 'client:view_card' card.slug %}">
-                <div class="p-6 hover:bg-slate-50 transition-colors">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-900 mb-1">{{ card.title }}</h3>
-                            <p class="text-sm text-slate-500">Posted {{ card.created_at|timesince }} ago • {{ card.category_id }}</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            {% if not card.is_blocked %}
-                            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full"
-                                >Active</span
-                            >
-                            {% else %}
-                            <span class="px-3 py-1 bg-red-100 text-black-700 text-xs font-semibold rounded-full"
-                                >Disabled</span
-                            >
-                            {% endif %}
-                            <div class="relative group">
-                                <button class="p-2 text-slate-400 hover:text-slate-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                                        ></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Image Carousel -->
-                    <div class="mb-4 relative group/carousel">
-                        <div class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
-                            {% for img in card.image.all %}
-                            <div class="snap-center shrink-0 w-64 h-40 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative">
-                                <img src="{{ img.image.url }}" alt="Dashboard Preview" class="w-full h-full object-cover">
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-6">
-                            <div class="flex -space-x-2">
-                                <img
-                                    class="w-8 h-8 rounded-full border-2 border-white"
-                                    src="https://ui-avatars.com/api/?name=Alice&background=random"
-                                    alt=""
-                                />
-                                <img
-                                    class="w-8 h-8 rounded-full border-2 border-white"
-                                    src="https://ui-avatars.com/api/?name=Bob&background=random"
-                                    alt=""
-                                />
-                                <img
-                                    class="w-8 h-8 rounded-full border-2 border-white"
-                                    src="https://ui-avatars.com/api/?name=Charlie&background=random"
-                                    alt=""
-                                />
-                                <div
-                                    class="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-xs text-slate-500 font-medium"
-                                >
-                                    +2
+            <div id="job-cards-container" class="flex flex-col gap-4">
+                <!-- Job Cards -->
+                {% for card in card %}
+                <div class="job-card-item bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <a href="{% url 'client:view_card' card.slug %}" class="block">
+                        <div class="p-6 hover:bg-slate-50 transition-colors">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-900 mb-1">{{ card.title }}</h3>
+                                    <p class="text-sm text-slate-500">
+                                        Posted {{ card.created_at|timesince }} ago • {{ card.category_id }}
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    {% if not card.is_blocked %}
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full"
+                                        >Active</span
+                                    >
+                                    {% else %}
+                                    <span class="px-3 py-1 bg-red-100 text-black-700 text-xs font-semibold rounded-full"
+                                        >Disabled</span
+                                    >
+                                    {% endif %}
                                 </div>
                             </div>
-                            <span class="text-sm text-slate-600"
-                                ><span class="font-bold text-slate-900">5</span> Proposals</span
-                            >
+
+                            <!-- Image Carousel -->
+                            <div class="mb-4 relative group/carousel">
+                                <div class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+                                    {% for img in card.image.all %}
+                                    <div
+                                        class="snap-center shrink-0 w-64 h-40 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative"
+                                    >
+                                        <img
+                                            src="{{ img.image.url }}"
+                                            alt="Dashboard Preview"
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex -space-x-2">
+                                        <img
+                                            class="w-8 h-8 rounded-full border-2 border-white"
+                                            src="https://ui-avatars.com/api/?name=Alice&background=random"
+                                            alt=""
+                                        />
+                                        <img
+                                            class="w-8 h-8 rounded-full border-2 border-white"
+                                            src="https://ui-avatars.com/api/?name=Bob&background=random"
+                                            alt=""
+                                        />
+                                        <img
+                                            class="w-8 h-8 rounded-full border-2 border-white"
+                                            src="https://ui-avatars.com/api/?name=Charlie&background=random"
+                                            alt=""
+                                        />
+                                        <div
+                                            class="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-xs text-slate-500 font-medium"
+                                        >
+                                            +2
+                                        </div>
+                                    </div>
+                                    <span class="text-sm text-slate-600"
+                                        ><span class="font-bold text-slate-900">5</span> Proposals</span
+                                    >
+                                </div>
+                                <a
+                                    href="{% url "client:manage_proposals" card.slug %}"
+                                    class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 font-medium text-sm transition-all"
+                                    >Manage Proposals</a
+                                >
+                            </div>
                         </div>
-                        <a
-                            href="/client/card/view.html"
-                            class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 font-medium text-sm transition-all"
-                            >Manage Proposals</a
-                        >
-                    </div>
+                        {% if error %}
+                        <div class="px-6 pb-4 text-red-600 text-sm">{{ error }}</div>
+                        {% endif %}
+                    </a>
                 </div>
-                {% if error %}
-                <div>{{ error }}</div>
-                {% endif %}
-                </a>
                 {% endfor %}
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="pagination-controls" class="flex justify-center items-center gap-2 mt-8">
+                <!-- Buttons will be injected here by JS -->
             </div>
         </div>
     </div>
 </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cards = document.querySelectorAll(".job-card-item");
+        const itemsPerPage = 4;
+        const totalPages = Math.ceil(cards.length / itemsPerPage);
+        const paginationContainer = document.getElementById("pagination-controls");
+        const statsSection = document.getElementById("top-stats-section");
+
+        let currentPage = 1;
+
+        function showPage(page) {
+            currentPage = page;
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+
+            // Toggle card visibility
+            cards.forEach((card, index) => {
+                if (index >= start && index < end) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            // Toggle stats visibility
+            if (statsSection) {
+                if (page === 1) {
+                    statsSection.style.display = "grid"; // Maintain grid layout
+                } else {
+                    statsSection.style.display = "none";
+                }
+            }
+
+            // Update controls
+            renderPaginationControls();
+
+            // Scroll to top of list if not first page
+            if (page > 1) {
+                document.getElementById("job-cards-container").scrollIntoView({ behavior: "smooth" });
+            }
+        }
+
+        function renderPaginationControls() {
+            paginationContainer.innerHTML = "";
+
+            if (totalPages <= 1) return;
+
+            // Prev Button
+            const prevBtn = document.createElement("button");
+            prevBtn.innerText = "Previous";
+            prevBtn.className = `px-4 py-2 rounded-lg text-sm font-medium ${currentPage === 1 ? "text-slate-400 cursor-not-allowed" : "text-slate-700 hover:bg-slate-100 bg-white border border-slate-200 shadow-sm"}`;
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => showPage(currentPage - 1);
+            paginationContainer.appendChild(prevBtn);
+
+            // Page Numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement("button");
+                pageBtn.innerText = i;
+                pageBtn.className = `w-10 h-10 rounded-lg text-sm font-medium transition-colors ${i === currentPage ? "bg-indigo-600 text-white shadow-md shadow-indigo-200" : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"}`;
+                pageBtn.onclick = () => showPage(i);
+                paginationContainer.appendChild(pageBtn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement("button");
+            nextBtn.innerText = "Next";
+            nextBtn.className = `px-4 py-2 rounded-lg text-sm font-medium ${currentPage === totalPages ? "text-slate-400 cursor-not-allowed" : "text-slate-700 hover:bg-slate-100 bg-white border border-slate-200 shadow-sm"}`;
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => showPage(currentPage + 1);
+            paginationContainer.appendChild(nextBtn);
+        }
+
+        // Initialize
+        if (cards.length > 0) {
+            showPage(1);
+        }
+    });
+</script>
 {% endblock %}

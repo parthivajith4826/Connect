@@ -14,5 +14,17 @@ urlpatterns = [
     
     path('add-fund',views.add_fund,name = 'add_fund'),
     path("withdraw/", views.withdraw, name="withdraw"),
+    
+    
+    path("manage-proposals/<slug:slug>/", views.manage_proposals, name="manage_proposals"),
+    path("gig-details/<slug:gig_slug>/<slug:card_slug>/", views.gig_details, name="gig_details"),
+    path("connection/", views.connections, name="connections"),
+    
+    
+    #temp
+    # path("hello/", views.hello_page, name="hello_page"),
+    # path("qr/", views.qr_code, name="qr_code"),
+    
+    
 
 ]

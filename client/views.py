@@ -5,6 +5,7 @@ from accounts.models import User
 from .models import Location,Card_images,Card,Categories,Wallet,WalletTransactions
 from .forms import ProfileForm,LocationForm,CreatecardForm
 
+
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -18,10 +19,11 @@ def home(request):
         if not user.profile_completed:
             return render(request,'client/errors/profile_error.html')
         else :
-            card = Card.objects.filter(client_id = user).prefetch_related('image')
+            card = Card.objects.filter(client_id = user).prefetch_related('image').order_by("-created_at")
             count = Card.objects.count()
+            wallet = Wallet.objects.filter(user = user).first()
             # card = Card.obejcts.all()
-            return render(request,'client/home.html',{'count':count,'card':card})
+            return render(request,'client/home.html',{'count':count,'card':card,"wallet":wallet})
     else :
         return redirect('accounts:signin')
 
@@ -475,3 +477,83 @@ def sanitize_filename(name):
     print(name)
     name = re.sub(r'[^a-zA-Z]+', '_', name)    # letters only
     return name.strip('_').lower()
+
+from freelancer.models import Connections,Gig
+from django.shortcuts import get_object_or_404
+def manage_proposals(request,slug):
+    card = get_object_or_404(Card,slug = slug)
+    connections = Connections.objects.filter(card = card).exclude(status = "rejected")
+    return render(request,"client/manage_proposals.html",{"connections":connections})
+
+def gig_details(request,gig_slug,card_slug):
+    gig = get_object_or_404(Gig,slug = gig_slug)
+    skills = gig.skills
+    skills = skills.split(",")
+    card = get_object_or_404(Card,slug = card_slug )
+    connection = get_object_or_404(Connections,gig = gig,card = card)
+    print(gig.freelancer_id.profile.phone_number)
+    return render(request,"client/view_proposal_gig.html",{"gig":gig,"skills":skills,"card":card,"connection":connection})
+
+
+def connections(request):
+    if request.method == "POST":
+        action = request.POST.get("action")
+        card_slug = request.POST.get("card_slug")
+        gig_slug = request.POST.get("gig_slug")
+
+        if action == "accept":
+            gig = get_object_or_404(Gig, slug=gig_slug)
+            card = get_object_or_404(Card, slug=card_slug)
+
+            connection = Connections.objects.filter(
+                gig=gig,
+                card=card
+            ).first()
+            
+            connection.status = "accepted"
+            connection.save()
+            return redirect("client:gig_details",gig.slug,card.slug)
+
+
+        elif action == "reject":
+            gig = get_object_or_404(Gig, slug=gig_slug)
+            card = get_object_or_404(Card, slug=card_slug)
+
+            connection = Connections.objects.filter(
+                gig=gig,
+                card=card
+            ).first()
+            
+            connection.status = "rejected"
+            connection.save()
+            return redirect("client:gig_details",gig.slug,card.slug)
+
+    return HttpResponse("hai")
+
+    
+    
+
+
+
+
+
+# def hello_page(request):
+#     return render(request, "freelancer/hello.html")
+
+# import qrcode
+# from io import BytesIO
+# from django.http import HttpResponse
+# from django.urls import reverse
+
+# def qr_code(request):
+#     path = reverse("client:hello_page")  # resolves to /client/hello/
+#     url = request.build_absolute_uri(path)
+#     img = qrcode.make(url)
+
+#     buffer = BytesIO()
+#     img.save(buffer, format="PNG")
+
+#     return HttpResponse(buffer.getvalue(), content_type="image/png")
+
+
+
