@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
-from accounts.models import User
+from accounts.models import User,Rating
 from .models import Location,Card_images,Card,Categories,Wallet,WalletTransactions
 from .forms import ProfileForm,LocationForm,CreatecardForm
 
@@ -485,14 +485,15 @@ def manage_proposals(request,slug):
     connections = Connections.objects.filter(card = card).exclude(status = "rejected")
     return render(request,"client/manage_proposals.html",{"connections":connections})
 
+
 def gig_details(request,gig_slug,card_slug):
     gig = get_object_or_404(Gig,slug = gig_slug)
     skills = gig.skills
     skills = skills.split(",")
     card = get_object_or_404(Card,slug = card_slug )
     connection = get_object_or_404(Connections,gig = gig,card = card)
-    print(gig.freelancer_id.profile.phone_number)
-    return render(request,"client/view_proposal_gig.html",{"gig":gig,"skills":skills,"card":card,"connection":connection})
+    rating = Rating.objects.filter(reviewer = request.user,gig = gig).first()
+    return render(request,"client/view_proposal_gig.html",{"gig":gig,"skills":skills,"card":card,"connection":connection,"rating":rating})
 
 
 def connections(request):
@@ -512,6 +513,7 @@ def connections(request):
             
             connection.status = "accepted"
             connection.save()
+            messages.success(request, "🎉 Connection established!  You’re now connected, and contact details are ready to view.")
             return redirect("client:gig_details",gig.slug,card.slug)
 
 
@@ -526,9 +528,51 @@ def connections(request):
             
             connection.status = "rejected"
             connection.save()
-            return redirect("client:gig_details",gig.slug,card.slug)
+    return redirect("client:gig_details",gig.slug,card.slug)
 
-    return HttpResponse("hai")
+
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponseBadRequest
+
+def review(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest("Invalid request")
+
+    rating = request.POST.get("rating")
+    card_slug = request.POST.get("card_slug")
+    gig_slug = request.POST.get("gig_slug")
+
+    redirect_url = (request.META.get("HTTP_REFERER") or "client/" )
+
+    try:
+        rating = int(rating)
+        if rating < 1 or rating > 5:
+            messages.error(request, "Invalid rating")
+            return redirect(redirect_url)
+
+        card = get_object_or_404(Card, slug=card_slug)
+        gig = get_object_or_404(Gig, slug=gig_slug)
+
+        rating_old = Rating.objects.filter(reviewer=request.user,gig=gig).first()
+
+        if not rating_old:
+            Rating.objects.create(
+                reviewer=request.user,
+                freelancer=gig.freelancer_id,
+                gig=gig,
+                stars=rating
+            )
+            messages.success(request, "Your rating was submitted successfully ⭐")
+        else:
+            messages.warning(request, "You already rated this gig")
+
+    except (TypeError, ValueError):
+        messages.error(request, "Invalid rating")
+        return redirect(redirect_url)
+
+    return redirect(redirect_url)
+
 
     
     

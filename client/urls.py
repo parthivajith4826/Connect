@@ -19,6 +19,7 @@ urlpatterns = [
     path("manage-proposals/<slug:slug>/", views.manage_proposals, name="manage_proposals"),
     path("gig-details/<slug:gig_slug>/<slug:card_slug>/", views.gig_details, name="gig_details"),
     path("connection/", views.connections, name="connections"),
+    path("review/", views.review, name="review"),
     
     
     #temp

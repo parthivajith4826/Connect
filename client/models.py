@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 from autoslug import AutoSlugField
+# from freelancer.models import Gig
 
 # Create your models here.
 
@@ -54,3 +55,4 @@ class WalletTransactions(models.Model):
     stripe_payment_intent = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=20)  # success / failed / pending
     created_at = models.DateTimeField(auto_now_add=True)
+    

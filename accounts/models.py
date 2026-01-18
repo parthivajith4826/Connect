@@ -67,7 +67,48 @@ class Otp(models.Model):
     otp = models.IntegerField()
     
 
+
+from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Q
+from freelancer.models import Gig
+from django.utils import timezone
+
+
+class Rating(models.Model):
+    reviewer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="given_ratings"
+    )
+    freelancer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="received_ratings"
+    )
+    gig = models.ForeignKey(
+        Gig,
+        on_delete=models.CASCADE
+    )
+
+    stars = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ]
+    )
     
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("reviewer", "gig")
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(stars__gte=1) & Q(stars__lte=5),
+                name="stars_between_1_and_5"
+            )
+        ]
+
     
 
     
