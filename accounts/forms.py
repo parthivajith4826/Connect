@@ -75,3 +75,6 @@ class Reset_passwordForm(UserCreationForm):
         if not re.match(pattern,password):
             raise forms.ValidationError("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number.")
         return password
+    
+    
+    

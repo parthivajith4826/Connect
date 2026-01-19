@@ -4,7 +4,12 @@
     <div class="md:col-span-2 space-y-6">
         <!-- Header & Back Button -->
         <div class="bg-white shadow rounded-lg p-4 sm:p-6 mb-4 flex items-center justify-between">
-            <h3 class="text-xl font-bold leading-none text-gray-900">{{ gig.title }}</h3>
+            <div>
+                <h3 class="text-xl font-bold leading-none text-gray-900 mb-2">{{ gig.title }}</h3>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                    {{ gig.categories }}
+                </span>
+            </div>
             {% comment %} <a
                 href="{% url "control_panel:freelancer_gig_list" gig.freelancer_id.Profile_name %}"
                 class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center transition-colors duration-200"

@@ -62,4 +62,6 @@ urlpatterns = [
     path("disable-plantype/<str:name>",views.disable_plantype,name = "disable_plantype"),    
     path("disable-plantype/<str:name>",views.disable_plantype,name = "disable_plantype"),    
     
+    path("service-pricing",views.service_pricing,name = "service_pricing"),
+    
    ] 

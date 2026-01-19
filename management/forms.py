@@ -2,7 +2,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from client.models import Categories
-from .models import SubscriptionPack,Plantype
+from .models import SubscriptionPack,Plantype,Pricing
 import re
 
 
@@ -341,3 +341,38 @@ class EditPlanTypeForm(forms.ModelForm):
             raise ValidationError("Phone numbers are not allowed.")
 
         return description
+
+
+
+
+
+
+class PricingForm(forms.ModelForm):
+
+    class Meta:
+        model = Pricing
+        fields = ['card_creation_price','connection_price',]
+
+    
+    def clean_card_creation_price(self):
+        price = self.cleaned_data.get('card_creation_price')
+
+        if price is None:
+            raise forms.ValidationError("Card creation price is required.")
+
+        if price <= 0:
+            raise forms.ValidationError("Card creation price must be greater than 0.")
+
+        return price
+
+    
+    def clean_connection_price(self):
+        price = self.cleaned_data.get('connection_price')
+
+        if price is None:
+            raise forms.ValidationError("Connection price is required.")
+
+        if price <= 0:
+            raise forms.ValidationError("Connection price must be greater than 0.")
+
+        return price
