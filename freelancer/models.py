@@ -35,6 +35,7 @@ class GigImages(models.Model):
 class Connections(models.Model):
     
     user = models.ForeignKey(User,on_delete = models.CASCADE)
+    client_user = models.ForeignKey(User,on_delete = models.CASCADE,related_name="user_client")
     
     card = models.ForeignKey(
         Card,

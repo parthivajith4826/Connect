@@ -22,8 +22,12 @@ def home(request):
             card = Card.objects.filter(client_id = user).prefetch_related('image').order_by("-created_at")
             count = Card.objects.count()
             wallet = Wallet.objects.filter(user = user).first()
-            # card = Card.obejcts.all()
-            return render(request,'client/home.html',{'count':count,'card':card,"wallet":wallet})
+            connection = Connections.objects.filter(client_user = request.user)
+            pending_count = connection.filter(status = "pending").count()
+            success_count = connection.filter(status = "accepted").count()
+            print(success_count)
+            rejected_count = connection.filter(status = "rejected").count()
+            return render(request,'client/home.html',{'count':count,'card':card,"wallet":wallet,'pending_count':pending_count,'success_count':success_count,'rejected_count':rejected_count})
     else :
         return redirect('accounts:signin')
 

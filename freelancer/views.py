@@ -612,6 +612,7 @@ from django.core.exceptions import PermissionDenied
 def create_connection(request, card_slug):
     #this is created for , when creating connection object
     card = get_object_or_404(Card, slug=card_slug)
+    client_user = card.client_id
 
     gig_slug = request.POST.get("gig_slug")
     gig = get_object_or_404(Gig,slug=gig_slug,freelancer_id=request.user)
@@ -627,6 +628,7 @@ def create_connection(request, card_slug):
     with transaction.atomic():
         connection, created = Connections.objects.get_or_create(
             user = request.user,
+            client_user = client_user,
             card=card,
             gig=gig
         )

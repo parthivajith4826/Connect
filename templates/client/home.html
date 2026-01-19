@@ -26,15 +26,15 @@
                 <div class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Request Status</div>
                 <div class="grid grid-cols-3 gap-2 text-center divide-x divide-slate-100">
                     <div>
-                        <div class="text-2xl font-bold text-orange-500">0</div>
+                        <div class="text-2xl font-bold text-orange-500">{{ pending_count }}</div>
                         <div class="text-xs text-slate-400 mt-1">Pending</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-green-500">0</div>
+                        <div class="text-2xl font-bold text-green-500">{{ success_count }}</div>
                         <div class="text-xs text-slate-400 mt-1">Accepted</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-red-500">0</div>
+                        <div class="text-2xl font-bold text-red-500">{{ rejected_count }}</div>
                         <div class="text-xs text-slate-400 mt-1">Cancelled</div>
                     </div>
                 </div>
