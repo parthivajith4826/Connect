@@ -89,7 +89,9 @@
             </div>
         </div>
     </header>
-
+    {% if error %}
+    {{ error }}
+    {% endif %}
     <!-- Messages -->
     {% if messages %}
     <div id="message-container" class="fixed top-6 left-1/2 -translate-x-1/2 space-y-3 z-50 w-full max-w-md pointer-events-none">
@@ -376,12 +378,10 @@
                             <input type="hidden" name="card_slug" value="{{ card.slug }}">
                             <input type="hidden" name="gig_slug" value="{{ gig.slug }}">
 
-                            <button type="submit"
-                                class="w-full py-3 bg-green-600 text-white rounded-xl
-                                {% if connection.status == 'accepted' or connection.status == 'rejected' %}
-                                opacity-50 cursor-not-allowed
-                                {% endif %}"
-                                {% if connection.status == 'accepted' or connection.status == 'rejected' %}disabled{% endif %}>
+                            <button
+                                type="submit"
+                                class="w-full py-3 bg-green-600 text-white rounded-xl {% if connection.status == 'accepted' or connection.status == 'rejected' or pricing.connection_price > wallet.balance %} opacity-50 cursor-not-allowed{% endif %}"
+                                {% if connection.status == 'accepted' or connection.status == 'rejected' or pricing.connection_price > wallet.balance %} disabled {% endif %} >
                                 Accept Proposal
                             </button>
                         </form>

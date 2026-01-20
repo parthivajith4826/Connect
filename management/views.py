@@ -6,13 +6,14 @@ from freelancer.models import Gig,Freelancer_Profile,GigImages
 from client.models import Card,Categories,WalletTransactions,Wallet,Card_images
 from django.http import Http404
 from .forms import CategoryForm,SubscriptionForm,PlanTypeForm,EditSubscriptionForm,EditPlanTypeForm,PricingForm
-from .models import Plantype,SubscriptionPack,Pricing
+from .models import Plantype,SubscriptionPack,Pricing,UserSubscription
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.views.decorators.cache import never_cache
 from .utilities import is_email 
+from django.utils import timezone
 
 
 
@@ -216,7 +217,8 @@ def freelancer_view_profile(request,profile_name):
     profile = Freelancer_Profile.objects.get(user_id = user)
     gigs = Gig.objects.filter(freelancer_id = user)
     gig_count = gigs.count()
-    return render(request,"management/freelancer-detail.html",{"user":user,"profile":profile,"count":gig_count})
+    user_subscriptions = UserSubscription.objects.filter(user = user)
+    return render(request,"management/freelancer-detail.html",{"user":user,"profile":profile,"count":gig_count,"user_subscriptions":user_subscriptions})
 
 
 

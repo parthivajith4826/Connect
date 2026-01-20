@@ -54,12 +54,19 @@ class UserSubscription(models.Model):
     def __str__(self):
         return f"{self.user} - {self.subscription_pack.title}"
     
+
+
+
 class Total_pack(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name="total_pack")
     gig_count = models.IntegerField(default = 0)
     connection_limit = models.IntegerField(default = 0)
     
     
+
+
+
+
 class SubscriptionTransaction(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="subscription_transactions")
 

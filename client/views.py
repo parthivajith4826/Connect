@@ -4,6 +4,10 @@ from django.contrib.auth import logout
 from accounts.models import User,Rating
 from .models import Location,Card_images,Card,Categories,Wallet,WalletTransactions
 from .forms import ProfileForm,LocationForm,CreatecardForm
+from management.models import Pricing
+from django.db import transaction
+
+
 
 
 import stripe
@@ -84,55 +88,66 @@ def profile(request):
 @never_cache
 def create_card(request):
     categories = Categories.objects.filter(is_blocked=False)
-    print(request.POST)
 
+    wallet = get_object_or_404(Wallet,user = request.user)
+    pricing = Pricing.objects.get(id = 1)
+    
     if request.method == "POST":
-        form = CreatecardForm(request.POST)
-        images = request.FILES.getlist("images")
-
         
-        is_form_valid = form.is_valid()
-
+        with transaction.atomic():
         
-        if images:
-            if len(images) > 3:
-                form.add_error(None, "You can upload a maximum of 3 images only.")
-                is_form_valid = False
-
-            allowed_types = ["image/jpeg", "image/png"]
-            for img in images:
-                if img.content_type not in allowed_types:
-                    form.add_error(
-                        None, "Only JPG and PNG images are allowed."
-                    )
-                    is_form_valid = False
-
-
-        
-        if is_form_valid:
-            card = form.save(commit=False)
-            card.client_id = request.user
-            card.save()
+            form = CreatecardForm(request.POST)
+            images = request.FILES.getlist("images")
 
             
-            for img in images:
-                Card_images.objects.create(
-                    card_id=card,
-                    image=img
-                )
+            is_form_valid = form.is_valid()
 
-            return redirect("client:home")
+            
+            if images:
+                if len(images) > 3:
+                    form.add_error(None, "You can upload a maximum of 3 images only.")
+                    is_form_valid = False
 
-        
-        return render(
-            request,
-            "client/create_card.html",{"form": form,"categories": categories,}
-        )
+                allowed_types = ["image/jpeg", "image/png"]
+                for img in images:
+                    if img.content_type not in allowed_types:
+                        form.add_error(
+                            None, "Only JPG and PNG images are allowed."
+                        )
+                        is_form_valid = False
 
-   
+
+            
+            if is_form_valid:
+                card = form.save(commit=False)
+                card.client_id = request.user
+                card.save()
+
+                
+                for img in images:
+                    Card_images.objects.create(
+                        card_id=card,
+                        image=img
+                    )
+                
+                wallet.balance -= pricing.card_creation_price 
+                wallet.save()
+                WalletTransactions.objects.create(wallet = wallet,amount = pricing.card_creation_price,transaction_type = "debit",status = "success" )
+                
+                return redirect("client:home")
+
+            
+            # return render(
+            #     request,
+            #     "client/create_card.html",{"form": form,"categories": categories,}
+            # )
+    
+    error = None
+    if pricing.card_creation_price > wallet.balance :
+        error = "Error: Insufficient funds. Unable to create the required card."
     form = CreatecardForm()
     return render(
-        request,"client/create_card.html",{"form": form,"categories": categories,}
+        request,"client/create_card.html",{"form": form,"categories": categories,"pricing":pricing,"wallet":wallet,"error":error}
     )
 
 
@@ -497,7 +512,12 @@ def gig_details(request,gig_slug,card_slug):
     card = get_object_or_404(Card,slug = card_slug )
     connection = get_object_or_404(Connections,gig = gig,card = card)
     rating = Rating.objects.filter(reviewer = request.user,gig = gig).first()
-    return render(request,"client/view_proposal_gig.html",{"gig":gig,"skills":skills,"card":card,"connection":connection,"rating":rating})
+    pricing = Pricing.objects.get(id = 1)
+    wallet = get_object_or_404(Wallet,user = request.user)
+    error = None
+    if pricing.connection_price > wallet.balance :
+        error = "Error: Insufficient funds. Unable to connect."
+    return render(request,"client/view_proposal_gig.html",{"gig":gig,"skills":skills,"card":card,"connection":connection,"rating":rating,"pricing":pricing,"error":error,"wallet":wallet})
 
 
 def connections(request):

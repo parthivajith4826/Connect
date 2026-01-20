@@ -361,7 +361,7 @@ def subscribe_start(request, slug):
                                                   
     
     
-    # ✅ Create PaymentIntent
+    # Create PaymentIntent
     intent = stripe.PaymentIntent.create(
         amount=int(pack.price * 100),
         currency="inr",
