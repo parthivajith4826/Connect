@@ -4,9 +4,15 @@ from django.contrib.auth import logout
 from accounts.models import User,Rating
 from .models import Location,Card_images,Card,Categories,Wallet,WalletTransactions
 from .forms import ProfileForm,LocationForm,CreatecardForm
-from management.models import Pricing
-from django.db import transaction
 
+from management.models import Pricing
+
+from django.db import transaction
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from decimal import Decimal
+import stripe
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -229,38 +235,47 @@ def close_card(request,slug):
     return redirect("client:home")
     
 def add_fund(request):
-    if request.method == 'POST':
-        wallet = Wallet.objects.filter(user = request.user).first()
-        if not wallet.is_blocked:
-            amount = request.POST.get('amount')
-            
-            if not amount or int(amount) <= 0:
-                return render(request,"client/add_funds.html",{"error":"Enter a valid amount"})
-            
-                    # create Stripe PaymentIntent
-            intent = stripe.PaymentIntent.create(
-                amount=int(amount) * 100,
-                currency="inr",
-                metadata={
-                    "user_id": request.user.id,
-                    "purpose": "wallet_topup"
-                }
-            )
-            
-            return render(
-                request,
-                "client/confirm_payment.html",
-                {
-                    "client_secret": intent.client_secret,
-                    "amount": amount,
-                    "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
-                }
-            )
+    if request.method == "POST":
+        amount = request.POST.get("amount")
 
-        else :
-            return render(request,'client/add_funds.html',{"error":"Wallet is disabled"})
+        try:
+            amount = Decimal(amount)
+        except:
+            return render(request, "client/add_funds.html", {
+                "error": "Invalid amount"
+            })
+
+        if amount <= 0:
+            return render(request, "client/add_funds.html", {
+                "error": "Amount must be greater than zero"
+            })
         
-    return render(request,'client/add_funds.html')
+        
+        if amount < 50:
+            return render(request, "client/add_funds.html", {
+                "error": "Minimum amount: ₹50.00"
+            })
+
+        intent = stripe.PaymentIntent.create(
+            amount=int(amount * 100),
+            currency="inr",
+            automatic_payment_methods={"enabled": True},
+            metadata={
+                "purpose": "wallet_topup",
+                "user_id": request.user.id,
+            }
+        )
+
+        return render(request, "client/wallet_pay.html", {
+            "client_secret": intent.client_secret,
+            "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+            "amount": amount,
+            "success_url": request.build_absolute_uri(
+                "/client/wallet/result/"
+            ),
+        })
+
+    return render(request, "client/add_funds.html")
    
 
 def wallet(request):
@@ -269,52 +284,15 @@ def wallet(request):
         wallet=wallet
     ).order_by("-created_at")[:4]
 
-    message = None
-    message_type = None  # success / error / warning
-
-    pi = request.GET.get("pi")
-    print(pi)
-    if pi:
-        txn = WalletTransactions.objects.filter(
-            stripe_payment_intent=pi
-        ).order_by("-created_at").first()
-
-        if txn:
-            if txn.status == "success":
-                message = "Payment successful. Wallet credited."
-                message_type = "success"
-
-            elif txn.status == "failed":
-                message = "Payment failed. No amount was deducted."
-                message_type = "error"
-
-            elif txn.status == "canceled":
-                message = "Payment was canceled."
-                message_type = "warning"
-
-            elif txn.status == "refunded":
-                message = "Payment was refunded. Amount removed from wallet."
-                message_type = "warning"
-
     return render(
         request,
         "client/wallet.html",
         {
             "wallet": wallet,
             "transactions": transactions,
-            "message": message,
-            "message_type": message_type,
         },
     )
     
-    
-
-
-
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-from decimal import Decimal
-import stripe
 
 @csrf_exempt
 def stripe_webhook(request):
@@ -327,29 +305,27 @@ def stripe_webhook(request):
             sig_header,
             settings.STRIPE_WALLET_WEBHOOK_SECRET
         )
-    except (ValueError, stripe.error.SignatureVerificationError):
+    except:
         return HttpResponse(status=400)
 
-    event_type = event["type"]
-    data_object = event["data"]["object"]
-    metadata = data_object.get("metadata", {})
-    
+    intent = event["data"]["object"]
+    metadata = intent.get("metadata", {})
+
     if metadata.get("purpose") != "wallet_topup":
         return HttpResponse(status=200)
-   
 
-    if event_type.startswith("payment_intent"):
-        intent = data_object
+    user_id = metadata.get("user_id")
+    if not user_id:
+        return HttpResponse(status=200)
 
-        user_id = intent["metadata"].get("user_id")
-        if not user_id:
-            return HttpResponse(status=200)
+    amount = Decimal(intent["amount"]) / Decimal("100")
 
-        amount = Decimal(intent["amount"]) / Decimal("100")
-        wallet, _ = Wallet.objects.get_or_create(user_id=user_id)
+    with transaction.atomic():
 
-        
-        if event_type == "payment_intent.succeeded":
+        wallet = Wallet.objects.select_for_update().get_or_create(user_id=user_id)[0]
+
+        if event["type"] == "payment_intent.succeeded":
+
             txn, created = WalletTransactions.objects.get_or_create(
                 stripe_payment_intent=intent["id"],
                 defaults={
@@ -360,12 +336,12 @@ def stripe_webhook(request):
                 }
             )
 
+            
             if created:
                 wallet.balance += amount
-                wallet.save()
+                wallet.save(update_fields=["balance"])
 
-       
-        elif event_type == "payment_intent.payment_failed":
+        elif event["type"] == "payment_intent.payment_failed":
             WalletTransactions.objects.get_or_create(
                 stripe_payment_intent=intent["id"],
                 defaults={
@@ -376,8 +352,7 @@ def stripe_webhook(request):
                 }
             )
 
-        
-        elif event_type == "payment_intent.canceled":
+        elif event["type"] == "payment_intent.canceled":
             WalletTransactions.objects.get_or_create(
                 stripe_payment_intent=intent["id"],
                 defaults={
@@ -388,41 +363,10 @@ def stripe_webhook(request):
                 }
             )
 
-
-    elif event_type == "charge.refunded":
-        charge = data_object
-        intent_id = charge["payment_intent"]
-        amount = Decimal(charge["amount_refunded"]) / Decimal("100")
-
-        txn = WalletTransactions.objects.filter(
-            stripe_payment_intent=intent_id,
-            status="success"
-        ).first()
-
-        if txn:
-            wallet = txn.wallet
-            wallet.balance -= amount
-            wallet.save()
-
-            WalletTransactions.objects.create(
-                wallet=wallet,
-                amount=amount,
-                transaction_type="debit",
-                stripe_payment_intent=intent_id,
-                status="refunded",
-            )
-
-    
     return HttpResponse(status=200)
 
 
-from decimal import Decimal
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-
-
 def withdraw(request):
-    wallet = Wallet.objects.get(user=request.user)
 
     if request.method == "POST":
         amount = request.POST.get("amount")
@@ -439,26 +383,56 @@ def withdraw(request):
                 "error": "Amount must be greater than zero"
             })
 
-        if amount > wallet.balance:
-            return render(request, "client/withdraw.html", {
-                "error": "Insufficient wallet balance"
-            })
+        with transaction.atomic():
 
-       
-        wallet.balance -= amount
-        wallet.save()
+            wallet = Wallet.objects.select_for_update().get(user=request.user)
 
-        
-        WalletTransactions.objects.create(
-            wallet=wallet,
-            amount=amount,
-            transaction_type="debit",
-            status="pending",
-        )
+            if amount > wallet.balance:
+                return render(request, "client/withdraw.html", {
+                    "error": "Insufficient wallet balance"
+                })
+
+            
+            wallet.balance -= amount
+            wallet.save(update_fields=["balance"])
+
+            
+            WalletTransactions.objects.create(
+                wallet=wallet,
+                amount=amount,
+                transaction_type="debit",
+                status="pending",
+            )
 
         return redirect("client:wallet")
 
     return render(request, "client/withdraw.html")
+
+
+def wallet_result(request):
+    intent_id = request.GET.get("payment_intent")
+
+    if not intent_id:
+        return redirect("client:wallet")
+
+    txn = WalletTransactions.objects.filter(
+        stripe_payment_intent=intent_id
+    ).first()
+
+    if not txn:
+        return render(request, "client/wallet_pending.html")
+
+    if txn.status == "success":
+        return render(request, "client/wallet_success.html")
+
+    if txn.status == "failed":
+        return render(request, "client/wallet_failed.html")
+
+    if txn.status == "canceled":
+        return render(request, "client/wallet_canceled.html")
+
+    return render(request, "client/wallet_pending.html")
+
 
 
 import uuid                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
