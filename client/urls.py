@@ -21,11 +21,8 @@ urlpatterns = [
     path("gig-details/<slug:gig_slug>/<slug:card_slug>/", views.gig_details, name="gig_details"),
     path("connection/", views.connections, name="connections"),
     path("review/", views.review, name="review"),
+    # path("cancel/", views.cancel, name="cancel"),
     
-    
-    #temp
-    # path("hello/", views.hello_page, name="hello_page"),
-    # path("qr/", views.qr_code, name="qr_code"),
     
     
 

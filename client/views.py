@@ -1,56 +1,63 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
 from accounts.models import User,Rating
 from .models import Location,Card_images,Card,Categories,Wallet,WalletTransactions
 from .forms import ProfileForm,LocationForm,CreatecardForm
-
 from management.models import Pricing
-
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from decimal import Decimal
-import stripe
 from django.contrib.auth.decorators import login_required
-
-
-
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
+from django.urls import reverse_lazy
+import uuid                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+from django.http import JsonResponse
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import os
+import re
+from freelancer.models import Connections,Gig
+from django.contrib import messages
+from django.http import HttpResponseBadRequest
 
+
+
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 @never_cache
-# Create your views here.
 def home(request):
     user = request.user
-    print(user.is_authenticated)
-    if user.is_authenticated:
-        if not user.profile_completed:
-            return render(request,'client/errors/profile_error.html')
-        else :
-            card = Card.objects.filter(client_id = user).prefetch_related('image').order_by("-created_at")
-            count = Card.objects.count()
-            wallet = Wallet.objects.filter(user = user).first()
-            connection = Connections.objects.filter(client_user = request.user)
-            pending_count = connection.filter(status = "pending").count()
-            success_count = connection.filter(status = "accepted").count()
-            print(success_count)
-            rejected_count = connection.filter(status = "rejected").count()
-            return render(request,'client/home.html',{'count':count,'card':card,"wallet":wallet,'pending_count':pending_count,'success_count':success_count,'rejected_count':rejected_count})
-    else :
-        return redirect('accounts:signin')
+    if not user.profile_completed:
+        return render(request,'client/errors/profile_error.html')
+    
+    card = Card.objects.filter(client_id = user).prefetch_related('image').order_by("-created_at")
+    count = Card.objects.count()
+    wallet = Wallet.objects.filter(user = user).first()
+    connection = Connections.objects.filter(client_user = request.user)
+    pending_count = connection.filter(status = "pending").count()
+    success_count = connection.filter(status = "accepted").count()
+    rejected_count = connection.filter(status = "rejected").count()
+    wallet_transactions = WalletTransactions.objects.filter(wallet = wallet)
+    debit = 0
+    for txn in wallet_transactions :
+        if txn.transaction_type == "debit" :
+            debit += txn.amount
+    return render(request,'client/home.html',{'count':count,'card':card,"wallet":wallet,'pending_count':pending_count,'success_count':success_count,'rejected_count':rejected_count,'debit':debit})
+   
 
-
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 @never_cache
 def signout(request):
     request.session.flush()
-    
     logout(request)
-    
     return redirect('accounts:landing_page')
     
     
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 @never_cache
 def profile(request):
     
@@ -58,20 +65,15 @@ def profile(request):
     if request.method == 'POST':
         form1 = ProfileForm(request.POST,request.FILES,instance=user)
         form2 = LocationForm(request.POST)
-        # print(request.POST)
         print(form1.is_valid(),form2.is_valid())
         if form1.is_valid() and form2.is_valid():  
-            # user.profile_photo = None
             user.save()
             user.profile_completed = True
             
             form1.save()
             location_form = form2.save(commit=False)
-            # print(form2,location_form)
             location_form.user_id = user
             location_form.save()
-            
-            
             return redirect('client:profile')
         else:
             return render(request,'client/profile.html',{'form1':form1,'form2':form2})
@@ -87,10 +89,8 @@ def profile(request):
             form2 = LocationForm()
         return render(request,'client/profile.html',{'user':user,'form1':form1,'form2':form2})
 
-# @never_cache
-# def wallet(request):
-#     return render(request,'client/wallet.html')
 
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 @never_cache
 def create_card(request):
     categories = Categories.objects.filter(is_blocked=False)
@@ -100,31 +100,31 @@ def create_card(request):
     
     if request.method == "POST":
         
-        with transaction.atomic():
+        form = CreatecardForm(request.POST)
+        images = request.FILES.getlist("images")
+
         
-            form = CreatecardForm(request.POST)
-            images = request.FILES.getlist("images")
+        is_form_valid = form.is_valid()
+        print(is_form_valid)
 
-            
-            is_form_valid = form.is_valid()
+        
+        if images:
+            if len(images) > 3:
+                form.add_error(None, "You can upload a maximum of 3 images only.")
+                is_form_valid = False
 
-            
-            if images:
-                if len(images) > 3:
-                    form.add_error(None, "You can upload a maximum of 3 images only.")
+            allowed_types = ["image/jpeg", "image/png"]
+            for img in images:
+                if img.content_type not in allowed_types:
+                    form.add_error(
+                        None, "Only JPG and PNG images are allowed."
+                    )
                     is_form_valid = False
 
-                allowed_types = ["image/jpeg", "image/png"]
-                for img in images:
-                    if img.content_type not in allowed_types:
-                        form.add_error(
-                            None, "Only JPG and PNG images are allowed."
-                        )
-                        is_form_valid = False
 
-
-            
-            if is_form_valid:
+        
+        if is_form_valid:
+            with transaction.atomic():
                 card = form.save(commit=False)
                 card.client_id = request.user
                 card.save()
@@ -143,10 +143,10 @@ def create_card(request):
                 return redirect("client:home")
 
             
-            # return render(
-            #     request,
-            #     "client/create_card.html",{"form": form,"categories": categories,}
-            # )
+        return render(
+            request,
+            "client/create_card.html",{"form": form,"categories": categories,}
+        )
     
     error = None
     if pricing.card_creation_price > wallet.balance :
@@ -158,6 +158,8 @@ def create_card(request):
 
 
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 @never_cache
 def view_card(request,slug):
     
@@ -170,20 +172,19 @@ def view_card(request,slug):
         return render(request,'accounts/home.html',{'error':'IIssue with the Card'})
     
     
-@never_cache   
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache  
 def edit_card(request,slug):
     card = Card.objects.get(slug=slug)
     images_db = card.image.all()
     categories = Categories.objects.filter(is_blocked=False)
     
     if request.method == "POST":
-        # print(request.POST)
-        # print(request.FILES)
         form = CreatecardForm(request.POST,instance=card)
         images = request.FILES.getlist("images")
         
         deleted_image_ids = request.POST.get('deleted_image_ids')
-        # print(deleted_image_ids)
         if deleted_image_ids:
             list =deleted_image_ids.split(",")
             for i in list:
@@ -221,19 +222,25 @@ def edit_card(request,slug):
             return redirect("client:home")
 
         
-        return render(request,"client/create_card.html",{"form": form,"categories": categories,"card":card,"images":images_db})
+        return render(request,"client/edit_card.html",{"form": form,"categories": categories,"card":card,"images":images_db})
 
     
     form = CreatecardForm(instance = card)
-    return render(request,"client/create_card.html",{"form": form,"categories": categories,"card":card,"images":images_db})
+    return render(request,"client/edit_card.html",{"form": form,"categories": categories,"card":card,"images":images_db})
     
 
+
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 @never_cache
 def close_card(request,slug):
     card = Card.objects.get(slug=slug)
     card.delete()
     return redirect("client:home")
-    
+ 
+ 
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache   
 def add_fund(request):
     if request.method == "POST":
         amount = request.POST.get("amount")
@@ -278,6 +285,9 @@ def add_fund(request):
     return render(request, "client/add_funds.html")
    
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def wallet(request):
     wallet, created = Wallet.objects.get_or_create(user=request.user)
     transactions = WalletTransactions.objects.filter(
@@ -294,6 +304,10 @@ def wallet(request):
     )
     
 
+
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 @csrf_exempt
 def stripe_webhook(request):
     payload = request.body
@@ -366,6 +380,9 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def withdraw(request):
 
     if request.method == "POST":
@@ -409,6 +426,9 @@ def withdraw(request):
     return render(request, "client/withdraw.html")
 
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def wallet_result(request):
     intent_id = request.GET.get("payment_intent")
 
@@ -435,12 +455,8 @@ def wallet_result(request):
 
 
 
-import uuid                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 @csrf_exempt
 def quill_image_upload(request):
     if request.method == "POST" and request.FILES.get("image"):
@@ -461,24 +477,28 @@ def quill_image_upload(request):
 
     return JsonResponse({"success": False}, status=400)
 
-import uuid
-import os
-import re
 
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache   
 def sanitize_filename(name):
     name = os.path.splitext(name)[0]          # remove extension
     print(name)
     name = re.sub(r'[^a-zA-Z]+', '_', name)    # letters only
     return name.strip('_').lower()
 
-from freelancer.models import Connections,Gig
-from django.shortcuts import get_object_or_404
+
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache   
 def manage_proposals(request,slug):
     card = get_object_or_404(Card,slug = slug)
     connections = Connections.objects.filter(card = card).exclude(status = "rejected")
     return render(request,"client/manage_proposals.html",{"connections":connections})
 
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache 
 def gig_details(request,gig_slug,card_slug):
     gig = get_object_or_404(Gig,slug = gig_slug)
     skills = gig.skills
@@ -494,24 +514,31 @@ def gig_details(request,gig_slug,card_slug):
     return render(request,"client/view_proposal_gig.html",{"gig":gig,"skills":skills,"card":card,"connection":connection,"rating":rating,"pricing":pricing,"error":error,"wallet":wallet})
 
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache 
 def connections(request):
     if request.method == "POST":
         action = request.POST.get("action")
         card_slug = request.POST.get("card_slug")
         gig_slug = request.POST.get("gig_slug")
+        wallet = get_object_or_404(Wallet,user = request.user)
+        pricing = Pricing.objects.get(id = 1)
 
         if action == "accept":
             gig = get_object_or_404(Gig, slug=gig_slug)
             card = get_object_or_404(Card, slug=card_slug)
 
-            connection = Connections.objects.filter(
-                gig=gig,
-                card=card
-            ).first()
+            connection = Connections.objects.filter(gig=gig,card=card).first()
             
-            connection.status = "accepted"
-            connection.save()
-            messages.success(request, "🎉 Connection established!  You’re now connected, and contact details are ready to view.")
+            with transaction.atomic():
+                connection.status = "accepted"
+                connection.save()
+                
+                wallet.balance -= pricing.connection_price 
+                wallet.save()
+                WalletTransactions.objects.create(wallet = wallet,amount = pricing.card_creation_price,transaction_type = "debit",status = "success" )
+                messages.success(request, "🎉 Connection established!  You’re now connected, and contact details are ready to view.")
             return redirect("client:gig_details",gig.slug,card.slug)
 
 
@@ -529,10 +556,9 @@ def connections(request):
     return redirect("client:gig_details",gig.slug,card.slug)
 
 
-from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseBadRequest
 
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache 
 def review(request):
     if request.method != "POST":
         return HttpResponseBadRequest("Invalid request")
@@ -572,30 +598,5 @@ def review(request):
     return redirect(redirect_url)
 
 
+# def cancel(request):
     
-    
-
-
-
-
-
-# def hello_page(request):
-#     return render(request, "freelancer/hello.html")
-
-# import qrcode
-# from io import BytesIO
-# from django.http import HttpResponse
-# from django.urls import reverse
-
-# def qr_code(request):
-#     path = reverse("client:hello_page")  # resolves to /client/hello/
-#     url = request.build_absolute_uri(path)
-#     img = qrcode.make(url)
-
-#     buffer = BytesIO()
-#     img.save(buffer, format="PNG")
-
-#     return HttpResponse(buffer.getvalue(), content_type="image/png")
-
-
-

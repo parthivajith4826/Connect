@@ -1,64 +1,81 @@
-{% extends "client/client_base.html" %}
-{% block wallet %}
+{% extends "client/client_base.html" %} {% block wallet %}
 
 <script src="https://js.stripe.com/v3/"></script>
 
-<main class="flex-1 p-8 max-w-xl mx-auto">
-    <h2 class="text-2xl font-bold mb-4">
-        Pay ₹{{ amount }}
-    </h2>
+<main class="flex-1 p-8 max-w-xl mx-auto flex items-center justify-center h-full">
+    <div class="w-full bg-white p-6 rounded-sm shadow-sm border border-black/5">
+        <div class="flex items-center gap-3 mb-6 border-b border-black/5 pb-4">
+            <div class="p-2 bg-indigo-50 rounded-sm border border-indigo-100">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                    ></path>
+                </svg>
+            </div>
+            <h2 class="text-xl font-bold text-slate-800">Secure Payment</h2>
+        </div>
 
-    <div id="card-element" class="mb-4"></div>
+        <div class="mb-6">
+            <label class="block text-[10px] uppercase font-bold text-slate-500 tracking-wider mb-2">Total Amount</label>
+            <div class="text-3xl font-bold text-slate-800">₹{{ amount }}</div>
+        </div>
 
-    <button
-        id="payBtn"
-        class="px-6 py-3 bg-indigo-600 text-white rounded-lg"
-    >
-        Pay Now
-    </button>
+        <div class="p-4 bg-slate-50 rounded-sm border border-black/5 mb-6">
+            <div id="card-element" class="p-1"></div>
+        </div>
+
+        <button
+            id="payBtn"
+            class="w-full px-6 py-3 bg-indigo-600 text-white rounded-sm font-semibold text-sm shadow-sm hover:bg-indigo-700 hover:shadow-md transition-all flex justify-center items-center gap-2"
+        >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                ></path>
+            </svg>
+            Pay Now
+        </button>
+    </div>
 </main>
 
 <script>
-const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-const elements = stripe.elements();
-const card = elements.create("card");
-card.mount("#card-element");
+    const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+    const elements = stripe.elements();
+    const card = elements.create("card");
+    card.mount("#card-element");
 
-const payBtn = document.getElementById("payBtn");
+    const payBtn = document.getElementById("payBtn");
 
-payBtn.onclick = async () => {
-    payBtn.disabled = true;
-    payBtn.innerText = "Processing...";
+    payBtn.onclick = async () => {
+        payBtn.disabled = true;
+        payBtn.innerText = "Processing...";
 
-    const result = await stripe.confirmCardPayment(
-        "{{ client_secret }}",
-        {
-            payment_method: { card: card }
+        const result = await stripe.confirmCardPayment("{{ client_secret }}", {
+            payment_method: { card: card },
+        });
+
+        // 🔴 ERROR HANDLING (THIS WAS MISSING)
+        if (result.error) {
+            alert(result.error.message);
+            payBtn.disabled = false;
+            payBtn.innerText = "Pay Now";
+            return;
         }
-    );
 
-    // 🔴 ERROR HANDLING (THIS WAS MISSING)
-    if (result.error) {
-        alert(result.error.message);
-        payBtn.disabled = false;
-        payBtn.innerText = "Pay Now";
-        return;
-    }
-
-    // 🟢 SUCCESS HANDLING
-    if (result.paymentIntent) {
-        setTimeout(() => {
-            const pi = result.paymentIntent.id;
-            window.location.href = `{% url 'client:wallet' %}?pi=${pi}`;
-        }, 2000);
-    }
-};
+        // 🟢 SUCCESS HANDLING
+        if (result.paymentIntent) {
+            setTimeout(() => {
+                const pi = result.paymentIntent.id;
+                window.location.href = `{% url 'client:wallet' %}?pi=${pi}`;
+            }, 2000);
+        }
+    };
 </script>
 
-
 {% endblock %}
-
-
-
-
-

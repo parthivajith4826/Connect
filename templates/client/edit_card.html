@@ -17,7 +17,24 @@
     <!-- Topbar -->
     <header class="bg-white border-b border-black/5 h-16 flex items-center justify-between px-8 sticky top-0 z-50">
         <div class="flex items-center gap-4">
-            <h1 class="text-xl font-bold text-slate-800">Post a New Job</h1>
+            <a
+                href="#"
+                onclick="
+                    window.history.back();
+                    return false;
+                "
+                class="text-slate-400 hover:text-slate-600"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Edit-Job</h1>
         </div>
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-3">
@@ -245,8 +262,7 @@
                             class="bg-white border border-slate-300 rounded-sm"
                             style="min-height: 200px"
                         >
-                            {% if form.description.value and form.description.value != 'None' %}{{
-                            form.description.value|safe }}{% endif %}
+                            {{ form.description.value|safe }}
                         </div>
 
                         <!-- Hidden input sent to Django -->
@@ -459,13 +475,16 @@
 
             <div class="flex justify-end gap-4">
                 <a
-                    href="{% url "client:home" %}"
+                    href="#"
+                    onclick="
+                        window.history.back();
+                        return false;
+                    "
                     class="px-6 py-2 border border-slate-300 rounded-sm text-slate-700 hover:bg-slate-50 font-medium text-sm"
                     >Cancel</a
                 >
                 <button type="submit" {% if pricing.card_creation_price > wallet.balance %} disabled class="px-6 py-2 bg-indigo-600 text-white rounded-sm font-medium shadow-lg shadow-indigo-200 opacity-50 cursor-not-allowed" {% endif %} 
-                    class="px-6 py-2 bg-indigo-600 text-white rounded-sm hover:bg-indigo-700 font-medium shadow-lg shadow-indigo-200 text-sm" > 
-                    Post Job
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-sm hover:bg-indigo-700 font-medium shadow-lg shadow-indigo-200 text-sm" > Post Job
                 </button>
             </div>
         </form>
