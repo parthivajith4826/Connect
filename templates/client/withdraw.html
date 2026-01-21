@@ -1,35 +1,111 @@
-{% extends "client/client_base.html" %}
-{% block wallet %}
+{% extends "client/client_base.html" %} {% block wallet %}
 
-<main class="flex-1 p-8 max-w-xl mx-auto">
-    <h2 class="text-2xl font-bold mb-6">Withdraw Funds</h2>
-
-    {% if error %}
-        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
-            {{ error }}
+<main class="flex-1 overflow-y-auto h-screen bg-slate-50 font-inter">
+    <!-- Standard Header -->
+    <header class="bg-white border-b border-black/5 h-16 px-8 flex items-center justify-between sticky top-0 z-10">
+        <h1 class="text-xl font-bold text-slate-800">Withdraw Funds</h1>
+        <div class="flex items-center gap-3">
+            <img
+                src="{{ user.profile_photo.url }}"
+                alt="Profile"
+                class="w-8 h-8 rounded-full border border-black/5 object-cover"
+            />
+            <span class="font-medium text-slate-700 hidden md:block">{{ user.Profile_name }}</span>
         </div>
-    {% endif %}
+    </header>
 
-    <form method="post">
-        {% csrf_token %}
+    <div class="max-w-xl mx-auto px-6 py-12">
+        <div class="bg-white rounded-sm border border-black/5 shadow-sm overflow-hidden flex flex-col md:flex-row">
+            <!-- Illustration / Info Side -->
+            <div class="bg-slate-50 p-8 md:w-2/5 flex flex-col justify-between border-r border-black/5">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 mb-2">Request Withdrawal</h2>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Transfer funds from your wallet to your linked bank account securely.
+                    </p>
+                </div>
+                <div class="mt-8 flex justify-center">
+                    <svg class="w-24 h-24 text-indigo-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                    </svg>
+                </div>
+            </div>
 
-        <label class="block mb-2 font-medium">Amount</label>
-        <input
-            type="number"
-            name="amount"
-            step="0.01"
-            class="w-full border rounded px-4 py-2 mb-4"
-            placeholder="Enter amount"
-            required
-        />
+            <!-- Form Side -->
+            <div class="p-8 md:w-3/5">
+                {% if error %}
+                <div
+                    class="mb-6 p-3 rounded-sm bg-red-50 border border-red-100 text-red-600 text-xs flex items-center gap-2"
+                >
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                    </svg>
+                    <span>{{ error }}</span>
+                </div>
+                {% endif %}
 
-        <button
-            type="submit"
-            class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold"
-        >
-            Request Withdrawal
-        </button>
-    </form>
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide"
+                            >Withdrawal Amount</label
+                        >
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 font-medium"
+                                >₹</span
+                            >
+                            <input
+                                type="number"
+                                name="amount"
+                                step="0.01"
+                                placeholder="0.00"
+                                required
+                                class="w-full pl-8 pr-4 py-2 text-sm border border-slate-300 rounded-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 placeholder-slate-300 transition-colors"
+                            />
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1.5 text-right">Processing time: 1-3 business days</p>
+                    </div>
+
+                    <div class="space-y-3 pt-2">
+                        <button
+                            type="submit"
+                            class="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-sm shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center gap-2"
+                        >
+                            <span>Request Withdrawal</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                ></path>
+                            </svg>
+                        </button>
+
+                        <a href="{% url 'client:wallet' %}" class="block w-full">
+                            <button
+                                type="button"
+                                class="w-full px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-sm transition-colors"
+                            >
+                                Cancel
+                            </button>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </main>
 
 {% endblock %}

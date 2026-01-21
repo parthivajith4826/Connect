@@ -19,6 +19,7 @@ Job posting & proposal workflows (future extensions)
 It is built with structured Django apps to keep the project scalable, clean, and beginner-friendly.
 
 
+
 ⭐ Features
 
 1.🔐 Authentication & Security

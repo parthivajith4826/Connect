@@ -7,6 +7,7 @@ urlpatterns = [
     path('signout/',views.signout,name = 'signout'),
     path('profile/',views.profile,name = 'profile'),
     path('wallet/',views.wallet,name = 'wallet'),
+    path('wallet/result/',views.wallet_result,name = 'wallet_result'),
     path('create-card/',views.create_card,name = 'create_card'),
     path('view-card/<slug:slug>/',views.view_card,name = 'view_card'),
     path('edit-card/<slug:slug>/',views.edit_card,name = 'edit_card'),
