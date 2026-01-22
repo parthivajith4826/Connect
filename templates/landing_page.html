@@ -1,426 +1,742 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>FreelanceConnect - Professional Marketplace</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-            rel="stylesheet"
-        />
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+{% extends 'footer\base_landing.html' %} {% load static %} {% block title %}How to Hire | Connect{% endblock %} {% block content %}<!-- Hero Section (Adjusted PT for gap) -->
+<section class="relative pt-12 pb-12 lg:pt-36 lg:pb-32 overflow-hidden bg-slate-50">
+    <!-- Floating Shapes -->
+    <div class="shape-blob bg-indigo-300 w-64 h-64 md:w-96 md:h-96 top-0 -left-20 opacity-30 animate-pulse-slow"></div>
+    <div class="shape-blob bg-purple-300 w-64 h-64 md:w-96 md:h-96 bottom-0 right-0 opacity-30 animate-float-delayed"></div>
 
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        fontFamily: {
-                            sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
-                        },
-                        colors: {
-                            primary: {
-                                50: "#eff6ff",
-                                100: "#dbeafe",
-                                200: "#bfdbfe",
-                                300: "#93c5fd",
-                                400: "#60a5fa",
-                                500: "#3b82f6",
-                                600: "#2563eb",
-                                700: "#1d4ed8",
-                                800: "#1e40af",
-                                900: "#1e3a8a",
-                            },
-                            brand: {
-                                black: "#0a0a0a",
-                                gray: "#666666",
-                                border: "#e5e5e5",
-                            },
-                            gray: {
-                                850: "#1f2937",
-                                900: "#111827", // Standard dark gray/black
-                            },
-                        },
-                        boxShadow: {
-                            soft: "0 2px 8px rgba(0,0,0,0.04)",
-                            card: "0 8px 24px rgba(0,0,0,0.08)",
-                            float: "0 20px 40px -5px rgba(0,0,0,0.1)",
-                        },
-                        backgroundImage: {
-                            texture: "url('{% static 'images/bg_texture.png' %}')",
-                        },
-                    },
-                },
-            };
-        </script>
-        <style>
-            [x-cloak] {
-                display: none !important;
-            }
-            .antialiased {
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-            }
-            .glass-card {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.5);
-            }
-        </style>
-    </head>
-    <body class="bg-white text-gray-900 font-sans antialiased text-[15px] leading-relaxed">
-        <!-- Navigation -->
-        <nav
-            class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 h-20 transition-all duration-300"
-            x-data="{ mobileOpen: false }"
-        >
-            <div class="max-w-[1400px] mx-auto px-4 lg:px-6 h-full flex items-center justify-between">
-                <div class="flex items-center gap-8">
-                    <!-- Logo -->
-                    <a href="/" class="text-xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
-                        <div
-                            class="w-8 h-8 bg-primary-600 rounded flex items-center justify-center text-white font-bold text-lg"
-                        >
-                            F
-                        </div>
-                        FreelanceConnect
-                    </a>
-                    <div class="hidden md:flex items-center gap-6">
-                        <a href="#" class="text-gray-600 hover:text-primary-600 font-medium transition-colors"
-                            >Find Talent</a
-                        >
-                        <a href="#" class="text-gray-600 hover:text-primary-600 font-medium transition-colors">Find Work</a>
-                        <a href="#how-it-works" class="text-gray-600 hover:text-primary-600 font-medium transition-colors"
-                            >Why FreelanceConnect</a
-                        >
-                    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <!-- Content -->
+            <div data-aos="fade-right" data-aos-duration="1000">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 font-semibold text-sm mb-6 animate-float"
+                >
+                    <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+                    The Future of IT Hiring is Here
                 </div>
-                <div class="flex items-center gap-4">
-                    <a href="{% url 'accounts:signin' %}" class="hidden md:block text-gray-800 font-medium hover:underline"
-                        >Log In</a
-                    >
+                <h1 class="font-sans text-4xl md:text-5xl lg:text-7xl font-bold text-slate-900 leading-[1.1] mb-6">
+                    Hire expert <br />
+                    <span class="text-gradient">tech talent.</span>
+                </h1>
+                <p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg">
+                    Connect with top-tier developers, designers, and data experts. Secure Stripe payments, verified skills,
+                    and direct collaboration.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
                     <a
                         href="{% url 'accounts:register' %}"
-                        class="px-6 py-2.5 rounded-full bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-colors shadow-sm text-sm"
-                        >Sign Up</a
+                        class="px-8 py-4 rounded-full bg-indigo-600 text-white text-lg font-semibold shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:shadow-2xl hover:shadow-indigo-300 transition-all transform hover:-translate-y-1 text-center decoration-none"
                     >
-                    <button @click="mobileOpen = !mobileOpen" class="md:hidden p-2 text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"
-                            ></path>
-                        </svg>
-                    </button>
+                        Find Talent
+                    </a>
+                    <a
+                        href="{% url 'accounts:register' %}"
+                        class="px-8 py-4 rounded-full bg-white text-slate-700 border border-slate-200 text-lg font-semibold hover:bg-slate-50 hover:border-indigo-200 transition-all text-center flex items-center justify-center gap-2 group decoration-none"
+                    >
+                        <span>Find Work</span>
+                        <i
+                            class="fas fa-arrow-right text-indigo-600 transform group-hover:translate-x-1 transition-transform"
+                        ></i>
+                    </a>
                 </div>
             </div>
-            <div
-                x-show="mobileOpen"
-                x-collapse
-                x-cloak
-                class="md:hidden border-t border-gray-200 bg-white p-4 space-y-4 shadow-lg absolute w-full left-0 top-20"
-            >
-                <a href="#" class="block text-gray-600 font-medium">Find Talent</a>
-                <a href="#" class="block text-gray-600 font-medium">Find Work</a>
-                <a href="{% url 'accounts:signin' %}" class="block text-gray-900 font-medium">Log In</a>
-            </div>
-        </nav>
 
-        <!-- Hero Section with Background Texture -->
-        <section class="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-texture bg-cover bg-center">
-            <!-- Overlay for readability -->
-            <div class="absolute inset-0 bg-white/40"></div>
+            <!-- Visual -->
+            <div class="relative" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                <!-- 3D Wireframe Animation Container -->
+                <div
+                    class="relative w-full aspect-square md:aspect-[5/4] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-700 flex items-center justify-center group transform rotate-2 hover:rotate-0 transition-transform duration-500"
+                >
+                    <!-- Background Grid/Glow -->
+                    <div
+                        class="absolute inset-0 opacity-20"
+                        style="background-image: radial-gradient(#6366f1 1px, transparent 1px); background-size: 30px 30px"
+                    ></div>
+                    <div class="absolute inset-0 bg-gradient-to-tr from-slate-900 via-transparent to-slate-900/50"></div>
 
-            <div class="max-w-[1400px] mx-auto px-4 lg:px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
-                <div class="max-w-2xl">
-                    <h1 class="text-5xl lg:text-[76px] font-bold text-gray-900 leading-[1.05] tracking-tight mb-8">
-                        How work <br />
-                        <span class="text-primary-600">should work</span>
-                    </h1>
-                    <p class="text-xl text-gray-600 mb-10 leading-normal max-w-lg">
-                        Forget the old rules. You can have the best people. Right now. Right here.
-                    </p>
+                    <!-- Animation Scene: The Connection & Growth -->
+                    <div
+                        class="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center transform scale-90 md:scale-100"
+                        style="perspective: 1000px"
+                    >
+                        <style>
+                            /* Client Node (Cubeish) */
+                            .node-client {
+                                position: absolute;
+                                width: 40px;
+                                height: 40px;
+                                border: 1px solid rgba(99, 102, 241, 0.6); /* Indigo */
+                                background: rgba(99, 102, 241, 0.1);
+                                transform-style: preserve-3d;
+                                animation: client-move 8s ease-in-out infinite;
+                                box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+                            }
+                            /* Freelancer Node (Sphereish) */
+                            .node-freelancer {
+                                position: absolute;
+                                width: 40px;
+                                height: 40px;
+                                border: 1px solid rgba(45, 212, 191, 0.6); /* Teal */
+                                border-radius: 50%;
+                                background: rgba(45, 212, 191, 0.1);
+                                animation: freelancer-move 8s ease-in-out infinite;
+                                box-shadow: 0 0 10px rgba(45, 212, 191, 0.2);
+                            }
 
-                    <div class="flex flex-col sm:flex-row gap-4 mb-12">
-                        <a
-                            href="{% url 'accounts:register' %}"
-                            class="px-9 py-4 rounded-full bg-primary-600 text-white font-semibold text-lg hover:bg-primary-700 transition-all shadow-lg hover:shadow-primary-600/30 text-center transform hover:-translate-y-0.5"
+                            /* Connecting Beam */
+                            .connection-beam {
+                                position: absolute;
+                                height: 2px;
+                                background: linear-gradient(90deg, #6366f1, #2dd4bf);
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                width: 0;
+                                animation: beam-connect 8s ease-in-out infinite;
+                                box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+                            }
+
+                            /* Growth/Success Ripple */
+                            .growth-ripple {
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                width: 0;
+                                height: 0;
+                                border: 1px solid rgba(255, 255, 255, 0.4);
+                                border-radius: 50%;
+                                opacity: 0;
+                                animation: ripple-expand 8s ease-in-out infinite;
+                            }
+
+                            /* Platform Base (Structure) */
+                            .platform-base {
+                                position: absolute;
+                                bottom: 20%;
+                                width: 140px;
+                                height: 140px;
+                                border: 1px dashed rgba(255, 255, 255, 0.1);
+                                border-radius: 50%;
+                                transform: rotateX(70deg);
+                                animation: platform-spin 20s linear infinite;
+                            }
+
+                            @keyframes client-move {
+                                0% {
+                                    transform: translateX(-80px) rotateY(0deg) rotateZ(0deg);
+                                    opacity: 0;
+                                }
+                                15% {
+                                    transform: translateX(-80px) rotateY(45deg) rotateZ(10deg);
+                                    opacity: 1;
+                                } /* Appear */
+                                40% {
+                                    transform: translateX(-30px) rotateY(180deg) rotateZ(45deg);
+                                    opacity: 1;
+                                } /* Move to center */
+                                70% {
+                                    transform: translateX(-30px) rotateY(180deg) rotateZ(45deg);
+                                    opacity: 1;
+                                } /* Hold connected */
+                                85% {
+                                    transform: translateX(-30px) translateY(-20px) rotateY(180deg);
+                                    opacity: 1;
+                                } /* Grow Up */
+                                100% {
+                                    transform: translateX(-30px) translateY(-50px);
+                                    opacity: 0;
+                                } /* Fade out */
+                            }
+
+                            @keyframes freelancer-move {
+                                0% {
+                                    transform: translateX(80px) rotateY(0deg);
+                                    opacity: 0;
+                                }
+                                15% {
+                                    transform: translateX(80px) rotateY(-45deg);
+                                    opacity: 1;
+                                }
+                                40% {
+                                    transform: translateX(30px) rotateY(-180deg);
+                                    opacity: 1;
+                                }
+                                70% {
+                                    transform: translateX(30px) rotateY(-180deg);
+                                    opacity: 1;
+                                }
+                                85% {
+                                    transform: translateX(30px) translateY(-20px);
+                                    opacity: 1;
+                                }
+                                100% {
+                                    transform: translateX(30px) translateY(-50px);
+                                    opacity: 0;
+                                }
+                            }
+
+                            @keyframes beam-connect {
+                                0%,
+                                35% {
+                                    width: 0;
+                                    opacity: 0;
+                                }
+                                40%,
+                                75% {
+                                    width: 60px;
+                                    opacity: 1;
+                                } /* Connected */
+                                80% {
+                                    width: 60px;
+                                    opacity: 0;
+                                } /* Fade with scaling */
+                                100% {
+                                    width: 0;
+                                    opacity: 0;
+                                }
+                            }
+
+                            @keyframes ripple-expand {
+                                0%,
+                                60% {
+                                    width: 0;
+                                    height: 0;
+                                    opacity: 0;
+                                    border-width: 2px;
+                                }
+                                70% {
+                                    opacity: 0.8;
+                                }
+                                85% {
+                                    width: 150px;
+                                    height: 150px;
+                                    opacity: 0;
+                                    border-width: 0px;
+                                }
+                                100% {
+                                    opacity: 0;
+                                }
+                            }
+
+                            @keyframes platform-spin {
+                                0% {
+                                    transform: rotateX(75deg) rotateZ(0deg);
+                                }
+                                100% {
+                                    transform: rotateX(75deg) rotateZ(360deg);
+                                }
+                            }
+                        </style>
+
+                        <!-- The Platform (Foundation) -->
+                        <div class="platform-base"></div>
+
+                        <!-- The Entities -->
+                        <div class="node-client flex items-center justify-center">
+                            <i class="fas fa-briefcase text-[10px] text-indigo-300 opacity-80"></i>
+                        </div>
+                        <div class="node-freelancer flex items-center justify-center">
+                            <i class="fas fa-user text-[10px] text-teal-300 opacity-80"></i>
+                        </div>
+
+                        <!-- The Connection -->
+                        <div class="connection-beam"></div>
+                        <div class="growth-ripple"></div>
+                        <div class="growth-ripple" style="animation-delay: 0.2s"></div>
+
+                        <!-- Labels (Subtle) -->
+                        <div
+                            class="absolute bottom-10 text-[10px] text-slate-500 tracking-[0.2em] uppercase font-medium animate-pulse"
                         >
-                            Get Started
-                        </a>
-                        <a
-                            href="{% url 'accounts:register' %}"
-                            class="px-9 py-4 rounded-full bg-white border border-gray-200 text-gray-900 font-semibold text-lg hover:bg-gray-50 transition-all text-center"
-                        >
-                            Hire Talent
-                        </a>
-                    </div>
-
-                    <div class="flex gap-8 text-sm font-medium text-gray-500">
-                        <div class="flex items-center gap-2">
-                            <svg
-                                class="w-5 h-5 text-primary-600"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            No cost to join
+                            Connecting Talent
                         </div>
                     </div>
-                </div>
-
-                <!-- Hero Image with Floating Stats Badge -->
-                <div class="relative group">
-                    <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-white/50 bg-gray-100">
-                        <img
-                            src="{% static 'images/hero_workspace.png' %}"
-                            alt="Professional Workspace"
-                            class="w-full h-auto object-cover transform transition-transform duration-700 hover:scale-[1.02]"
-                        />
-                    </div>
-
-                    <!-- Stats Badge -->
-                    <div
-                        class="absolute -bottom-8 -left-8 md:-bottom-10 md:-left-10 z-20 animate-[float_4s_ease-in-out_infinite]"
-                    >
-                        <img
-                            src="{% static 'images/stat_badge.png' %}"
-                            alt="Projects Completed"
-                            class="w-48 md:w-56 rounded-xl shadow-float transition-transform hover:scale-105"
-                        />
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Trusted By Strip -->
-        <div class="bg-white border-y border-gray-200 py-8">
-            <div class="max-w-[1400px] mx-auto px-4 flex flex-col items-center">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Trusted by leading enterprises</p>
-                <div class="flex flex-wrap justify-center gap-12 opacity-50 grayscale transition-opacity hover:opacity-80">
-                    <span class="text-xl font-bold text-gray-800">Microsoft</span>
-                    <span class="text-xl font-bold text-gray-800">Airbnb</span>
-                    <span class="text-xl font-bold text-gray-800">Bissell</span>
-                    <span class="text-xl font-bold text-gray-800">GoDaddy</span>
                 </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Upgrade Feature Section with 3D Icons -->
-        <section class="py-24 bg-gray-50/50" id="how-it-works">
-            <div class="max-w-[1400px] mx-auto px-4 lg:px-6">
-                <h2 class="text-4xl font-bold text-gray-900 mb-16 text-center lg:text-left">Upgrade your workforce</h2>
+<!-- Categories / Explore Section (IT Only) -->
+<section class="py-12 md:py-24 bg-white relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="font-sans text-4xl font-bold text-slate-900 mb-4">Explore Tech Opportunities</h2>
+            <div class="w-24 h-1 bg-indigo-600 mx-auto rounded-full"></div>
+        </div>
 
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Card 1: Quality -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1: Web Dev -->
+            <div
+                class="group relative overflow-hidden rounded-2xl aspect-[4/5] cursor-pointer bg-slate-900 border border-slate-800"
+                data-aos="fade-up"
+                data-aos-delay="0"
+            >
+                <!-- Abstract Wireframe Background -->
+                <div
+                    class="absolute inset-0 opacity-20"
+                    style="background-image: radial-gradient(#6366f1 1px, transparent 1px); background-size: 20px 20px"
+                ></div>
+
+                <!-- Web Dev Wireframe Animation -->
+                <div class="absolute inset-0 flex items-center justify-center">
                     <div
-                        class="bg-white p-10 rounded-2xl border border-gray-200 hover:shadow-card transition-all duration-300 group"
+                        class="relative w-32 h-24 border border-indigo-500/50 rounded-lg bg-indigo-900/10 backdrop-blur-sm transform group-hover:scale-110 transition-transform duration-500 shadow-[0_0_15px_rgba(99,102,241,0.3)]"
                     >
-                        <div class="w-20 h-20 mb-8 transform group-hover:-translate-y-2 transition-transform duration-300">
-                            <img
-                                src="{% static 'images/icon_quality.png' %}"
-                                alt="Quality Icon"
-                                class="w-full h-full object-contain drop-shadow-lg"
-                            />
+                        <!-- Browser Header -->
+                        <div
+                            class="absolute top-0 left-0 right-0 h-6 border-b border-indigo-500/30 flex items-center px-2 gap-1"
+                        >
+                            <div class="w-1.5 h-1.5 rounded-full bg-red-400/80"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-yellow-400/80"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-green-400/80"></div>
                         </div>
-                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Proof of quality</h3>
-                        <p class="text-gray-600 text-lg leading-relaxed">
-                            Check any pro’s work samples, client reviews, and identity verification.
-                        </p>
-                    </div>
-
-                    <!-- Card 2: Cost -->
-                    <div
-                        class="bg-white p-10 rounded-2xl border border-gray-200 hover:shadow-card transition-all duration-300 group"
-                    >
-                        <div class="w-20 h-20 mb-8 transform group-hover:-translate-y-2 transition-transform duration-300">
-                            <img
-                                src="{% static 'images/icon_cost.png' %}"
-                                alt="Cost Icon"
-                                class="w-full h-full object-contain drop-shadow-lg"
-                            />
+                        <!-- Code Lines -->
+                        <div class="absolute top-10 left-3 right-3 space-y-2">
+                            <div class="h-1 w-2/3 bg-indigo-400/40 rounded animate-pulse"></div>
+                            <div
+                                class="h-1 w-1/2 bg-indigo-400/40 rounded animate-pulse"
+                                style="animation-delay: 0.2s"
+                            ></div>
+                            <div
+                                class="h-1 w-3/4 bg-indigo-400/40 rounded animate-pulse"
+                                style="animation-delay: 0.4s"
+                            ></div>
                         </div>
-                        <h3 class="text-2xl font-bold mb-4 text-gray-900">No cost until you hire</h3>
-                        <p class="text-gray-600 text-lg leading-relaxed">
-                            Interview potential fits for your job, negotiate rates, and only pay for work you approve.
-                        </p>
-                    </div>
-
-                    <!-- Card 3: Security -->
-                    <div
-                        class="bg-white p-10 rounded-2xl border border-gray-200 hover:shadow-card transition-all duration-300 group"
-                    >
-                        <div class="w-20 h-20 mb-8 transform group-hover:-translate-y-2 transition-transform duration-300">
-                            <img
-                                src="{% static 'images/icon_security.png' %}"
-                                alt="Security Icon"
-                                class="w-full h-full object-contain drop-shadow-lg"
-                            />
+                        <!-- Floating Element -->
+                        <div
+                            class="absolute -right-4 -bottom-4 w-12 h-12 border border-cyan-400/50 rounded-lg bg-slate-900/80 backdrop-blur-md flex items-center justify-center animate-float"
+                        >
+                            <i class="fas fa-code text-cyan-400 text-sm"></i>
                         </div>
-                        <h3 class="text-2xl font-bold mb-4 text-gray-900">Safe and secure</h3>
-                        <p class="text-gray-600 text-lg leading-relaxed">
-                            Focus on your work knowing we help protect your data and privacy with 24/7 support.
-                        </p>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Visual Collaboration Section -->
-        <section class="py-24 bg-white relative overflow-hidden">
-            <!-- Subtle decorative blob -->
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-6 z-10">
+                    <div
+                        class="w-10 h-10 mb-3 rounded-full bg-indigo-600/20 border border-indigo-500/30 backdrop-blur-sm flex items-center justify-center text-indigo-400"
+                    >
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">
+                        Web Development
+                    </h3>
+                    <p
+                        class="text-slate-400 text-sm mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform md:translate-y-2 md:group-hover:translate-y-0 duration-300"
+                    >
+                        Frontend, Backend & Fullstack
+                    </p>
+                </div>
+            </div>
+            <!-- Card 2: Mobile Apps -->
             <div
-                class="absolute right-0 top-0 w-1/3 h-full bg-primary-600/5 blur-3xl rounded-l-full pointer-events-none"
+                class="group relative overflow-hidden rounded-2xl aspect-[4/5] cursor-pointer bg-slate-900 border border-slate-800"
+                data-aos="fade-up"
+                data-aos-delay="100"
+            >
+                <div
+                    class="absolute inset-0 opacity-20"
+                    style="background-image: radial-gradient(#2dd4bf 1px, transparent 1px); background-size: 20px 20px"
+                ></div>
+
+                <!-- App Dev Wireframe Animation -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div
+                        class="relative w-20 h-36 border border-teal-500/50 rounded-2xl bg-teal-900/10 backdrop-blur-sm transform group-hover:rotate-6 transition-transform duration-500 shadow-[0_0_15px_rgba(45,212,191,0.2)]"
+                    >
+                        <!-- Notch -->
+                        <div class="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-teal-500/30 rounded-full"></div>
+                        <!-- App Grid -->
+                        <div class="absolute top-8 left-3 right-3 grid grid-cols-2 gap-2">
+                            <div class="aspect-square rounded-lg bg-teal-500/20 animate-pulse"></div>
+                            <div
+                                class="aspect-square rounded-lg bg-teal-500/20 animate-pulse"
+                                style="animation-delay: 0.2s"
+                            ></div>
+                            <div
+                                class="aspect-square rounded-lg bg-teal-500/20 animate-pulse"
+                                style="animation-delay: 0.4s"
+                            ></div>
+                            <div
+                                class="aspect-square rounded-lg bg-teal-500/20 animate-pulse"
+                                style="animation-delay: 0.6s"
+                            ></div>
+                        </div>
+                        <!-- Floating Icon -->
+                        <div
+                            class="absolute -left-6 top-1/2 w-10 h-10 border border-white/20 rounded-xl bg-slate-800/90 flex items-center justify-center animate-float-delayed shadow-lg"
+                        >
+                            <i class="fab fa-apple text-white text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-6 z-10">
+                    <div
+                        class="w-10 h-10 mb-3 rounded-full bg-teal-600/20 border border-teal-500/30 backdrop-blur-sm flex items-center justify-center text-teal-400"
+                    >
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-teal-400 transition-colors">
+                        App Development
+                    </h3>
+                    <p
+                        class="text-slate-400 text-sm mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform md:translate-y-2 md:group-hover:translate-y-0 duration-300"
+                    >
+                        iOS, Android & Flutter
+                    </p>
+                </div>
+            </div>
+            <!-- Card 3: UI/UX -->
+            <div
+                class="group relative overflow-hidden rounded-2xl aspect-[4/5] cursor-pointer bg-slate-900 border border-slate-800"
+                data-aos="fade-up"
+                data-aos-delay="200"
+            >
+                <div
+                    class="absolute inset-0 opacity-20"
+                    style="background-image: radial-gradient(#a855f7 1px, transparent 1px); background-size: 20px 20px"
+                ></div>
+
+                <!-- UI/UX Wireframe Animation -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="relative w-32 h-32 transform group-hover:scale-105 transition-transform duration-500">
+                        <!-- Layer 1 -->
+                        <div
+                            class="absolute top-0 right-0 w-24 h-24 border border-purple-500/30 rounded-xl bg-purple-900/20 backdrop-blur-sm transform translate-x-2 translate-y-2 animate-float"
+                        ></div>
+                        <!-- Layer 2 -->
+                        <div
+                            class="absolute top-4 right-4 w-24 h-24 border border-purple-500/50 rounded-xl bg-purple-900/20 backdrop-blur-sm transform -translate-x-2 -translate-y-2 animate-float-delayed shadow-[0_0_15px_rgba(168,85,247,0.3)]"
+                        >
+                            <!-- Elements inside -->
+                            <div class="absolute top-3 left-3 w-8 h-8 rounded-full bg-purple-400/30"></div>
+                            <div class="absolute top-5 left-14 h-2 w-8 bg-purple-400/30 rounded"></div>
+                            <div class="absolute bottom-3 right-3 w-6 h-6 rounded bg-purple-400/30"></div>
+                        </div>
+                        <!-- Cursor -->
+                        <div class="absolute -bottom-2 -right-2 text-white text-2xl animate-bounce">
+                            <i class="fas fa-mouse-pointer drop-shadow-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-6 z-10">
+                    <div
+                        class="w-10 h-10 mb-3 rounded-full bg-purple-600/20 border border-purple-500/30 backdrop-blur-sm flex items-center justify-center text-purple-400"
+                    >
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">UI/UX Design</h3>
+                    <p
+                        class="text-slate-400 text-sm mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform md:translate-y-2 md:group-hover:translate-y-0 duration-300"
+                    >
+                        Interfaces & Prototyping
+                    </p>
+                </div>
+            </div>
+            <!-- Card 4: AI & Data -->
+            <div
+                class="group relative overflow-hidden rounded-2xl aspect-[4/5] cursor-pointer bg-slate-900 border border-slate-800"
+                data-aos="fade-up"
+                data-aos-delay="300"
+            >
+                <div
+                    class="absolute inset-0 opacity-20"
+                    style="background-image: radial-gradient(#ec4899 1px, transparent 1px); background-size: 20px 20px"
+                ></div>
+
+                <!-- AI Wireframe Animation -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="relative w-32 h-32">
+                        <!-- Nodes -->
+                        <div
+                            class="absolute top-1/2 left-1/2 w-4 h-4 -ml-2 -mt-2 bg-pink-500 rounded-full shadow-[0_0_15px_pink] animate-pulse"
+                        ></div>
+                        <div class="absolute top-0 left-0 w-3 h-3 bg-pink-400 rounded-full animate-float"></div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-pink-400 rounded-full animate-float-delayed"></div>
+                        <div class="absolute top-0 right-10 w-2 h-2 bg-pink-300 rounded-full animate-bounce"></div>
+
+                        <!-- Connecting Lines (SVG) -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-50">
+                            <line x1="50%" y1="50%" x2="0%" y2="0%" stroke="#ec4899" stroke-width="1" />
+                            <line x1="50%" y1="50%" x2="100%" y2="100%" stroke="#ec4899" stroke-width="1" />
+                            <line
+                                x1="50%"
+                                y1="50%"
+                                x2="70%"
+                                y2="0%"
+                                stroke="#ec4899"
+                                stroke-dasharray="4"
+                                stroke-width="1"
+                            />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-6 z-10">
+                    <div
+                        class="w-10 h-10 mb-3 rounded-full bg-pink-600/20 border border-pink-500/30 backdrop-blur-sm flex items-center justify-center text-pink-400"
+                    >
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-pink-400 transition-colors">AI & Data</h3>
+                    <p
+                        class="text-slate-400 text-sm mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform md:translate-y-2 md:group-hover:translate-y-0 duration-300"
+                    >
+                        Machine Learning & Python
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features / Why Choose Us -->
+<section class="py-12 md:py-24 bg-slate-50 relative overflow-hidden" id="features">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="font-sans text-4xl font-bold text-slate-900 mb-4">Why FreelanceConnect?</h2>
+            <p class="text-slate-600 max-w-2xl mx-auto text-lg">The ecosystem for scalability, security, and speed.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Feature 1 -->
+            <div
+                class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                data-aos="fade-up"
+                data-aos-delay="0"
+            >
+                <div
+                    class="w-14 h-14 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-2xl mb-6"
+                >
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Vetted Experts</h3>
+                <p class="text-slate-500 leading-relaxed">Verified portfolios and coding tests ensure you hire quality.</p>
+            </div>
+            <!-- Feature 2 -->
+            <div
+                class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                data-aos="fade-up"
+                data-aos-delay="100"
+            >
+                <div
+                    class="w-14 h-14 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 text-2xl mb-6"
+                >
+                    <i class="fab fa-stripe"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Stripe Payments</h3>
+                <p class="text-slate-500 leading-relaxed">Fast, secure global payments processed via Stripe Connect.</p>
+            </div>
+            <!-- Feature 3 -->
+            <div
+                class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                data-aos="fade-up"
+                data-aos-delay="200"
+            >
+                <div class="w-14 h-14 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 text-2xl mb-6">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Secure Platform</h3>
+                <p class="text-slate-500 leading-relaxed">
+                    Your data and privacy are protected by enterprise-grade security.
+                </p>
+            </div>
+            <!-- Feature 4 -->
+            <div
+                class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                data-aos="fade-up"
+                data-aos-delay="300"
+            >
+                <div class="w-14 h-14 rounded-xl bg-pink-50 flex items-center justify-center text-pink-600 text-2xl mb-6">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">24/7 Support</h3>
+                <p class="text-slate-500 leading-relaxed">Dedicated support to resolve any connection issues instantly.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works (Process) -->
+<section class="py-12 md:py-24 bg-white" id="how-it-works">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-20" data-aos="fade-up">
+            <h2 class="font-sans text-4xl font-bold text-slate-900 mb-4">How It Works</h2>
+            <p class="text-slate-600">Simple, transparent, and direct.</p>
+        </div>
+
+        <div class="relative">
+            <!-- Connecting Line (Desktop) -->
+            <div
+                class="hidden lg:block absolute top-12 left-0 w-full h-1 bg-gradient-to-r from-indigo-50 via-indigo-200 to-indigo-50 z-0"
             ></div>
 
-            <div class="max-w-[1400px] mx-auto px-4 lg:px-6 grid md:grid-cols-2 gap-20 items-center relative z-10">
-                <div class="order-2 md:order-1">
-                    <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200">
-                        <img
-                            src="{% static 'images/collaboration.png' %}"
-                            alt="Team Collaboration"
-                            class="w-full h-auto transform hover:scale-105 transition-transform duration-700"
-                        />
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+                <!-- Step 1 -->
+                <div class="text-center group" data-aos="fade-up" data-aos-delay="0">
+                    <div
+                        class="w-24 h-24 mx-auto bg-white border-4 border-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-sm group-hover:border-indigo-600 transition-colors duration-300"
+                    >
+                        <span class="text-3xl text-indigo-600"><i class="fas fa-search"></i></span>
                     </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">1. Explore</h3>
+                    <p class="text-slate-500 text-sm">Browse expert profiles and gig listings.</p>
                 </div>
-                <div class="order-1 md:order-2">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-6">Work together, <br />wherever you are</h2>
-                    <p class="text-xl text-gray-600 mb-10 leading-relaxed">
-                        Collaborate with your team and freelancers in a single workspace. Track progress, share files, and
-                        communicate in real-time.
-                    </p>
-                    <a href="#" class="text-primary-600 font-bold text-lg hover:underline flex items-center gap-2">
-                        Explore tools
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3"
-                            ></path>
-                        </svg>
-                    </a>
+                <!-- Step 2 -->
+                <div class="text-center group" data-aos="fade-up" data-aos-delay="200">
+                    <div
+                        class="w-24 h-24 mx-auto bg-white border-4 border-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-sm group-hover:border-indigo-600 transition-colors duration-300"
+                    >
+                        <span class="text-3xl text-indigo-600"><i class="fas fa-network-wired"></i></span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">2. Connect</h3>
+                    <p class="text-slate-500 text-sm">Use your plan credits to connect with talent.</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="text-center group" data-aos="fade-up" data-aos-delay="400">
+                    <div
+                        class="w-24 h-24 mx-auto bg-white border-4 border-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-sm group-hover:border-indigo-600 transition-colors duration-300"
+                    >
+                        <span class="text-3xl text-indigo-600"><i class="fas fa-address-card"></i></span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">3. Reveal Details</h3>
+                    <p class="text-slate-500 text-sm">Get direct contact information immediately.</p>
+                </div>
+                <!-- Step 4 -->
+                <div class="text-center group" data-aos="fade-up" data-aos-delay="600">
+                    <div
+                        class="w-24 h-24 mx-auto bg-white border-4 border-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-sm group-hover:border-indigo-600 transition-colors duration-300"
+                    >
+                        <span class="text-3xl text-indigo-600"><i class="fas fa-handshake"></i></span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">4. Start Working</h3>
+                    <p class="text-slate-500 text-sm">Take it offline and collaborate directly. No limits.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
 
-        <!-- Accordion FAQ -->
-        <section class="py-24 bg-gray-50 border-t border-gray-200">
-            <div class="max-w-3xl mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center mb-16 text-gray-900">Frequently asked questions</h2>
-                <div class="space-y-4" x-data="{ selected: 1 }">
-                    <!-- Item 1 -->
-                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <button
-                            @click="selected = selected === 1 ? null : 1"
-                            class="w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 transition-colors"
-                        >
-                            <span class="text-lg font-semibold text-gray-900">How does the payment release work?</span>
-                            <svg
-                                class="w-5 h-5 text-gray-400 transition-transform duration-200"
-                                :class="selected === 1 ? 'rotate-180' : ''"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div
-                            x-show="selected === 1"
-                            x-collapse
-                            x-cloak
-                            class="px-6 pb-6 text-gray-600 leading-relaxed text-base border-t border-gray-100 pt-4"
-                        >
-                            Funds are held in escrow when you start a contract. You review the work, and once you approve
-                            it, the funds are released to the freelancer.
-                        </div>
-                    </div>
-                    <!-- Item 2 -->
-                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <button
-                            @click="selected = selected === 2 ? null : 2"
-                            class="w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 transition-colors"
-                        >
-                            <span class="text-lg font-semibold text-gray-900"
-                                >What if I'm not satisfied with the work?</span
-                            >
-                            <svg
-                                class="w-5 h-5 text-gray-400 transition-transform duration-200"
-                                :class="selected === 2 ? 'rotate-180' : ''"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-                                <path d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div
-                            x-show="selected === 2"
-                            x-collapse
-                            x-cloak
-                            class="px-6 pb-6 text-gray-600 leading-relaxed text-base border-t border-gray-100 pt-4"
-                        >
-                            We offer a comprehensive dispute resolution process. If work doesn't meet the requirements
-                            outlined in the intro, you can request revisions or a refund.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<!-- Supported Tech Stack Section -->
+<section class="py-12 md:py-20 bg-slate-900 text-white relative overflow-hidden" id="stats">
+    <div class="absolute inset-0 bg-indigo-900/20"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="font-sans text-3xl font-bold text-white opacity-90">Expertise across the stack</h2>
+            <p class="text-indigo-200 mt-2">Hire talent for any framework or tool</p>
+        </div>
 
-        <!-- Footer -->
-        <footer class="bg-gray-900 text-white py-20">
-            <div class="max-w-[1400px] mx-auto px-4 lg:px-6">
-                <div class="grid md:grid-cols-4 gap-12 mb-16">
-                    <div>
-                        <h3 class="font-bold text-lg mb-6">Clients</h3>
-                        <ul class="space-y-4 text-gray-400 text-sm">
-                            <li><a href="#" class="hover:text-white transition-colors">How to Hire</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Talent Marketplace</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Pay safely</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-lg mb-6">Talent</h3>
-                        <ul class="space-y-4 text-gray-400 text-sm">
-                            <li><a href="#" class="hover:text-white transition-colors">How to Find Work</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Direct Contracts</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-lg mb-6">Resources</h3>
-                        <ul class="space-y-4 text-gray-400 text-sm">
-                            <li><a href="#" class="hover:text-white transition-colors">Help & Support</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-lg mb-6">Company</h3>
-                        <ul class="space-y-4 text-gray-400 text-sm">
-                            <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div
-                    class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-500"
-                >
-                    <p>&copy; 2024 FreelanceConnect Global Inc.</p>
-                    <div class="flex gap-8">
-                        <a href="#" class="hover:text-white transition-colors">Terms</a>
-                        <a href="#" class="hover:text-white transition-colors">Privacy</a>
-                    </div>
-                </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-8 text-center items-center opacity-70">
+            <!-- Python -->
+            <div
+                class="hover:opacity-100 hover:text-yellow-400 transition-all transform hover:-translate-y-1 duration-300"
+                data-aos="fade-up"
+                data-aos-delay="0"
+            >
+                <i class="fab fa-python text-4xl mb-2"></i>
+                <p class="text-xs font-medium tracking-wide">Python</p>
             </div>
-        </footer>
-    </body>
-</html>
+            <!-- React -->
+            <div
+                class="hover:opacity-100 hover:text-cyan-400 transition-all transform hover:-translate-y-1 duration-300"
+                data-aos="fade-up"
+                data-aos-delay="50"
+            >
+                <i class="fab fa-react text-4xl mb-2"></i>
+                <p class="text-xs font-medium tracking-wide">React</p>
+            </div>
+            <!-- Node -->
+            <div
+                class="hover:opacity-100 hover:text-green-500 transition-all transform hover:-translate-y-1 duration-300"
+                data-aos="fade-up"
+                data-aos-delay="100"
+            >
+                <i class="fab fa-node-js text-4xl mb-2"></i>
+                <p class="text-xs font-medium tracking-wide">Node.js</p>
+            </div>
+            <!-- AWS -->
+            <div
+                class="hover:opacity-100 hover:text-orange-400 transition-all transform hover:-translate-y-1 duration-300"
+                data-aos="fade-up"
+                data-aos-delay="150"
+            >
+                <i class="fab fa-aws text-4xl mb-2"></i>
+                <p class="text-xs font-medium tracking-wide">AWS</p>
+            </div>
+            <!-- Docker -->
+            <div
+                class="hover:opacity-100 hover:text-blue-500 transition-all transform hover:-translate-y-1 duration-300"
+                data-aos="fade-up"
+                data-aos-delay="200"
+            >
+                <i class="fab fa-docker text-4xl mb-2"></i>
+                <p class="text-xs font-medium tracking-wide">Docker</p>
+            </div>
+            <!-- Android -->
+            <div
+                class="hover:opacity-100 hover:text-green-400 transition-all transform hover:-translate-y-1 duration-300"
+                data-aos="fade-up"
+                data-aos-delay="250"
+            >
+                <i class="fab fa-android text-4xl mb-2"></i>
+                <p class="text-xs font-medium tracking-wide">Android</p>
+            </div>
+            <!-- Swift -->
+            <div
+                class="hover:opacity-100 hover:text-red-500 transition-all transform hover:-translate-y-1 duration-300"
+                data-aos="fade-up"
+                data-aos-delay="300"
+            >
+                <i class="fab fa-swift text-4xl mb-2"></i>
+                <p class="text-xs font-medium tracking-wide">Swift</p>
+            </div>
+            <!-- Vue -->
+            <div
+                class="hover:opacity-100 hover:text-emerald-400 transition-all transform hover:-translate-y-1 duration-300"
+                data-aos="fade-up"
+                data-aos-delay="350"
+            >
+                <i class="fab fa-vuejs text-4xl mb-2"></i>
+                <p class="text-xs font-medium tracking-wide">Vue.js</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Parallax CTA -->
+<section class="relative py-16 md:py-32 flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-indigo-900 to-slate-900">
+        <!-- Abstract background pattern since images might be missing -->
+        <div
+            class="absolute inset-0 opacity-20"
+            style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 30px 30px"
+        ></div>
+    </div>
+
+    <div class="relative z-10 text-center px-4 max-w-3xl mx-auto" data-aos="zoom-in">
+        <h2 class="font-sans text-3xl md:text-5xl font-bold text-white mb-6">Ready to scale your team?</h2>
+        <p class="text-xl text-indigo-100 mb-10">
+            Join thousands of businesses and freelancers growing together on FreelanceConnect.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+                href="{% url 'accounts:register' %}"
+                class="px-8 py-4 rounded-full bg-indigo-600 text-white font-bold text-lg hover:bg-indigo-500 transition-colors shadow-2xl decoration-none"
+                >Get Started Now</a
+            >
+            <a
+                href="{% url 'accounts:signin' %}"
+                class="px-8 py-4 rounded-full bg-transparent border-2 border-white text-white font-bold text-lg hover:bg-white hover:text-slate-900 transition-colors decoration-none"
+                >Log In</a
+            >
+        </div>
+    </div>
+</section>
+{% endblock %}

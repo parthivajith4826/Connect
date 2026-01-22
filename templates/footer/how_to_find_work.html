@@ -1,0 +1,189 @@
+{% extends 'footer\base_landing.html' %} {% load static %} {% block title %}Find Work | Connect{% endblock %} {% block content %}
+<section class="relative pt-12 pb-12 lg:pt-36 lg:pb-32 overflow-hidden bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-20" data-aos="fade-up">
+            <h1 class="font-sans text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 mb-4 sm:mb-6">
+                Work your way. <br />
+                <span class="text-gradient">Get paid securely.</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-600 leading-relaxed">
+                Join a community of experts. Choose your projects, set your rates, and grow your career.
+            </p>
+        </div>
+
+        <!-- Timeline / Process -->
+        <div class="relative">
+            <!-- Connecting Line (Desktop) -->
+            <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-indigo-100 -translate-y-1/2 z-0"></div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 relative z-10">
+                <!-- Step 1 -->
+                <div
+                    class="group bg-white p-8 rounded-3xl shadow-lg border border-slate-100 hover:-translate-y-2 transition-transform duration-300"
+                    data-aos="fade-up"
+                    data-aos-delay="0"
+                >
+                    <div
+                        class="w-16 h-16 rounded-full bg-indigo-600 text-white flex items-center justify-center text-2xl font-bold mb-6 mx-auto lg:mx-0 shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform"
+                    >
+                        1
+                    </div>
+                    <div class="h-40 flex items-center justify-center mb-6 bg-slate-50 rounded-2xl overflow-hidden">
+                        <!-- SVG Profile Setup -->
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <rect
+                                x="25"
+                                y="25"
+                                width="70"
+                                height="70"
+                                rx="35"
+                                fill="white"
+                                stroke="#6366F1"
+                                stroke-width="2"
+                            />
+                            <circle cx="60" cy="50" r="15" fill="#E0E7FF" />
+                            <path d="M40 85C40 73.9543 48.9543 65 60 65C71.0457 65 80 73.9543 80 85" fill="#E0E7FF" />
+                            <!-- Editing Pencil -->
+                            <path
+                                d="M85 25L95 35L90 40L80 30L85 25Z"
+                                fill="#F43F5E"
+                                class="animate-bounce"
+                                style="animation-duration: 2s"
+                            />
+                            <path d="M90 40L80 30L65 45L65 55L75 55L90 40Z" fill="#FB7185" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3 text-center lg:text-left">Create Profile</h3>
+                    <p class="text-slate-600 text-center lg:text-left">
+                        Highlight your skills, portfolio, and work history. Stand out to top clients.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div
+                    class="group bg-white p-8 rounded-3xl shadow-lg border border-slate-100 hover:-translate-y-2 transition-transform duration-300"
+                    data-aos="fade-up"
+                    data-aos-delay="200"
+                >
+                    <div
+                        class="w-16 h-16 rounded-full bg-purple-600 text-white flex items-center justify-center text-2xl font-bold mb-6 mx-auto lg:mx-0 shadow-lg shadow-purple-200 group-hover:scale-110 transition-transform"
+                    >
+                        2
+                    </div>
+                    <div class="h-40 flex items-center justify-center mb-6 bg-slate-50 rounded-2xl overflow-hidden">
+                        <!-- SVG Search/Match -->
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <!-- Cards -->
+                            <rect
+                                x="30"
+                                y="40"
+                                width="40"
+                                height="50"
+                                rx="4"
+                                fill="white"
+                                stroke="#CBD5E1"
+                                class="transform -rotate-6 origin-bottom-right"
+                            />
+                            <rect
+                                x="40"
+                                y="35"
+                                width="40"
+                                height="50"
+                                rx="4"
+                                fill="white"
+                                stroke="#CBD5E1"
+                                class="transform rotate-3 origin-bottom-left"
+                            />
+                            <rect
+                                x="35"
+                                y="30"
+                                width="50"
+                                height="60"
+                                rx="4"
+                                fill="white"
+                                stroke="#9333EA"
+                                stroke-width="2"
+                            />
+                            <!-- Magnifying Glass -->
+                            <circle
+                                cx="75"
+                                cy="75"
+                                r="20"
+                                stroke="#9333EA"
+                                stroke-width="4"
+                                fill="none"
+                                class="animate-pulse"
+                            />
+                            <path d="M90 90L105 105" stroke="#9333EA" stroke-width="4" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3 text-center lg:text-left">Find Jobs</h3>
+                    <p class="text-slate-600 text-center lg:text-left">
+                        Search for projects that match your expertise or get invited by clients.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div
+                    class="group bg-white p-8 rounded-3xl shadow-lg border border-slate-100 hover:-translate-y-2 transition-transform duration-300"
+                    data-aos="fade-up"
+                    data-aos-delay="400"
+                >
+                    <div
+                        class="w-16 h-16 rounded-full bg-teal-500 text-white flex items-center justify-center text-2xl font-bold mb-6 mx-auto lg:mx-0 shadow-lg shadow-teal-200 group-hover:scale-110 transition-transform"
+                    >
+                        3
+                    </div>
+                    <div class="h-40 flex items-center justify-center mb-6 bg-slate-50 rounded-2xl overflow-hidden">
+                        <!-- SVG Get Paid -->
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <rect
+                                x="20"
+                                y="40"
+                                width="80"
+                                height="50"
+                                rx="6"
+                                fill="#F0FDFA"
+                                stroke="#2DD4BF"
+                                stroke-width="2"
+                            />
+                            <circle cx="60" cy="65" r="15" stroke="#2DD4BF" stroke-width="2" />
+                            <path d="M55 65H65M60 60V70" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round" />
+                            <!-- Coins -->
+                            <circle
+                                cx="90"
+                                cy="30"
+                                r="10"
+                                fill="#FCD34D"
+                                class="animate-bounce"
+                                style="animation-delay: 0.1s"
+                            />
+                            <circle
+                                cx="100"
+                                cy="45"
+                                r="8"
+                                fill="#F59E0B"
+                                class="animate-bounce"
+                                style="animation-delay: 0.3s"
+                            />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-3 text-center lg:text-left">Get Paid</h3>
+                    <p class="text-slate-600 text-center lg:text-left">
+                        Secure payments with payment protection. Direct deposit to your bank.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-24 text-center">
+            <a
+                href="{% url 'accounts:register' %}"
+                class="inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-full hover:bg-indigo-700 hover:shadow-2xl hover:shadow-indigo-300 transform hover:-translate-y-1 decoration-none"
+            >
+                Create Your Profile
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

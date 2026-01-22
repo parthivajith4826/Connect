@@ -534,3 +534,29 @@ def social_email_conflict(request):
     return render(request, "account/social_email_conflict.html")
 
 
+
+def how_to_hire(request):
+    return render(request,"footer/how_to_hire.html")
+
+def talent_marketplace(request):
+    return render(request,"footer/talent_marketplace.html")
+
+def enterprise(request):
+    return render(request,"footer/enterprise.html")
+
+def how_to_find_work(request):
+    return render(request,"footer/how_to_find_work.html")
+
+def direct_contracts(request):
+    return render(request,"footer/direct_contracts.html")
+
+def community(request):
+    return render(request,"footer/community.html")
+
+def privacy_policy(request):
+    return render(request,"footer/privacy_policy.html")
+
+def terms_of_service(request):
+    return render(request,"footer/terms_of_service.html")
+
+

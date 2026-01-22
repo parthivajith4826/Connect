@@ -1,0 +1,177 @@
+{% extends 'footer\base_landing.html' %} {% load static %} {% block title %}Talent Marketplace | Connect{% endblock %} {% block content %}
+<section class="py-12 md:py-24 bg-white relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-20" data-aos="fade-up">
+            <h1 class="font-sans text-4xl sm:text-5xl font-bold text-slate-900 mb-4 sm:mb-6">
+                Explore the <span class="text-gradient">Marketplace</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-600">
+                Find the perfect professional for any project. From Development to Design, we have it all.
+            </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Category 1: Development -->
+            <div
+                class="group p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                data-aos="fade-up"
+                data-aos-delay="0"
+            >
+                <div
+                    class="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-3xl mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-colors"
+                >
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Development & IT</h3>
+                <ul class="space-y-3 text-slate-600 mb-8">
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Python & Django
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> React & Node.js
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Mobile App Dev
+                    </li>
+                </ul>
+                <div class="h-1 w-full bg-slate-200 rounded overflow-hidden">
+                    <div class="h-full w-0 bg-indigo-600 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+                </div>
+            </div>
+
+            <!-- Category 2: Design -->
+            <div
+                class="group p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                data-aos="fade-up"
+                data-aos-delay="100"
+            >
+                <div
+                    class="w-16 h-16 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-3xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors"
+                >
+                    <i class="fas fa-pen-nib"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Design & Creative</h3>
+                <ul class="space-y-3 text-slate-600 mb-8">
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> UI/UX Design
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Graphic Design
+                    </li>
+                    <li class="flex items-center gap-2"><i class="fas fa-check text-green-500 text-sm"></i> Animation</li>
+                </ul>
+                <div class="h-1 w-full bg-slate-200 rounded overflow-hidden">
+                    <div class="h-full w-0 bg-purple-600 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+                </div>
+            </div>
+
+            <!-- Category 3: AI -->
+            <div
+                class="group p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                data-aos="fade-up"
+                data-aos-delay="200"
+            >
+                <div
+                    class="w-16 h-16 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center text-3xl mb-6 group-hover:bg-pink-600 group-hover:text-white transition-colors"
+                >
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">AI & Machine Learning</h3>
+                <ul class="space-y-3 text-slate-600 mb-8">
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Data Science
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> NLP & Chatbots
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Computer Vision
+                    </li>
+                </ul>
+                <div class="h-1 w-full bg-slate-200 rounded overflow-hidden">
+                    <div class="h-full w-0 bg-pink-600 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+                </div>
+            </div>
+            <!-- Category 4: Marketing -->
+            <div
+                class="group p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                data-aos="fade-up"
+                data-aos-delay="300"
+            >
+                <div
+                    class="w-16 h-16 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-3xl mb-6 group-hover:bg-orange-600 group-hover:text-white transition-colors"
+                >
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Sales & Marketing</h3>
+                <ul class="space-y-3 text-slate-600 mb-8">
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Digital Marketing
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> SEO & Content
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Social Media
+                    </li>
+                </ul>
+                <div class="h-1 w-full bg-slate-200 rounded overflow-hidden">
+                    <div class="h-full w-0 bg-orange-600 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+                </div>
+            </div>
+
+            <!-- Category 5: Writing -->
+            <div
+                class="group p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                data-aos="fade-up"
+                data-aos-delay="400"
+            >
+                <div
+                    class="w-16 h-16 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center text-3xl mb-6 group-hover:bg-teal-600 group-hover:text-white transition-colors"
+                >
+                    <i class="fas fa-pencil-alt"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Writing & Translation</h3>
+                <ul class="space-y-3 text-slate-600 mb-8">
+                    <li class="flex items-center gap-2"><i class="fas fa-check text-green-500 text-sm"></i> Copywriting</li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Technical Writing
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Localization
+                    </li>
+                </ul>
+                <div class="h-1 w-full bg-slate-200 rounded overflow-hidden">
+                    <div class="h-full w-0 bg-teal-600 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+                </div>
+            </div>
+
+            <!-- Category 6: Admin -->
+            <div
+                class="group p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                data-aos="fade-up"
+                data-aos-delay="500"
+            >
+                <div
+                    class="w-16 h-16 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors"
+                >
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Admin & Support</h3>
+                <ul class="space-y-3 text-slate-600 mb-8">
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Virtual Assistant
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-500 text-sm"></i> Project Management
+                    </li>
+                    <li class="flex items-center gap-2"><i class="fas fa-check text-green-500 text-sm"></i> Data Entry</li>
+                </ul>
+                <div class="h-1 w-full bg-slate-200 rounded overflow-hidden">
+                    <div class="h-full w-0 bg-blue-600 group-hover:w-full transition-all duration-700 ease-in-out"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

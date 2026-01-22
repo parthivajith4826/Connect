@@ -1,0 +1,136 @@
+{% extends 'footer\base_landing.html' %} {% load static %} {% block title %}Enterprise Solutions | Connect{% endblock %} {% block content %}
+<section class="relative pt-12 pb-12 lg:pt-36 lg:pb-32 overflow-hidden bg-slate-900 text-white">
+    <!-- Abstract Tech Background -->
+    <div
+        class="absolute inset-0 opacity-20"
+        style="background-image: radial-gradient(#6366f1 1px, transparent 1px); background-size: 30px 30px"
+    ></div>
+    <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-900/50 to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            <div data-aos="fade-right">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-900/50 border border-indigo-700 text-indigo-300 text-sm mb-6"
+                >
+                    <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+                    Enterprise Grade
+                </div>
+                <h1 class="font-sans text-4xl sm:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6">
+                    Scale with <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400"
+                        >Confidence.</span
+                    >
+                </h1>
+                <p class="text-xl text-slate-300 mb-10 leading-relaxed max-w-lg">
+                    Secure, compliant, and scalable workforce solutions for the world's leading organizations.
+                </p>
+                <div class="flex gap-4">
+                    <a
+                        href="#"
+                        class="px-8 py-4 rounded-full bg-white text-slate-900 text-lg font-bold hover:bg-slate-100 transition-colors decoration-none"
+                    >
+                        Contact Sales
+                    </a>
+                </div>
+            </div>
+
+            <!-- Isometric Server/Security Animation -->
+            <div class="relative h-96 flex items-center justify-center" data-aos="fade-left">
+                <div class="relative w-64 h-64 md:w-80 md:h-80">
+                    <!-- Base -->
+                    <div
+                        class="absolute bottom-0 w-full h-40 bg-indigo-900/20 rounded-full border border-indigo-500/30 transform rotate-x-60 animate-spin-slow"
+                        style="animation-duration: 20s"
+                    ></div>
+
+                    <!-- Floating Shield -->
+                    <div class="absolute top-10 left-1/2 transform -translate-x-1/2 w-48 h-56 animate-float">
+                        <svg
+                            viewBox="0 0 100 120"
+                            fill="none"
+                            class="w-full h-full drop-shadow-[0_0_30px_rgba(99,102,241,0.5)]"
+                        >
+                            <path
+                                d="M50 0L95 25V60C95 85 75 105 50 120C25 105 5 85 5 60V25L50 0Z"
+                                fill="url(#shield-gradient)"
+                                stroke="#818CF8"
+                                stroke-width="2"
+                            />
+                            <path
+                                d="M50 30V90M30 50L50 30L70 50"
+                                stroke="white"
+                                stroke-width="4"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            <defs>
+                                <linearGradient
+                                    id="shield-gradient"
+                                    x1="50"
+                                    y1="0"
+                                    x2="50"
+                                    y2="120"
+                                    gradientUnits="userSpaceOnUse"
+                                >
+                                    <stop stop-color="#4F46E5" stop-opacity="0.8" />
+                                    <stop offset="1" stop-color="#1E1B4B" stop-opacity="0.9" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+
+                    <!-- Orbiting Nodes -->
+                    <div
+                        class="absolute top-1/2 left-1/2 w-full h-20 -mt-10 animate-spin-slow"
+                        style="animation-duration: 10s"
+                    >
+                        <div
+                            class="absolute left-0 top-1/2 w-8 h-8 bg-cyan-500 rounded-full shadow-[0_0_15px_cyan] transform -translate-y-1/2"
+                        ></div>
+                        <div
+                            class="absolute right-0 top-1/2 w-8 h-8 bg-purple-500 rounded-full shadow-[0_0_15px_purple] transform -translate-y-1/2"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="py-12 md:py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid sm:grid-cols-3 gap-8 sm:gap-12">
+            <!-- Feature 1 -->
+            <div data-aos="fade-up" data-aos-delay="0">
+                <div
+                    class="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-3xl mb-6"
+                >
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Compliance</h3>
+                <p class="text-slate-600">Automated worker classification and global compliance checks.</p>
+            </div>
+            <!-- Feature 2 -->
+            <div data-aos="fade-up" data-aos-delay="100">
+                <div
+                    class="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 text-3xl mb-6"
+                >
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">SSO & Security</h3>
+                <p class="text-slate-600">Enterprise-grade security integrations including SSO and MFA.</p>
+            </div>
+            <!-- Feature 3 -->
+            <div data-aos="fade-up" data-aos-delay="200">
+                <div class="w-16 h-16 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 text-3xl mb-6">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Advanced Reporting</h3>
+                <p class="text-slate-600">Deep insights into workforce spread, spend, and performance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
