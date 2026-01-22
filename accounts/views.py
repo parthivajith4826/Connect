@@ -9,7 +9,7 @@ from django.contrib.auth import login
 
 from django.utils import timezone
 from datetime import timedelta
-
+from client.models import Wallet
 
 from accounts.tasks import send_verification_email,send_verification_otp,resend_verification_otp
 
@@ -223,6 +223,7 @@ def role(request):
             else :
                 user.role = role
                 user.save()
+                Wallet.objects.create(user = request.user)
             
             request.session['user_email'] = email
             
@@ -259,6 +260,7 @@ def role(request):
                     user.role = role
                     user.is_verified = True
                     user.save()
+                    Wallet.objects.create(user = request.user)
                 print("socail role saved")
                 
                 request.session['user_email'] = request.user.email

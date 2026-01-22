@@ -21,7 +21,7 @@ urlpatterns = [
     path("gig-details/<slug:gig_slug>/<slug:card_slug>/", views.gig_details, name="gig_details"),
     path("connection/", views.connections, name="connections"),
     path("review/", views.review, name="review"),
-    # path("cancel/", views.cancel, name="cancel"),
+    path("payment-fail/", views.payment_fail, name="payment_fail"),
     
     
     

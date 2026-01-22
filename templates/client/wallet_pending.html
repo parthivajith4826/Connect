@@ -132,6 +132,36 @@
 </style>
 
 <script>
-    setTimeout(() => location.reload(), 3000);
+    (function () {
+        const TIMEOUT_DURATION = 20000; // 20 seconds
+        const STORAGE_KEY = "wallet_pending_start_time";
+        const FAIL_URL = "{% url 'client:payment_fail' %}";
+
+        // Get navigation type to distinguish between fresh visit and reload
+        const navEntries = performance.getEntriesByType("navigation");
+        const navType = navEntries.length > 0 ? navEntries[0].type : "navigate";
+
+        let startTime = sessionStorage.getItem(STORAGE_KEY);
+        const now = Date.now();
+
+        // Check if we need to reset the timer (fresh navigation or back/forward)
+        // If it's a reload (navType === 'reload'), we continue the timer.
+        // Otherwise (navigate, back_forward, etc.), we start fresh.
+        if (navType !== "reload" || !startTime) {
+            startTime = now;
+            sessionStorage.setItem(STORAGE_KEY, startTime);
+        }
+
+        const elapsed = now - parseInt(startTime, 10);
+
+        if (elapsed > TIMEOUT_DURATION) {
+            // Timeout reached, redirect to failure page
+            sessionStorage.removeItem(STORAGE_KEY);
+            window.location.href = FAIL_URL;
+        } else {
+            // Continue waiting and reloading
+            setTimeout(() => location.reload(), 3000);
+        }
+    })();
 </script>
 {% endblock %}
