@@ -67,13 +67,15 @@ def profile(request):
         form2 = LocationForm(request.POST)
         print(form1.is_valid(),form2.is_valid())
         if form1.is_valid() and form2.is_valid():  
-            user.save()
-            user.profile_completed = True
-            
-            form1.save()
-            location_form = form2.save(commit=False)
-            location_form.user_id = user
-            location_form.save()
+            with transaction.atomic():
+                user.save()
+                user.profile_completed = True
+                
+                form1.save()
+                location_form = form2.save(commit=False)
+                location_form.user_id = user
+                location_form.save()
+                Wallet.objects.create(user = request.user)
             return redirect('client:profile')
         else:
             return render(request,'client/profile.html',{'form1':form1,'form2':form2})
@@ -310,6 +312,7 @@ def wallet(request):
 @never_cache
 @csrf_exempt
 def stripe_webhook(request):
+    print("Webhokk reached")
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
 
