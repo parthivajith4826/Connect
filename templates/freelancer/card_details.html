@@ -14,7 +14,7 @@
 </style>
 <main class="flex-1 overflow-y-auto h-screen bg-gray-50">
     <!-- Topbar -->
-    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
+    <header class="bg-white border-b border-black/5 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
         <div class="flex items-center gap-4">
             <!-- Mobile Menu Button -->
             <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
@@ -43,7 +43,7 @@
             <!-- Left Column: Job Description & Details -->
             <div class="lg:col-span-2 space-y-8">
                 <!-- Header Info -->
-                <div class="border-b border-slate-100 pb-8">
+                <div class="border-b border-black/5 pb-8">
                     <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-4 group">
                         <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -80,7 +80,7 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {% for image in card.image.all %}
                         <div
-                            class="relative group rounded-lg overflow-hidden border border-slate-200 aspect-video bg-slate-50"
+                            class="relative group rounded-sm overflow-hidden border border-black/5 aspect-video bg-slate-50"
                         >
                             <img
                                 src="{{ image.image.url }}"
@@ -114,13 +114,13 @@
             </div>
 
             <!-- Right Column: Sidebar -->
-            <div class="space-y-6">
+            <div class="space-y-6 sticky top-24 self-start">
                 <!-- Connect Card -->
                 
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <div class="bg-white p-6 rounded-sm shadow-sm border border-black/5">
                     <a href="{% url "freelancer:show_gigs" card.slug %}">
                     <button
-                        class="block w-full py-3 px-4 bg-[#0071e3] text-white text-center font-bold rounded-xl hover:bg-[#0077ED] transition-colors shadow-lg shadow-blue-500/20 mb-3"
+                        class="block w-full py-3 px-4 bg-[#0071e3] text-white text-center font-bold rounded-sm hover:bg-[#0077ED] transition-colors shadow-sm shadow-blue-500/20 mb-3"
                     >
                         Connect Now
                     </button>
@@ -144,11 +144,11 @@
                 {% endif %}
 
                 <!-- Client Info -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <div class="bg-white p-6 rounded-sm shadow-sm border border-black/5">
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4">About the Client</h3>
                     <div class="flex items-center gap-3 mb-4">
                         <img
-                            src="https://ui-avatars.com/api/?name=John+Doe&background=0071e3&color=fff"
+                            src="{{ card.client_id.profile_photo.url }}"
                             alt="Client"
                             class="w-12 h-12 rounded-full"
                         />
@@ -157,25 +157,15 @@
                             <p class="text-xs text-slate-500">Member since {{ card.client_id.date_joined|timesince }}</p>
                         </div>
                     </div>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2 text-sm text-slate-600">
-                            <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                ></path>
-                            </svg>
-                            4.9/5 Rating (12 Jobs)
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Budget & Timeline -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-6">
+                <div class="bg-white p-6 rounded-sm shadow-sm border border-black/5 space-y-6">
                     <div>
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Budget Range</h3>
                         <p class="text-2xl font-bold text-slate-900">₹{{ card.min_budget }} - {{ card.max_budget }}</p>
                     </div>
-                    <div class="border-t border-slate-100 pt-6">
+                    <div class="border-t border-black/5 pt-6">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Project Timeline</h3>
                         <div class="flex items-center gap-2 text-slate-900 font-medium">
                             <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

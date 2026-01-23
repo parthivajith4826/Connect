@@ -10,11 +10,75 @@
         /* transition removed for instant wheel response */
         will-change: transform;
     }
+
+    /* Entry Animations */
+    @keyframes slideUpFade {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .animate-enter {
+        opacity: 0;
+        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .delay-100 {
+        animation-delay: 100ms;
+    }
+    .delay-200 {
+        animation-delay: 200ms;
+    }
+
+    /* Helper classes for SVG animations */
+    @keyframes pulse-soft {
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
+    }
+    .animate-pulse-soft {
+        animation: pulse-soft 2s infinite;
+    }
+
+    /* Star Rating Styling */
+    .star-rating {
+        display: inline-flex;
+        flex-direction: row-reverse; /* Allows hover effects to cascade from right to left visually */
+    }
+    .star-rating input {
+        display: none;
+    }
+    .star-rating label {
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        color: #e2e8f0; /* slate-200 */
+        transition: color 0.2s;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+        color: #fbbf24; /* amber-400 */
+    }
+    .star-rating label svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+    }
 </style>
 <main class="flex-1 overflow-y-auto h-screen bg-gray-50">
     <!-- Topbar -->
     <header
-        class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 md:px-6 sticky top-0 z-10 shadow-sm"
+        class="bg-white border-b border-black/5 h-16 flex items-center justify-between px-4 md:px-6 sticky top-0 z-50 shadow-sm"
     >
         <div class="flex items-center gap-4">
             <!-- Mobile Menu Button -->
@@ -57,7 +121,7 @@
                 endif
                 %}
                 alt="Profile"
-                class="w-9 h-9 rounded-full border border-slate-200"
+                class="w-9 h-9 rounded-full border border-black/5"
             />
         </div>
     </header>
@@ -67,7 +131,7 @@
             <!-- Main Column: Image & Details -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Image Slider -->
-                <div class="relative overflow-hidden h-56 md:h-64 rounded-xl bg-slate-900 group">
+                <div class="relative overflow-hidden h-56 md:h-64 rounded-sm bg-slate-900 group">
                     <div class="w-full h-full overflow-hidden">
                         {% for image in gig.images.all %}
                         <img
@@ -121,7 +185,7 @@
                 </div>
 
                 <!-- Details Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mt-64">
+                <div class="bg-white rounded-sm shadow-sm border border-black/5 p-8 mt-64 animate-enter">
                     <div class="flex justify-between items-start mb-6">
                         <h2 class="text-2xl font-bold text-slate-900 leading-tight">{{ gig.title }}</h2>
                         {% if not gig.is_blocked %}
@@ -137,10 +201,15 @@
                         {% endif %}
                     </div>
 
-                    <div class="flex items-center gap-5 text-sm text-slate-500 mb-8 pb-6 border-b border-slate-100">
+                    <div class="flex items-center gap-5 text-sm text-slate-500 mb-8 pb-6 border-b border-black/5">
                         <span class="flex items-center gap-2">
-                            <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-sm">
+                                <svg
+                                    class="w-4 h-4 animate-pulse-soft"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
@@ -152,7 +221,7 @@
                             {{ gig.categories }}
                         </span>
                         <span class="flex items-center gap-2">
-                            <span class="p-1.5 bg-slate-50 text-slate-500 rounded-lg">
+                            <span class="p-1.5 bg-slate-50 text-slate-500 rounded-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
                                         stroke-linecap="round"
@@ -173,24 +242,92 @@
                         <div class="flex flex-wrap gap-2">
                             {% for skill in skill_list %}
                             <span
-                                class="px-3 py-1.5 bg-slate-50 text-slate-700 rounded-lg text-sm font-medium border border-slate-100"
+                                class="px-3 py-1.5 bg-slate-50 text-slate-700 rounded-sm text-sm font-medium border border-black/5"
                                 >{{ skill }}</span
                             >
                             {% endfor %}
                         </div>
                     </div>
+
+                    {% comment %} <!-- Review Section (Copied from Proposal View) -->
+                    <div class="mt-8 pt-8 border-t border-slate-100 animate-enter delay-200">
+                        <h4 class="text-xs font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                ></path>
+                            </svg>
+                            Rate Experience
+                        </h4>
+                        <form action="{% url 'client:review' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="card_slug" value="{{ card.slug }}" />
+                            <input type="hidden" name="gig_slug" value="{{ gig.slug }}" />
+                            <div class="bg-slate-50 rounded-sm p-4 text-center border border-slate-100">
+                                <div class="star-rating justify-center mb-3">
+                                    <!-- Inputs -->
+                                    <input type="radio" id="star5" name="rating" value="5" /><label
+                                        for="star5"
+                                        title="5 stars"
+                                        ><svg viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                            ></path></svg
+                                    ></label>
+                                    <input type="radio" id="star4" name="rating" value="4" /><label
+                                        for="star4"
+                                        title="4 stars"
+                                        ><svg viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                            ></path></svg
+                                    ></label>
+                                    <input type="radio" id="star3" name="rating" value="3" /><label
+                                        for="star3"
+                                        title="3 stars"
+                                        ><svg viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                            ></path></svg
+                                    ></label>
+                                    <input type="radio" id="star2" name="rating" value="2" /><label
+                                        for="star2"
+                                        title="2 stars"
+                                        ><svg viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                            ></path></svg
+                                    ></label>
+                                    <input type="radio" id="star1" name="rating" value="1" /><label
+                                        for="star1"
+                                        title="1 star"
+                                        ><svg viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                            ></path></svg
+                                    ></label>
+                                </div>
+                                <button
+                                    type="submit"
+                                    class="w-full py-2 bg-slate-800 text-white rounded-sm text-xs font-bold hover:bg-slate-900 transition-colors"
+                                >
+                                    Submit Review
+                                </button>
+                            </div>
+                        </form>
+                    </div> {% endcomment %}
                 </div>
             </div>
 
             <!-- Sidebar Info -->
             <div class="space-y-6">
                 <!-- Pricing Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-24">
+                <div class="bg-white rounded-sm shadow-sm border border-black/5 p-6 sticky top-24 animate-enter delay-100">
                     <h3 class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Price Range</h3>
                     <div class="flex items-baseline gap-1 mb-6">
-                        <span class="text-3xl font-bold text-slate-900">₹{{ gig.price_min }}</span>
+                        <span class="text-2xl font-bold text-slate-900">₹{{ gig.price_min }}</span>
                         <span class="text-slate-400 font-medium mx-1">-</span>
-                        <span class="text-3xl font-bold text-slate-900">₹1{{ gig.price_max }}</span>
+                        <span class="text-2xl font-bold text-slate-900">₹1{{ gig.price_max }}</span>
                     </div>
                 </div>
             </div>

@@ -12,10 +12,24 @@
     .alert-success { background-color: #f0fdf4; color: #166534; border-color: #bbf7d0; }
     .alert-warning { background-color: #fefce8; color: #854d0e; border-color: #fde047; }
     .alert-error, .alert-danger { background-color: #fef2f2; color: #991b1b; border-color: #fecaca; }
+
+    /* Entry Animations */
+    @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-enter { opacity: 0; animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
+    /* Staggered Delays via nth-child logic handled in JS or simplified CSS */
+    .gig-card { opacity: 0; animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
+    /* SVG Animations */
+    @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-3px); } 100% { transform: translateY(0); } }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+
+    @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } }
+    .animate-pulse-ring { animation: pulse-ring 2s infinite; }
 </style>
 <main class="flex-1 overflow-y-auto h-screen bg-gray-50">
     <!-- Topbar (Dashboard Header) -->
-    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
+    <header class="bg-white border-b border-black/5 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
         <div class="flex items-center gap-4">
             <!-- Mobile Menu Button -->
             <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
@@ -44,7 +58,7 @@
                 <img
                     src="{% static 'images/user.png' %}"
                     alt="Profile"
-                    class="w-8 h-8 rounded-full"
+                    class="w-8 h-8 rounded-full border border-black/5"
                 />
                 {% endif %}
                 <span class="font-medium text-slate-700">{{ user.Profile_name }}</span>
@@ -72,51 +86,79 @@
             </div>
         {% endif %}
         <!-- Gig List (Dashboard Style) -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h2 class="text-lg font-bold text-slate-900">Select a Gig to Connect</h2>
+        <div class="bg-white rounded-sm shadow-sm border border-black/5 overflow-hidden animate-enter">
+            <div class="p-4 border-b border-black/5 flex justify-between items-center bg-slate-50/50">
+                <h2 class="text-base font-bold text-slate-900">Select a Gig to Connect</h2>
                 {% if gig_count == 1 %}
-                <span class="text-sm text-slate-500">Showing {{ gig_count }} active gig</span>
+                <span class="text-xs text-slate-500 font-medium bg-white px-2 py-1 rounded border border-slate-200">1 Active Gig</span>
                 {% else %}
-                <span class="text-sm text-slate-500">Showing {{ gig_count }} active gigs</span>
+                <span class="text-xs text-slate-500 font-medium bg-white px-2 py-1 rounded border border-slate-200">{{ gig_count }} Active Gigs</span>
                 {% endif %}
             </div>
-            <div class="divide-y divide-slate-100">
-                {% for gig in gigs %}
-                <!-- Gig 1 -->
-                <div class="p-6 hover:bg-slate-50 transition-colors flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900 mb-1">{{ gig.title }}</h3>
-                        <p class="text-sm text-slate-500">
-                            Posted {{ gig.created_at|timesince }} ago • {{ gig.categories }}
-                        </p>
+            <div class="p-4 bg-slate-50/50">
+                <div class="space-y-2"> <!-- Minute gaps between rows -->
+                    {% for gig in gigs %}
+                    <!-- Gig Card -->
+                    <div class="gig-card p-4 bg-white rounded-sm border border-black/5 hover:border-indigo-300 hover:shadow-md transition-all flex items-center justify-between group relative overflow-hidden" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
+                        <!-- Hover Highlight -->
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-200"></div>
+                        
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
+                                {{ gig.title }}
+                                <span class="hidden group-hover:inline-flex animate-enter">
+                                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </span>
+                            </h3>
+                            <p class="text-xs text-slate-500 flex items-center gap-2">
+                                <span class="px-1.5 py-0.5 bg-slate-100 rounded text-[10px] uppercase font-bold tracking-wider text-slate-600">{{ gig.categories }}</span>
+                                <span>• Posted {{ gig.created_at|timesince }} ago</span>
+                            </p>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 relative z-10">
+                            <a
+                                href="{% url "freelancer:show_gig_details" gig.slug %}"
+                                class="px-3 py-1.5 border border-slate-200 rounded-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium text-xs transition-colors flex items-center gap-1"
+                            >
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                Details
+                            </a>
+                            <form action="{% url 'freelancer:create_connection' card.slug %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="gig_slug" value="{{ gig.slug }}">
+                            <button
+                                {% if total_pack.connection_limit == 0 %}disabled{% endif %}
+                                class="px-4 py-1.5 bg-[#0071e3] text-white rounded-sm font-semibold text-xs shadow-sm transition-all flex items-center gap-1.5
+                                    {% if total_pack.connection_limit == 0 %}
+                                    opacity-50 cursor-not-allowed
+                                    {% else %}
+                                    hover:bg-[#0077ED] hover:shadow hover:-translate-y-0.5
+                                    {% endif %}"
+                            >
+                                <span>Connect</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                            </button>
+                            </form>
+                        </div>
                     </div>
-
-                    <div class="flex items-center gap-3">
-                        <a
-                            href="{% url "freelancer:show_gig_details" gig.slug %}"
-                            class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 font-medium text-sm transition-all"
-                        >
-                            View Details
+                    {% empty %}
+                    <div class="py-12 flex flex-col items-center justify-center text-center p-8 bg-white rounded-sm border border-dashed border-slate-300">
+                        <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mb-3 border border-black/5 relative group">
+                             <div class="absolute inset-0 bg-blue-100 rounded-full opacity-0 group-hover:opacity-100 animate-pulse-ring"></div>
+                             <svg class="w-7 h-7 text-slate-400 relative z-10 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-slate-900 font-bold text-sm mb-1">No gigs available</h3>
+                        <p class="text-slate-500 text-xs max-w-xs mx-auto mb-4">You need an active gig to connect with this job.</p>
+                        <a href="{% url 'freelancer:add_gig' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#1d1d1f] text-white font-medium text-xs rounded-sm hover:bg-slate-800 transition-colors shadow-sm animate-enter delay-200">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Create New Gig
                         </a>
-                        <form action="{% url "freelancer:create_connection" card.slug %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="gig_slug" value="{{ gig.slug }}">
-                        <button
-                            {% if total_pack.connection_limit == 0 %}disabled{% endif %}
-                            class="px-4 py-2 bg-[#0071e3] text-white rounded-lg font-bold text-sm shadow-sm transition-all
-                                {% if total_pack.connection_limit == 0 %}
-                                opacity-50 cursor-not-allowed
-                                {% else %}
-                                hover:bg-[#0077ED]
-                                {% endif %}"
-                        >
-                            Select & Connect
-                        </button>
-                        </form>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>

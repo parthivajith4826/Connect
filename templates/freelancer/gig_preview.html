@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -45,7 +45,7 @@
             /* --- Gig Card --- */
             .gig-card {
                 background: white;
-                border-radius: 12px;
+                border-radius: 2px; /* rounded-sm equivalent */
                 box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
                 border: 1px solid #e2e8f0;
                 overflow: hidden;
@@ -54,7 +54,9 @@
                 /* Animation: Page Load */
                 animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
                 /* Interaction: Hover Lift */
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                transition:
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease;
                 will-change: transform, box-shadow;
             }
 
@@ -136,7 +138,9 @@
                 background-color: rgba(255, 255, 255, 0.5);
                 border-radius: 50%;
                 cursor: pointer;
-                transition: background-color 0.3s, transform 0.3s;
+                transition:
+                    background-color 0.3s,
+                    transform 0.3s;
             }
 
             .dot.active {
@@ -354,10 +358,13 @@
                 font-size: 15px;
                 font-weight: 600;
                 padding: 14px;
-                border-radius: 10px;
+                border-radius: 2px; /* rounded-sm */
                 text-decoration: none;
                 /* Interaction: Smooth Hover */
-                transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+                transition:
+                    background 0.3s,
+                    transform 0.2s,
+                    box-shadow 0.2s;
                 will-change: transform;
                 box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
             }
@@ -379,7 +386,8 @@
                 z-index: -1;
                 pointer-events: none;
                 opacity: 0.6;
-                background-image: radial-gradient(circle at 10% 10%, #eff6ff 0%, transparent 20%),
+                background-image:
+                    radial-gradient(circle at 10% 10%, #eff6ff 0%, transparent 20%),
                     radial-gradient(circle at 90% 90%, #eff6ff 0%, transparent 20%);
             }
         </style>

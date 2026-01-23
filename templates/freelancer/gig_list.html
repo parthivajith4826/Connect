@@ -6,9 +6,7 @@
 <!-- Main Content -->
 <main class="flex-1 overflow-y-auto h-screen">
     <!-- Topbar -->
-    <header
-        class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10"
-    >
+    <header class="bg-white border-b border-black/5 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
         <div class="flex items-center gap-4">
             <!-- Mobile Menu Button -->
             <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
@@ -26,7 +24,7 @@
         <div class="flex items-center gap-4">
             <a
                 href="{% url 'freelancer:add_gig' %}"
-                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium text-sm flex items-center gap-2 transition-colors decoration-none"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-sm hover:bg-indigo-700 font-medium text-sm flex items-center gap-2 transition-colors decoration-none"
             >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -35,7 +33,7 @@
             </a>
             <a
                 href="{% url 'freelancer:add_gig' %}"
-                class="md:hidden p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors decoration-none"
+                class="md:hidden p-2 bg-indigo-600 text-white rounded-sm hover:bg-indigo-700 transition-colors decoration-none"
             >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -45,7 +43,7 @@
                 <img
                     src="https://ui-avatars.com/api/?name=John+Doe&background=random"
                     alt="Profile"
-                    class="w-8 h-8 rounded-full"
+                    class="w-8 h-8 rounded-full border border-black/5"
                 />
             </div>
         </div>
@@ -55,7 +53,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {% for gig in gigs %}
             <div
-                class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow"
+                class="bg-white rounded-sm shadow-sm border border-black/5 overflow-hidden group hover:shadow-md transition-shadow"
             >
                 <!-- Image / Carousel Section -->
                 <div class="h-40 bg-slate-200 relative">
@@ -98,11 +96,11 @@
 
                     {% if not gig.is_blocked %}
                     <div class="absolute top-2 right-2 z-20">
-                        <span class="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">Active</span>
+                        <span class="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-sm">Active</span>
                     </div>
                     {% else %}
                     <div class="absolute top-2 right-2 z-20">
-                        <span class="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded">Not Active</span>
+                        <span class="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-sm">Not Active</span>
                     </div>
                     {% endif %}
                 </div>
@@ -117,11 +115,11 @@
                     <div class="flex gap-2">
                         <a
                             href="/freelancer/gigs/edit.html"
-                            class="flex-1 py-2 text-center border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium transition-colors decoration-none"
+                            class="flex-1 py-2 text-center border border-slate-200 rounded-sm text-slate-600 hover:bg-slate-50 font-medium transition-colors decoration-none"
                             >Edit</a
                         >
                         <button
-                            class="p-2 border border-slate-200 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                            class="p-2 border border-slate-200 rounded-sm text-red-500 hover:bg-red-50 transition-colors"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
@@ -134,6 +132,31 @@
                         </button>
                     </div>
                 </div>
+            </div>
+            {% empty %}
+            <div
+                class="col-span-full py-16 flex flex-col items-center justify-center text-center p-8 bg-white border border-black/5 rounded-sm shadow-sm"
+            >
+                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-black/5">
+                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        ></path>
+                    </svg>
+                </div>
+                <h3 class="text-slate-900 font-bold text-lg mb-1">You haven't posted any gigs</h3>
+                <p class="text-slate-500 text-sm max-w-sm mx-auto mb-6">
+                    Create a gig to start showcasing your skills and selling your services.
+                </p>
+                <a
+                    href="{% url 'freelancer:add_gig' %}"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1d1d1f] text-white font-medium text-sm rounded-sm hover:bg-slate-800 transition-colors shadow-sm"
+                >
+                    Create New Gig
+                </a>
             </div>
             {% endfor %}
         </div>

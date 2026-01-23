@@ -1,7 +1,7 @@
 {% extends "freelancer/freelancer_base.html" %} {% block subscriptions %}
 
 <div class="flex-1 flex items-center justify-center px-4 py-20">
-    <div class="w-full max-w-md bg-[#1d1d1f] rounded-3xl p-10 shadow-2xl border border-gray-800 text-center">
+    <div class="w-full max-w-md bg-[#1d1d1f] rounded-sm p-10 shadow-2xl border border-gray-800 text-center">
         <!-- FAILED ICON -->
         <div class="flex items-center justify-center mb-6">
             <div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
@@ -22,7 +22,7 @@
         <!-- ACTION BUTTON -->
         <a
             href="{% url 'freelancer:subscriptions' %}"
-            class="inline-flex items-center justify-center w-full py-3 rounded-2xl bg-red-500 text-white font-semibold text-sm hover:bg-red-400 transition shadow-lg shadow-red-500/30"
+            class="inline-flex items-center justify-center w-full py-3 rounded-sm bg-red-500 text-white font-semibold text-sm hover:bg-red-400 transition shadow-sm shadow-red-500/30"
         >
             Try Again
         </a>

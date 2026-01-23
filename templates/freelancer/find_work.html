@@ -56,7 +56,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
-                <h1 class="text-xl font-bold text-[#1d1d1f]">Find Work</h1>
+                <h1 class="text-xl font-bold text-slate-800">Find Work</h1>
             </div>
             
             <div class="flex-1 max-w-2xl mx-4 md:mx-8 relative">
@@ -80,7 +80,7 @@
                         id="searchInput"
                         type="text"
                         name="q"
-                        class="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-full text-sm placeholder-gray-500 focus:bg-white focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3] focus:outline-none transition-all shadow-sm"
+                        class="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-sm text-sm placeholder-gray-500 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all shadow-sm"
                         placeholder="Search..."
                         autocomplete="off"
                         value="{{ request.GET.q|default:'' }}"
@@ -115,7 +115,7 @@
                 <button
                     type="button"
                     onclick="toggleDropdown('categoryDropdown')"
-                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:border-[#0071e3] transition-colors text-sm font-semibold text-gray-700"
+                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-sm hover:border-indigo-500 transition-colors text-sm font-semibold text-gray-700"
                 >
                     Category
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +124,7 @@
                 </button>
                 <div
                     id="categoryDropdown"
-                    class="hidden absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 p-4 z-50"
+                    class="hidden absolute top-full left-0 mt-2 w-64 bg-white rounded-sm shadow-xl border border-gray-100 p-4 z-50"
                 >
                     <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
                         {% for category in categories %}
@@ -151,7 +151,7 @@
                     type="text"
                     name="skills"
                     placeholder="Search skills..."
-                    class="px-4 py-2 bg-white border border-gray-300 rounded text-sm text-gray-700 placeholder-gray-500 focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3] outline-none w-48 transition-all"
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-sm text-sm text-gray-700 placeholder-gray-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none w-48 transition-all"
                 />
             </div>
 
@@ -160,7 +160,7 @@
                 <button
                     type="button"
                     onclick="toggleDropdown('priceDropdown')"
-                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:border-[#0071e3] transition-colors text-sm font-semibold text-gray-700"
+                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-sm hover:border-indigo-500 transition-colors text-sm font-semibold text-gray-700"
                 >
                     Price
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +169,7 @@
                 </button>
                 <div
                     id="priceDropdown"
-                    class="hidden absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-100 p-6 z-50"
+                    class="hidden absolute top-full left-0 mt-2 w-80 bg-white rounded-sm shadow-xl border border-gray-100 p-6 z-50"
                 >
                     <div class="flex items-center justify-between mb-6">
                         <div class="border rounded px-3 py-1">
@@ -249,7 +249,7 @@
                 <button
                     type="button"
                     onclick="toggleDropdown('timelineDropdown')"
-                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:border-[#0071e3] transition-colors text-sm font-semibold text-gray-700"
+                    class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-sm hover:border-indigo-500 transition-colors text-sm font-semibold text-gray-700"
                 >
                     Timeline
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,7 +258,7 @@
                 </button>
                 <div
                     id="timelineDropdown"
-                    class="hidden absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 p-4 z-50"
+                    class="hidden absolute top-full left-0 mt-2 w-64 bg-white rounded-sm shadow-xl border border-gray-100 p-4 z-50"
                 >
                     <div class="space-y-2">
 
@@ -369,7 +369,7 @@
         <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for card in cards %}
             <div
-                class="group bg-white rounded border border-gray-200 hover:shadow-lg transition-all duration-300 flex flex-col h-full relative cursor-pointer"
+                class="group bg-white rounded-sm border border-black/5 hover:shadow-md transition-all duration-300 flex flex-col h-full relative cursor-pointer"
             >
                 <!-- Image Carousel -->
                 <div class="relative h-[180px] w-full bg-gray-100 overflow-hidden group/slider">
@@ -450,7 +450,8 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="px-3 py-2 border-t border-gray-100 flex items-center justify-between bg-white rounded-b">
+                <!-- Footer -->
+                <div class="px-3 py-2 border-t border-black/5 flex items-center justify-between bg-white rounded-b-sm">
                     <button class="text-gray-400 hover:text-gray-600">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path
@@ -463,6 +464,21 @@
                         <span class="text-lg font-medium text-[#1d1d1f] leading-tight">₹{{ card.min_budget }}</span>
                     </div>
                 </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-20 flex flex-col items-center justify-center text-center p-8 bg-white border border-black/5 rounded-sm shadow-sm h-96">
+                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 border border-black/5">
+                     <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-slate-900 font-bold text-xl mb-2">No work opportunities found</h3>
+                <p class="text-slate-500 text-base max-w-md mx-auto mb-8">We couldn't find any matches. Try adjusting your search or filters.</p>
+                <button 
+                    onclick="document.getElementById('searchInput').value=''; document.getElementById('searchForm').submit();"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-[#1d1d1f] text-white font-medium text-sm rounded-sm hover:bg-slate-800 transition-colors shadow-sm">
+                    Clear Search
+                </button>
             </div>
             {% endfor %}
         </div>
