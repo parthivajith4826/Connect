@@ -215,7 +215,7 @@ def role(request):
             if role == "freelancer":
                 UserSubscription.objects.create(user = user,
                 subscription_pack = subscriptionPack)
-                Total_pack.objects.create(user = user)
+                Total_pack.objects.create(user = user,gig_count = subscriptionPack.max_gigs,connection_limit = subscriptionPack.connection_limit)
                 
                 user.role = role
                 user.save()
@@ -251,7 +251,7 @@ def role(request):
                     print("cheyyan thudangi")
                     UserSubscription.objects.create(user = user,
                     subscription_pack = subscriptionPack)
-                    Total_pack.objects.create(user = user)
+                    Total_pack.objects.create(user = user,gig_count = subscriptionPack.max_gigs,connection_limit = subscriptionPack.connection_limit)
                     print("cheythu")
                     user.role = role
                     user.is_verified = True

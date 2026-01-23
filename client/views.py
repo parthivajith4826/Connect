@@ -501,7 +501,7 @@ def gig_details(request,gig_slug,card_slug):
     skills = skills.split(",")
     card = get_object_or_404(Card,slug = card_slug )
     connection = get_object_or_404(Connections,gig = gig,card = card)
-    rating = Rating.objects.filter(reviewer = request.user,gig = gig).exists()
+    rating = Rating.objects.filter(reviewer = request.user,gig = gig,card = card).exists()
     print(f"rating - {rating}")
     # print(f"rating -- rating_reviewer - {rating.reviewer} , rating-gig - {Rating.gig} ")
     
@@ -577,13 +577,14 @@ def review(request):
         card = get_object_or_404(Card, slug=card_slug)
         gig = get_object_or_404(Gig, slug=gig_slug)
 
-        rating_old = Rating.objects.filter(reviewer=request.user,gig=gig).first()
+        rating_old = Rating.objects.filter(reviewer=request.user,gig=gig,card = card).first()
 
         if not rating_old:
             Rating.objects.create(
                 reviewer=request.user,
                 freelancer=gig.freelancer_id,
                 gig=gig,
+                card=card,
                 stars=rating
             )
             messages.success(request, "Your rating was submitted successfully ⭐")

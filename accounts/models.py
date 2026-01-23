@@ -1,9 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser,BaseUserManager
 import uuid
-    
-from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractUser
+
 
 
 class UserManager(BaseUserManager):
@@ -90,6 +88,8 @@ class Rating(models.Model):
         Gig,
         on_delete=models.CASCADE
     )
+    
+    card = models.ForeignKey("client.Card",on_delete=models.CASCADE,related_name="card")  
 
     stars = models.PositiveSmallIntegerField(
         validators=[
@@ -101,13 +101,14 @@ class Rating(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("reviewer", "gig")
+        unique_together = ("reviewer", "gig","card")
         constraints = [
             models.CheckConstraint(
                 condition=Q(stars__gte=1) & Q(stars__lte=5),
                 name="stars_between_1_and_5"
             )
         ]
+
 
     
 
