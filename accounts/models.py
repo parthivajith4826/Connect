@@ -79,7 +79,7 @@ class Rating(models.Model):
         on_delete=models.CASCADE,
         related_name="given_ratings"
     )
-    freelancer = models.ForeignKey(
+    reviewee = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="received_ratings"

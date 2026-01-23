@@ -502,8 +502,6 @@ def gig_details(request,gig_slug,card_slug):
     card = get_object_or_404(Card,slug = card_slug )
     connection = get_object_or_404(Connections,gig = gig,card = card)
     rating = Rating.objects.filter(reviewer = request.user,gig = gig,card = card).exists()
-    print(f"rating - {rating}")
-    # print(f"rating -- rating_reviewer - {rating.reviewer} , rating-gig - {Rating.gig} ")
     
     pricing = Pricing.objects.get(id = 1)
     wallet = get_object_or_404(Wallet,user = request.user)
@@ -582,7 +580,7 @@ def review(request):
         if not rating_old:
             Rating.objects.create(
                 reviewer=request.user,
-                freelancer=gig.freelancer_id,
+                reviewee=gig.freelancer_id,
                 gig=gig,
                 card=card,
                 stars=rating

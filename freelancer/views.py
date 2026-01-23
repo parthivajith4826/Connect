@@ -3,59 +3,63 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
 from client.models import User
 from .models import Freelancer_Profile,Gig,GigImages,Connections
+from.forms import ProfileForm,ContactForm,CreategigForm
 from management.models import SubscriptionPack,UserSubscription,SubscriptionTransaction,Total_pack
 from client.models import Categories
-from.forms import ProfileForm,ContactForm,CreategigForm
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+from django.urls import reverse
+import uuid                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from datetime import timedelta
+from django.utils import timezone
+import stripe
+from django.conf import settings
+from django.shortcuts import render, get_object_or_404, redirect
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
-# Create your views here.
+from django.http import HttpResponse
+from decimal import Decimal
+import stripe
+from django.db import transaction
+from client.models import Card,Categories
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+
+
+
+
+
+
 
 @never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def home(request):
     user = request.user
-    # print(user)
-    if not user.is_authenticated: 
-       return redirect('accounts:landing_page') 
-    # if not request.session.get('user_email'):
-    #     return redirect('accounts:landing_page')
-    # if not request.session.get('user_email'):
-    #     # email = request.session.get('user_email')
-    #     # user = User.objects.get(email=email)
-    #     # if user.role == "freelancer":
-    #     #     return redirect('freelancer:home')
-    #     # else :
-    #     #     return redirect('client:home')
-    #     return redirect('accounts:landing_page')
+    if not user.profile_completed:
+        return render(request,'freelancer/errors/profile_error.html')
     else :
-    
-        if not user.profile_completed:
-            return render(request,'freelancer/errors/profile_error.html')
-        else :
-            gigs = Gig.objects.filter(freelancer_id = user) 
-            connections_count = Connections.objects.all().count()
-            connections_accepted = Connections.objects.filter(status = 'accepted').count()
-            connections_pending = Connections.objects.filter(status = 'pending').count()
-            connections_rejected = Connections.objects.filter(status = 'rejected').count()
-            
-    
-        return render(request,'freelancer/home.html',{'gigs':gigs,'connections_count':connections_count,'connections_accepted':connections_accepted,'connections_pending':connections_pending,'connections_rejected':connections_rejected})
+        gigs = Gig.objects.filter(freelancer_id = user) 
+        connections_count = Connections.objects.filter(user=request.user).count()
+        connections_accepted = Connections.objects.filter(user=request.user,status = 'accepted').count()
+        connections_pending = Connections.objects.filter(user=request.user,status = 'pending').count()
+        connections_rejected = Connections.objects.filter(user=request.user,status = 'rejected').count()
+        
+    return render(request,'freelancer/home.html',{'gigs':gigs,'connections_count':connections_count,'connections_accepted':connections_accepted,'connections_pending':connections_pending,'connections_rejected':connections_rejected})
 
     
     
     
     
 @never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def profile(request):
     user = request.user
-    # print(user)
-    if not user.is_authenticated: 
-       return redirect('accounts:landing_page') 
-    
-    
-    user = request.user
-    print(user)
     profile = Freelancer_Profile.objects.filter(user_id = user).first()
-    print(profile)
     if request.method == 'POST':
         form1 = ProfileForm(request.POST,request.FILES,instance=request.user)
         form2 = ContactForm(request.POST , instance=profile)
@@ -77,26 +81,10 @@ def profile(request):
     return render(request,'freelancer/profile.html',{'form1':form1,'form2':form2,'profile':profile})
 
 
-
-
-# def gigs(request):
-    
-#     user = request.user
-#     print(user)
-#     gigs = Gig.objects.filter(freelancer_id = user)
-
-#     # gigs = Gig.objects.all()
-#     # gig_images = GigImages.objects.filter(gig_id__in= gigs)
-#     return render(request,'freelancer/gig_list.html',{"gigs":gigs})
-
-
-from django.urls import reverse
 @never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def add_gig(request):
     user = request.user
-    # print(user)
-    if not user.is_authenticated: 
-       return redirect('accounts:landing_page')
    
     usersubscription = UserSubscription.objects.filter(user = user,is_active = True)
     total_pack = Total_pack.objects.filter(user = user).first()
@@ -132,20 +120,11 @@ def add_gig(request):
                 
                 if is_form_valid:
                     
-                    # category = request.POST.get("categories")
-                    # category = category.split(',') if category else []
-                    # category_ids = list(map(int,category))
-                    
                     gig = form.save(commit=False)
                     gig.freelancer_id = request.user
                     
                     gig.save()
-                    
-                    # gig = Gig.objects.get(id = gig.id)
-                    # gig.categories.set(category_ids)
 
-                    # gig = Gig.objects.get(id = gig.id)
-                    # print(gig)
                     for img in images:
                         GigImages.objects.create(
                             gig_id=gig,
@@ -166,15 +145,6 @@ def add_gig(request):
                     
                     return render(request,'freelancer/add_gig.html',{'categories':categories,'form':form})
             
-            # category = request.POST.get("categories")
-            # category = category.split(',') if category else []
-            # category_ids = list(map(int,category))
-            # categories = Categories.objects.filter(id__in=category_ids)
-            # print(categories)
-        
-            # print(request.POST)
-            # print(request.POST.getlist('categories'))
-            # categories = request.POST.getlist('categories').split(",")
             form = CreategigForm()
             return render(request,'freelancer/add_gig.html',{'form':form,'categories':categories})
     
@@ -191,12 +161,8 @@ def add_gig(request):
 
 
 @never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def view_gig(request,slug):
-    user = request.user
-    # print(user)
-    if not user.is_authenticated: 
-       return redirect('accounts:landing_page')
-    
     gig = Gig.objects.get(slug = slug)
     skills = gig.skills
     skills = skills.split(",")
@@ -206,13 +172,8 @@ def view_gig(request,slug):
 
 
 @never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def edit_gig(request,slug):
-    user = request.user
-    # print(user)
-    if not user.is_authenticated: 
-       return redirect('accounts:landing_page')
-    
-    
     gig = Gig.objects.get(slug=slug)
     images_db = gig.images.all()                                                                                                                                                                                                                                                                                                                        
     categories = Categories.objects.filter(is_blocked=False)
@@ -249,21 +210,11 @@ def edit_gig(request,slug):
 
         
         if is_form_valid:
-            print(is_form_valid)
-
-            # category = request.POST.get("categories")
-            # category = category.split(',') if category else []
-            # category_ids = list(map(int,category))
 
             gig = form.save(commit=False)
             gig.freelancer_id = request.user
             gig.save()
-
-            # gig = Gig.objects.get(id = gig.id)
-            # gig.categories.set(category_ids)
-
-            # gig = Gig.objects.get(id = gig.id)
-            # print(gig)
+            
             for img in images:
                 GigImages.objects.create(
                     gig_id=gig,
@@ -272,37 +223,31 @@ def edit_gig(request,slug):
 
             return redirect("freelancer:home")
         else :
-            print("valid alla")
-
             return render(request,"freelancer/edit_gig.html",{"form": form,"categories": categories,"Gig":gig,"images":images_db})
 
 
     form = CreategigForm(instance = gig)
     return render(request,"freelancer/edit_gig.html",{"form": form,"categories": categories,"gig":gig,"images":images_db})
 
+
 @never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def close_gig(request,slug):
-    user = request.user
-    # print(user)
-    if not user.is_authenticated: 
-       return redirect('accounts:landing_page')
-    
-    
     gig = Gig.objects.get(slug=slug)
     gig.delete()
     return redirect("freelancer:home")
 
 
+
 @never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def signout(request):
     user = request.user
-    # print(user)
     if not user.is_authenticated: 
        return redirect('accounts:landing_page')
     
     
     request.session.flush()
-    
     
     logout(request)
     
@@ -310,14 +255,6 @@ def signout(request):
 
 
 
-
-import uuid                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from datetime import timedelta
-from django.utils import timezone
 
 @csrf_exempt
 def quill_image_upload(request):
@@ -336,19 +273,14 @@ def quill_image_upload(request):
     return JsonResponse({"success": False}, status=400)
 
 
-
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def subscriptions(request):
     subscriptions = SubscriptionPack.objects.all()[1:]
     freeplan = SubscriptionPack.objects.all()[0]
     
     return render(request,"freelancer/subscriptions.html",{"subscriptions":subscriptions,"freeplan":freeplan})
 
-import stripe
-from django.conf import settings
-from django.shortcuts import render, get_object_or_404, redirect
-
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 
@@ -359,8 +291,8 @@ def subscribe_start(request, slug):
     # freeplan = SubscriptionPack.objects.all()[0]
     pack = get_object_or_404(SubscriptionPack, slug=slug, is_active=True)
                                                   
-    
-    
+
+
     # Create PaymentIntent
     intent = stripe.PaymentIntent.create(
         amount=int(pack.price * 100),
@@ -385,17 +317,6 @@ def subscribe_start(request, slug):
     
     
         
-
-
-
-
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-from django.conf import settings
-from decimal import Decimal
-import stripe
-from django.db import transaction
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @csrf_exempt
 def stripe_webhook_subscription(request):
@@ -430,7 +351,6 @@ def stripe_webhook_subscription(request):
     try:
         user = User.objects.get(id=user_id)
         pack = SubscriptionPack.objects.get(id=pack_id, is_active=True)
-        print(f"pack = {pack.connection_limit}")
     except (User.DoesNotExist, SubscriptionPack.DoesNotExist):
         return HttpResponse(status=200)
 
@@ -460,8 +380,6 @@ def stripe_webhook_subscription(request):
                     "gig_count": gig_count,
                     "connection_limit": connection_limit})
             
-            
-            print("User subscription updated")
             SubscriptionTransaction.objects.get_or_create(
                 stripe_payment_intent_id=intent["id"],
                 defaults={
@@ -472,8 +390,6 @@ def stripe_webhook_subscription(request):
                     
                 }
             )
-            
-            print("transactions also updated")
 
     #Payment Failed
     elif event_type == "payment_intent.payment_failed":
@@ -507,6 +423,8 @@ def stripe_webhook_subscription(request):
 
 
 
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def subscription_result(request):
     intent_id = request.GET.get("payment_intent")
 
@@ -537,9 +455,9 @@ def subscription_result(request):
 
 
 
-from client.models import Card,Categories
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def find_work(request):
-    print(request.GET)
     categories = Categories.objects.all()
     search_keyword = request.GET.get("q")
     category = request.GET.get("category")
@@ -574,13 +492,16 @@ def find_work(request):
     return render(request,"freelancer/find_work.html",{"cards":cards,"categories":categories})
 
 
-
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def card_details(request,slug):
     card = get_object_or_404(Card,slug = slug)
     skill_list = card.skills_required.split(",")
     return render(request,"freelancer/card_details.html",{"card":card,"skill_list":skill_list})
 
 
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def show_gigs(request,card_slug=None):
     card = get_object_or_404(Card,slug = card_slug)
     gigs = Gig.objects.filter(freelancer_id = request.user)
@@ -595,20 +516,19 @@ def show_gigs(request,card_slug=None):
         messages.error(request, "Connection limit reached (0). No new connections can be established.")
     return render(request,"freelancer/show-gigs.html",{"gigs":gigs,"gig_count":gig_count,"card":card,"total_pack":total_pack})
 
+
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def show_gig_details(request,slug):
     gig = get_object_or_404(Gig,slug = slug)
     skill_list = gig.skills.split(",")
-    print(gig.images.all())
-    for image in gig.images.all():
-        print(image)
     return render(request,"freelancer/show_gig_details.html",{"gig":gig,"skill_list":skill_list})
 
 
 
 
-
-from django.contrib import messages
-from django.core.exceptions import PermissionDenied
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def create_connection(request, card_slug):
     #this is created for , when creating connection object
     card = get_object_or_404(Card, slug=card_slug)
@@ -664,18 +584,27 @@ def create_connection(request, card_slug):
 
     return redirect('freelancer:work_details', card.slug)
 
+
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def subscription_details(request):
     subscriptions = UserSubscription.objects.filter(user = request.user).order_by("-created_at")
     total_pack = get_object_or_404(Total_pack,user = request.user)
     return render(request,'freelancer/subscription_status.html',{"subscriptions":subscriptions,"total_pack":total_pack})
 
 
+
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def my_connections(request):
     connections = Connections.objects.filter(user = request.user)
     connections_count = connections.count()
     return render(request,"freelancer/my_connections.html",{"connections":connections,"connections_count":connections_count})
 
 
+
+@never_cache
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
 def gig_preview(request,slug):
     gig = Gig.objects.filter(slug = slug).first()
     skills = gig.skills
