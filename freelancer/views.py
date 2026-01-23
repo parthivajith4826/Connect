@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
 from client.models import User
@@ -17,19 +17,15 @@ from django.core.files.base import ContentFile
 from datetime import timedelta
 from django.utils import timezone
 import stripe
-from django.conf import settings
-from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.conf import settings
 from decimal import Decimal
-import stripe
 from django.db import transaction
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
-
+from client.models import Card,Categories
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 
 
 
@@ -407,7 +403,8 @@ def stripe_webhook_subscription(request):
 
 
 
-
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def subscription_result(request):
     intent_id = request.GET.get("payment_intent")
 
@@ -438,9 +435,9 @@ def subscription_result(request):
 
 
 
-from client.models import Card,Categories
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def find_work(request):
-    print(request.GET)
     categories = Categories.objects.all()
     search_keyword = request.GET.get("q")
     category = request.GET.get("category")
@@ -476,12 +473,17 @@ def find_work(request):
 
 
 
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def card_details(request,slug):
     card = get_object_or_404(Card,slug = slug)
     skill_list = card.skills_required.split(",")
     return render(request,"freelancer/card_details.html",{"card":card,"skill_list":skill_list})
 
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def show_gigs(request,card_slug=None):
     card = get_object_or_404(Card,slug = card_slug)
     gigs = Gig.objects.filter(freelancer_id = request.user)
@@ -496,20 +498,22 @@ def show_gigs(request,card_slug=None):
         messages.error(request, "Connection limit reached (0). No new connections can be established.")
     return render(request,"freelancer/show-gigs.html",{"gigs":gigs,"gig_count":gig_count,"card":card,"total_pack":total_pack})
 
+
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def show_gig_details(request,slug):
     gig = get_object_or_404(Gig,slug = slug)
     skill_list = gig.skills.split(",")
-    print(gig.images.all())
-    for image in gig.images.all():
-        print(image)
     return render(request,"freelancer/show_gig_details.html",{"gig":gig,"skill_list":skill_list})
 
 
 
 
 
-from django.contrib import messages
-from django.core.exceptions import PermissionDenied
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def create_connection(request, card_slug):
     #this is created for , when creating connection object
     card = get_object_or_404(Card, slug=card_slug)
@@ -565,60 +569,30 @@ def create_connection(request, card_slug):
 
     return redirect('freelancer:work_details', card.slug)
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def subscription_details(request):
     subscriptions = UserSubscription.objects.filter(user = request.user).order_by("-created_at")
     total_pack = get_object_or_404(Total_pack,user = request.user)
     return render(request,'freelancer/subscription_status.html',{"subscriptions":subscriptions,"total_pack":total_pack})
 
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def my_connections(request):
     connections = Connections.objects.filter(user = request.user)
     connections_count = connections.count()
     return render(request,"freelancer/my_connections.html",{"connections":connections,"connections_count":connections_count})
 
 
+
+@login_required(login_url=reverse_lazy('accounts:landing_page'))
+@never_cache
 def gig_preview(request,slug):
     gig = Gig.objects.filter(slug = slug).first()
     skills = gig.skills
     skills = skills.split(",")    
     return render(request,"freelancer/gig_preview.html",{"gig":gig,"skills":skills})
 
-
-# def review(request):
-#     if request.method != "POST":
-#         return HttpResponseBadRequest("Invalid request")
-
-#     rating = request.POST.get("rating")
-#     card_slug = request.POST.get("card_slug")
-#     gig_slug = request.POST.get("gig_slug")
-
-#     redirect_url = (request.META.get("HTTP_REFERER") or "client/" )
-
-#     try:
-#         rating = int(rating)
-#         if rating < 1 or rating > 5:
-#             messages.error(request, "Invalid rating")
-#             return redirect(redirect_url)
-
-#         card = get_object_or_404(Card, slug=card_slug)
-#         gig = get_object_or_404(Gig, slug=gig_slug)
-
-#         rating_old = Rating.objects.filter(reviewer=request.user,gig=gig,card = card).first()
-
-#         if not rating_old:
-#             Rating.objects.create(
-#                 reviewer=request.user,
-#                 freelancer=gig.freelancer_id,
-#                 gig=gig,
-#                 card=card,
-#                 stars=rating
-#             )
-#             messages.success(request, "Your rating was submitted successfully ⭐")
-#         else:
-#             messages.warning(request, "You already rated this gig")
-
-#     except (TypeError, ValueError):
-#         messages.error(request, "Invalid rating")
-#         return redirect(redirect_url)
-
-#     return redirect(redirect_url)

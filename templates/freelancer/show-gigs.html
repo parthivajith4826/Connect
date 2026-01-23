@@ -37,7 +37,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
-            <a href="javascript:history.back()" class="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors group">
+            <a href="{% url 'freelancer:work_details' card.slug %}" class="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors group">
                 <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -66,7 +66,7 @@
         </div>
     </header>
 
-    <div class="p-8 max-w-7xl mx-auto">
+    <div class="p-4 md:p-8 max-w-7xl mx-auto">
         <!-- Stats Grid (Copied from Dashboard) -->
         <!-- Stats Grid (Copied from Dashboard) -->
         {% if messages %}
@@ -99,37 +99,37 @@
                 <div class="space-y-2"> <!-- Minute gaps between rows -->
                     {% for gig in gigs %}
                     <!-- Gig Card -->
-                    <div class="gig-card p-4 bg-white rounded-sm border border-black/5 hover:border-indigo-300 hover:shadow-md transition-all flex items-center justify-between group relative overflow-hidden" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
+                    <div class="gig-card p-4 bg-white rounded-sm border border-black/5 hover:border-indigo-300 hover:shadow-md transition-all flex flex-col md:flex-row items-start md:items-center justify-between group relative overflow-hidden gap-4 md:gap-0" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
                         <!-- Hover Highlight -->
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-200"></div>
                         
-                        <div>
-                            <h3 class="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
+                        <div class="w-full md:w-auto">
+                            <h3 class="text-base font-bold text-slate-900 mb-2 md:mb-1 flex items-center gap-2">
                                 {{ gig.title }}
                                 <span class="hidden group-hover:inline-flex animate-enter">
                                     <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 </span>
                             </h3>
-                            <p class="text-xs text-slate-500 flex items-center gap-2">
+                            <p class="text-xs text-slate-500 flex flex-wrap items-center gap-2">
                                 <span class="px-1.5 py-0.5 bg-slate-100 rounded text-[10px] uppercase font-bold tracking-wider text-slate-600">{{ gig.categories }}</span>
                                 <span>• Posted {{ gig.created_at|timesince }} ago</span>
                             </p>
                         </div>
                         
-                        <div class="flex items-center gap-2 relative z-10">
+                        <div class="flex items-center gap-2 relative z-10 w-full md:w-auto justify-end md:justify-start pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 md:border-none">
                             <a
-                                href="{% url "freelancer:show_gig_details" gig.slug %}"
-                                class="px-3 py-1.5 border border-slate-200 rounded-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium text-xs transition-colors flex items-center gap-1"
+                                href="{% url "freelancer:show_gig_details" gig.slug %}?card={{ card.slug }}"
+                                class="flex-1 md:flex-none px-3 py-1.5 border border-slate-200 rounded-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium text-xs transition-colors flex items-center justify-center gap-1"
                             >
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                 Details
                             </a>
-                            <form action="{% url 'freelancer:create_connection' card.slug %}" method="post">
+                            <form action="{% url 'freelancer:create_connection' card.slug %}" method="post" class="flex-1 md:flex-none flex">
                             {% csrf_token %}
                             <input type="hidden" name="gig_slug" value="{{ gig.slug }}">
                             <button
                                 {% if total_pack.connection_limit == 0 %}disabled{% endif %}
-                                class="px-4 py-1.5 bg-[#0071e3] text-white rounded-sm font-semibold text-xs shadow-sm transition-all flex items-center gap-1.5
+                                class="w-full md:w-auto justify-center px-4 py-1.5 bg-[#0071e3] text-white rounded-sm font-semibold text-xs shadow-sm transition-all flex items-center gap-1.5
                                     {% if total_pack.connection_limit == 0 %}
                                     opacity-50 cursor-not-allowed
                                     {% else %}

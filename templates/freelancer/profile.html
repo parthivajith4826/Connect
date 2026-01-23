@@ -18,7 +18,7 @@
                     ></path>
                 </svg>
             </button>
-            <h1 class="text-lg md:text-xl font-bold text-slate-800">Edit Profile</h1>
+            <h1 class="text-lg md:text-xl font-bold text-slate-800">Profile</h1>
         </div>
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-3">
@@ -82,7 +82,7 @@
         <form class="space-y-8" method="post" action="" enctype="multipart/form-data">
             {% csrf_token %}
             <!-- Basic Info Card -->
-            <div class="bg-white rounded-sm shadow-sm border border-black/5 p-8 animate-enter">
+            <div class="bg-white rounded-sm shadow-sm border border-black/5 p-5 md:p-8 animate-enter">
                 {% if form1.non_field_errors or form2.non_field_errors %}
                 <div class="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-sm text-sm animate-enter">
                     {% for error in form1.non_field_errors %}
@@ -286,12 +286,12 @@
             </div>
 
             <div id="action-buttons" class="hidden flex justify-end gap-4">
-                <button
+                <a href="{% url "freelancer:home" %}"><button
                     type="button"
                     class="px-6 py-2.5 border border-slate-300 rounded-sm text-slate-700 hover:bg-slate-50 font-medium transition-colors"
                 >
                     Cancel
-                </button>
+                </button></a>
                 <button
                     type="submit"
                     class="px-6 py-2.5 bg-indigo-600 text-white rounded-sm hover:bg-indigo-700 font-medium shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 flex items-center gap-2"

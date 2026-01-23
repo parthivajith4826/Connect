@@ -22,11 +22,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
-            <a href="javascript:history.back()" class="text-slate-400 hover:text-slate-600 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-            </a>
             <h1 class="text-lg md:text-xl font-bold text-slate-800">Card Details</h1>
         </div>
         <div class="flex items-center gap-3">
@@ -44,7 +39,7 @@
             <div class="lg:col-span-2 space-y-8">
                 <!-- Header Info -->
                 <div class="border-b border-black/5 pb-8">
-                    <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-4 group">
+                    <a href="{% url 'freelancer:find_work' %}" class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-4 group">
                         <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
@@ -184,4 +179,20 @@
         </div>
     </div>
 </main>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // --- Message Fade Out Logic ---
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(el => {
+                el.style.transition = "opacity 1s ease-out, transform 1s ease-out";
+                el.style.opacity = "0";
+                el.style.transform = "translateY(-10px)";
+                setTimeout(() => {
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }, 1000);
+            });
+        }, 5000); // 5 seconds delay
+    });
+</script>
 {% endblock view_card %}

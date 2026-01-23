@@ -4,6 +4,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/png" href="{% static 'images/icon.png' %}">
         <title>Client Dashboard - FreelanceConnect</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link
@@ -36,9 +37,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
-
                 <!-- Logo Area -->
-                <div class="p-4 flex items-center gap-2 border-b border-white/5 flex-shrink-0">
+                <div class="p-4 flex items-center gap-2 flex-shrink-0">
                     <img src="{% static 'images/logo.png' %}" alt="Connect" class="h-10 w-auto object-contain" />
                 </div>
                 
@@ -173,23 +173,36 @@
                     class="flex-1 flex items-center justify-center p-6 opacity-30 pointer-events-none overflow-hidden relative"
                 >
                     <svg
-                        class="w-full h-auto text-indigo-500 animate-[spin_10s_linear_infinite]"
-                        viewBox="0 0 100 100"
-                        fill="none"
+                        class="w-full h-auto text-indigo-500/40"
+                        viewBox="0 0 200 200"
                         xmlns="http://www.w3.org/2000/svg"
                     >
-                        <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="1" stroke-dasharray="10 10" />
-                        <circle
-                            cx="50"
-                            cy="50"
-                            r="35"
-                            stroke="currentColor"
-                            stroke-width="1"
-                            stroke-dasharray="20 5"
-                            class="text-indigo-400 animate-[spin_15s_linear_infinite_reverse] origin-center"
-                        />
-                        <circle cx="50" cy="50" r="20" fill="currentColor" class="text-indigo-600/20 animate-pulse" />
-                        <circle cx="50" cy="50" r="10" fill="currentColor" class="text-indigo-300 animate-bounce" />
+                        <!-- Connections -->
+                        <g stroke="currentColor" stroke-width="1" stroke-linecap="round">
+                            <line x1="100" y1="100" x2="60" y2="60" class="opacity-50" />
+                            <line x1="100" y1="100" x2="140" y2="60" class="opacity-50" />
+                            <line x1="100" y1="100" x2="100" y2="150" class="opacity-50" />
+                            <line x1="60" y1="60" x2="140" y2="60" class="opacity-30" />
+                            <line x1="60" y1="60" x2="100" y2="150" class="opacity-30" />
+                            <line x1="140" y1="60" x2="100" y2="150" class="opacity-30" />
+                        </g>
+
+                        <!-- Nodes -->
+                        <circle cx="100" cy="100" r="6" fill="currentColor" class="text-indigo-400 animate-pulse" />
+                        <circle cx="60" cy="60" r="4" fill="currentColor" class="text-indigo-600">
+                            <animate attributeName="r" values="4;5;4" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="140" cy="60" r="4" fill="currentColor" class="text-indigo-600">
+                            <animate attributeName="r" values="4;5;4" dur="3s" begin="1s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="100" cy="150" r="4" fill="currentColor" class="text-indigo-600">
+                            <animate attributeName="r" values="4;5;4" dur="3s" begin="2s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <!-- Orbiting/Moving Particles -->
+                        <circle r="2" fill="white" class="opacity-50">
+                            <animateMotion path="M100 100 L60 60 L140 60 Z" dur="10s" repeatCount="indefinite" />
+                        </circle>
                     </svg>
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
                 </div>

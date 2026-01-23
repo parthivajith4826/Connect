@@ -87,7 +87,7 @@
     <div class="p-4 md:p-8 max-w-4xl mx-auto">
         <form class="space-y-8" action="" method="post" enctype="multipart/form-data" >
             {% csrf_token %}
-            <div class="bg-white rounded-sm shadow-sm border border-black/5 p-8 animate-enter">
+            <div class="bg-white rounded-sm shadow-sm border border-black/5 p-5 md:p-8 animate-enter">
             {% if form.non_field_errors %}
             <div class="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-sm text-sm">
                 {% for error in form.non_field_errors %}

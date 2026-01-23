@@ -93,7 +93,11 @@
                 </svg>
             </button>
             <!-- Back Button Functional -->
+            {% if request.GET.card %}
+            <a href="{% url 'freelancer:show_gigs' request.GET.card %}" class="text-slate-400 hover:text-slate-600 transition-colors">
+            {% else %}
             <a href="javascript:history.back()" class="text-slate-400 hover:text-slate-600 transition-colors">
+            {% endif %}
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                         stroke-linecap="round"
@@ -249,7 +253,8 @@
                         </div>
                     </div>
 
-                    {% comment %} <!-- Review Section (Copied from Proposal View) -->
+                    {% comment %}
+                    <!-- Review Section (Copied from Proposal View) -->
                     <div class="mt-8 pt-8 border-t border-slate-100 animate-enter delay-200">
                         <h4 class="text-xs font-semibold text-slate-900 mb-3 flex items-center gap-2">
                             <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -315,7 +320,8 @@
                                 </button>
                             </div>
                         </form>
-                    </div> {% endcomment %}
+                    </div>
+                    {% endcomment %}
                 </div>
             </div>
 

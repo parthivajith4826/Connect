@@ -73,12 +73,13 @@
             <div id="stats-section" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
                 <!-- Active Connections -->
                 <!-- Active Connections -->
+                <!-- Active Connections -->
                 <div
-                    class="bg-white p-6 rounded-sm shadow-sm border border-black/5 flex flex-col justify-between hover:shadow-md transition-shadow"
+                    class="bg-white p-5 md:p-6 rounded-sm shadow-sm border border-black/5 flex flex-col justify-between hover:shadow-md transition-shadow"
                 >
                     <div>
                         <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Active Connections</div>
-                        <div class="mt-2 text-3xl font-bold text-slate-900">{{ connections_count }}</div>
+                        <div class="mt-2 text-2xl md:text-3xl font-bold text-slate-900">{{ connections_count }}</div>
                     </div>
                     <div class="mt-4 text-sm text-green-600 flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +95,9 @@
                 </div>
 
                 <!-- Pending Requests -->
-                <div class="bg-white p-6 rounded-sm shadow-sm border border-black/5 hover:shadow-md transition-shadow">
+                <div
+                    class="bg-white p-5 md:p-6 rounded-sm shadow-sm border border-black/5 hover:shadow-md transition-shadow"
+                >
                     <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-4">Request Status</div>
                     <div class="grid grid-cols-3 gap-2 text-center divide-x divide-slate-100/50">
                         <div class="flex flex-col items-center">
@@ -125,7 +128,7 @@
                 <!-- Subscription Status -->
                 <a
                     href="{% url 'freelancer:subscription_details' %}"
-                    class="bg-white p-6 rounded-sm shadow-sm border border-black/5 flex flex-col justify-between decoration-none relative overflow-hidden hover:shadow-md transition-shadow"
+                    class="bg-white p-5 md:p-6 rounded-sm shadow-sm border border-black/5 flex flex-col justify-between decoration-none relative overflow-hidden hover:shadow-md transition-shadow"
                 >
                     <!-- Transparent Illustration -->
                     <div class="absolute right-0 bottom-0 opacity-[0.03] pointer-events-none">
@@ -149,7 +152,7 @@
 
                     <div class="relative z-10">
                         <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Subscription Status</div>
-                        <div class="mt-2 text-2xl font-bold text-slate-900">My Plans</div>
+                        <div class="mt-2 text-xl md:text-2xl font-bold text-slate-900">My Plans</div>
                     </div>
                     <div class="mt-4 flex items-center justify-between text-sm relative z-10">
                         <span class="text-slate-500 font-medium">View Details</span>

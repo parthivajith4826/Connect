@@ -84,7 +84,7 @@
 
             @media (min-width: 768px) {
                 .carousel-section {
-                    width: 40%; /* Reduced from 45% to give more room to details */
+                    width: 50%;
                     height: 100%;
                 }
             }
@@ -148,6 +148,34 @@
                 transform: scale(1.2);
             }
 
+            /* Zoom Toggle Button */
+            .zoom-toggle-btn {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+                z-index: 10;
+                background: rgba(0, 0, 0, 0.5);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: white;
+                width: 32px;
+                height: 32px;
+                border-radius: 4px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.2s;
+            }
+            .zoom-toggle-btn:hover {
+                background: rgba(0, 0, 0, 0.7);
+            }
+
+            /* Utility to switch object-fit */
+            .img-contain {
+                object-fit: contain !important;
+                background-color: #000; /* Dark background for letterboxed images */
+            }
+
             .wave-decoration {
                 position: absolute;
                 bottom: -1px;
@@ -176,7 +204,7 @@
 
             @media (min-width: 768px) {
                 .details-section {
-                    width: 60%;
+                    width: 50%;
                     padding: clamp(20px, 3vw, 32px); /* Fluid padding */
                 }
             }
@@ -429,6 +457,18 @@
                             ></path>
                         </svg>
                     </div>
+
+                    <!-- Zoom Toggle Button -->
+                    <button class="zoom-toggle-btn" onclick="toggleImageScale()" title="Toggle Zoom">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                            ></path>
+                        </svg>
+                    </button>
                 </div>
 
                 <div class="details-section">
@@ -520,6 +560,34 @@
             const carousel = document.getElementById("carousel");
             carousel.addEventListener("mouseenter", stopAutoSlide);
             carousel.addEventListener("mouseleave", startAutoSlide);
+
+            /* --- Zoom Toggle Logic --- */
+            function toggleImageScale() {
+                const images = document.querySelectorAll(".carousel-item img");
+                const btnIcon = document.querySelector(".zoom-toggle-btn svg path");
+
+                // Toggle state based on first image
+                const isContain = images[0].classList.contains("img-contain");
+
+                images.forEach((img) => {
+                    if (isContain) {
+                        img.classList.remove("img-contain");
+                    } else {
+                        img.classList.add("img-contain");
+                    }
+                });
+
+                // Update Icon
+                if (isContain) {
+                    // Switch back to "Zoom In" icon
+                    btnIcon.setAttribute("d", "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7");
+                } else {
+                    // Switch to "Zoom Out" icon (Minus)
+                    btnIcon.setAttribute("d", "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 10h6m-9 0H7"); // Simplified zoom-out
+                    // Better Zoom Out Icon: Magnifying glass with minus
+                    btnIcon.setAttribute("d", "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7");
+                }
+            }
 
             /* --- Description Toggle Logic --- */
             function toggleDescription() {
