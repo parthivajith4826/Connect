@@ -23,7 +23,7 @@
 <!-- Scrollable Vertical Area -->
                 <div class="flex-1 overflow-y-auto no-scrollbar">
                      <!-- Topbar -->
-                    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 w-full">
+                    <header class="bg-white/80 backdrop-blur-md border-b border-black/5 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-50 w-full">
                         <div class="flex items-center gap-4">
                             <!-- Mobile Menu Button -->
                             <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
@@ -37,12 +37,45 @@
                             <!-- Placeholder for user or actions if needed -->
                         </div>
                     </header>
-                    <div class="max-w-full pl-6 md:pl-12 py-12">
-                        <div class="mb-8 pr-6 md:pr-12">
-                            <h2 class="text-3xl font-semibold text-[#1d1d1f] tracking-tight">Choose your plan.</h2>
-                            <p class="text-[#86868b] mt-2 font-medium">
-                                Swipe to explore tools for every stage of your career.
-                            </p>
+                    <div class="max-w-full pl-6 md:pl-12 py-8">
+                        <!-- Hero Header Section -->
+                        <div class="mb-8 md:mb-12 pr-6 md:pr-12 relative overflow-hidden rounded-sm bg-gradient-to-r from-indigo-50 via-purple-50 to-white p-6 md:p-8 border border-indigo-100/50">
+                            <div class="flex flex-col md:flex-row items-center justify-between relative z-10">
+                                <div class="max-w-xl">
+                                    <h2 class="text-3xl md:text-4xl font-bold text-[#1d1d1f] tracking-tight mb-4 animate-slide-up">Choose your plan.</h2>
+                                    <p class="text-slate-600 text-base md:text-lg leading-relaxed mb-6 animate-slide-up" style="animation-delay: 100ms;">
+                                        Swipe to explore tools for every stage of your career. upgrading unlocks potential.
+                                    </p>
+                                    <div class="flex gap-4 animate-slide-up" style="animation-delay: 200ms;">
+                                        <div class="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            Secure Payment
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Decorative Standard UI Illustration -->
+                                <div class="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 opacity-90 pointer-events-none">
+                                     <svg class="w-64 h-64 animate-float" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="100" cy="100" r="80" fill="url(#gradHero)" opacity="0.1"/>
+                                        <path d="M60 140 L100 80 L140 120" stroke="url(#gradStroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" class="animate-draw-chart"/>
+                                        <circle cx="140" cy="120" r="6" fill="#818cf8" class="animate-ping-slow"/>
+                                        <rect x="40" y="40" width="40" height="40" rx="8" fill="white" stroke="#c084fc" stroke-width="2" transform="rotate(-10 60 60)"/>
+                                        <rect x="120" y="30" width="30" height="30" rx="6" fill="white" stroke="#818cf8" stroke-width="2" transform="rotate(15 135 45)"/>
+                                        
+                                        <defs>
+                                            <linearGradient id="gradHero" x1="0" y1="0" x2="200" y2="200">
+                                                <stop stop-color="#818cf8"/>
+                                                <stop offset="1" stop-color="#c084fc"/>
+                                            </linearGradient>
+                                            <linearGradient id="gradStroke" x1="60" y1="140" x2="140" y2="80">
+                                                <stop stop-color="#6366f1"/>
+                                                <stop offset="1" stop-color="#a855f7"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- 
@@ -54,109 +87,129 @@
                           - Added pt-4 to accommodate floating badges
                         -->
                           {{ error }}
-                        <div
-                            class="flex gap-6 overflow-x-auto snap-x snap-mandatory pt-4 pb-12 no-scrollbar px-1 pr-6 md:pr-12 items-stretch"
-                        >
-                            <!-- Card 1: Starter -->
-                            <div
-                                class="snap-start flex-shrink-0 w-[90vw] sm:w-[400px] bg-white rounded-3xl p-6 flex flex-col shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all duration-300"
-                            >
-                                <div class="mb-5">
+                        <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory pt-4 pb-12 no-scrollbar px-1 pr-6 md:pr-12 items-stretch">
+                            <!-- Card 1: Starter (Optimized) -->
+                            <div class="snap-start flex-shrink-0 w-[90vw] sm:w-[380px] bg-white rounded-sm p-6 flex flex-col shadow-sm border border-black/5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                                <!-- Subtle Background Decoration for "Empty Space" -->
+                                <div class="absolute bottom-[-10px] right-[-10px] opacity-[0.03] transform rotate-12 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+                                    <svg width="120" height="120" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M20 12a8 8 0 11-16 0 8 8 0 0116 0zM22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z"/>
+                                    </svg>
+                                </div>
+                                <div class="mb-5 relative z-10">
                                     <div class="flex items-center justify-between mb-2">
-                                        <h3 class="font-semibold text-[#1d1d1f] text-xl">{{ freeplan.title }}</h3>
-                                        
+                                        <h3 class="font-bold text-slate-800 text-xl">{{ freeplan.title }}</h3>
+                                        <span class="px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider rounded-full">Current</span>
                                     </div>
-                                    <p class="text-[#86868b] text-sm leading-relaxed">
+                                    <p class="text-slate-500 text-sm leading-relaxed min-h-[40px]">
                                         {{ freeplan.plantype.description }}
                                     </p>
                                 </div>
-                                <div class="grid grid-cols-2 gap-6 flex-1 mb-6 content-start">
-                                    <div>
-                                        <p class="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold mb-1">
-                                            Active Gigs
-                                        </p>
-                                        <p class="font-semibold text-[#1d1d1f] text-base">{{ freeplan.max_gigs }}</p>
+                                <div class="grid grid-cols-2 gap-y-6 gap-x-4 flex-1 mb-8 content-start relative z-10">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2 text-[#64748b] mb-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                            <span class="text-[11px] uppercase tracking-wider font-bold">Active Gigs</span>
+                                        </div>
+                                        <p class="font-bold text-slate-900 text-lg">{{ freeplan.max_gigs }}</p>
                                     </div>
-                                    {% comment %} <div>
-                                        <p class="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold mb-1">
-                                            Images / Gig
-                                        </p>
-                                        <p class="font-semibold text-[#1d1d1f] text-base">{{ freeplan.max_images_per_gig }}</p>
-                                    </div> {% endcomment %}
-                                    <div>
-                                        <p class="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold mb-1">
-                                            Connections
-                                        </p>
-                                        <p class="font-semibold text-[#1d1d1f] text-base">{{ freeplan.connection_limit }}</p>
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2 text-[#64748b] mb-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                            <span class="text-[11px] uppercase tracking-wider font-bold">Connections</span>
+                                        </div>
+                                        <p class="font-bold text-slate-900 text-lg">{{ freeplan.connection_limit }}</p>
                                     </div>
-                                    <div>
-                                        <p class="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold mb-1">
-                                            Duration
-                                        </p>
-                                        <p class="font-semibold text-[#1d1d1f] text-base">{{ freeplan.duration_days }}</p>
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2 text-[#64748b] mb-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            <span class="text-[11px] uppercase tracking-wider font-bold">Duration</span>
+                                        </div>
+                                        <p class="font-bold text-slate-900 text-lg">{{ freeplan.duration_days }} <span class="text-xs text-slate-500 font-normal">Days</span></p>
                                     </div>
                                 </div>
-                                <div class="mb-6 flex items-baseline gap-1">
-                                    <span class="text-3xl font-bold text-[#1d1d1f] tracking-tight">₹{{ freeplan.price }}</span>
+                                <div class="mt-auto pt-6 border-t border-slate-100 flex items-end justify-between relative z-10">
+                                    <div>
+                                        <span class="text-3xl font-bold text-slate-900 tracking-tight">₹{{ freeplan.price }}</span>
+                                        <span class="text-xs text-slate-500 block font-medium">Forever Free</span>
+                                    </div>
+                                    <button class="px-4 py-2 bg-slate-100 text-slate-600 rounded-sm text-sm font-semibold hover:bg-slate-200 transition-colors" disabled>
+                                        Active
+                                    </button>
                                 </div>
                             </div>
+
                             {% for subscription in subscriptions %}
-                            <!-- Card 3: Standard (Popular) -->
-                            <div
-                                class="snap-start flex-shrink-0 w-[90vw] sm:w-[400px] bg-[#1d1d1f] rounded-3xl p-6 flex flex-col shadow-2xl relative border border-gray-800"
-                            >
-                                <div
-                                    class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] uppercase font-bold px-3 py-1 rounded-full shadow-lg z-10"
-                                >
+                            <!-- Card: Paid Plans (Optimized) -->
+                            <!-- Removed overflow-hidden to allow badge to show properly -->
+                            <div class="snap-start flex-shrink-0 w-[90vw] sm:w-[380px] bg-[#1d1d1f] rounded-sm p-6 flex flex-col shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative border border-gray-800 group">
+                                <!-- Hover Glow Effect (Needs rounded corners since parent doesn't clip) -->
+                                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-sm"></div>
+                                
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] uppercase font-bold px-4 py-1.5 rounded-full shadow-lg z-20 tracking-wide border border-indigo-400 whitespace-nowrap">
                                     {{ subscription.title }}
                                 </div>
-                                <div class="mb-5">
+                                <div class="mb-5 relative z-10">
                                     <div class="flex items-center justify-between mb-2">
-                                        <h3 class="font-semibold text-white text-xl">{{ subscription.plantype.name }}</h3>
+                                        <h3 class="font-bold text-white text-xl">{{ subscription.plantype.name }}</h3>
                                     </div>
-                                    <p class="text-gray-400 text-sm leading-relaxed">
+                                    <p class="text-gray-400 text-sm leading-relaxed min-h-[40px]">
                                         {{ subscription.plantype.description }}
                                     </p>
                                 </div>
-                                <div class="grid grid-cols-2 gap-6 flex-1 mb-6 content-start">
-                                    <div>
-                                        <p class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
-                                            Active Gigs
-                                        </p>
-                                        <p class="font-semibold text-white text-base">{{ subscription.max_gigs }}</p>
+                                <div class="grid grid-cols-2 gap-y-6 gap-x-4 flex-1 mb-8 content-start relative z-10">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2 text-gray-500 mb-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                            <span class="text-[11px] uppercase tracking-wider font-bold">Active Gigs</span>
+                                        </div>
+                                        <p class="font-bold text-white text-lg">{{ subscription.max_gigs }}</p>
                                     </div>
-                                    {% comment %} <div>
-                                        <p class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
-                                            Images / Gig
-                                        </p>
-                                        <p class="font-semibold text-white text-base">{{ subscription.max_images_per_gig }}</p>
-                                    </div> {% endcomment %}
-                                    <div>
-                                        <p class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
-                                            Connections
-                                        </p>
-                                        <p class="font-semibold text-white text-base">{{ subscription.connection_limit }}</p>
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2 text-gray-500 mb-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                            <span class="text-[11px] uppercase tracking-wider font-bold">Connections</span>
+                                        </div>
+                                        <p class="font-bold text-white text-lg">{{ subscription.connection_limit }}</p>
                                     </div>
-                                    <div>
-                                        <p class="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
-                                            Duration
-                                        </p>
-                                        <p class="font-semibold text-white text-base">{{ subscription.duration_days }} Days</p>
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2 text-gray-500 mb-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            <span class="text-[11px] uppercase tracking-wider font-bold">Duration</span>
+                                        </div>
+                                        <p class="font-bold text-white text-lg">{{ subscription.duration_days }} <span class="text-xs text-gray-500 font-normal">Days</span></p>
                                     </div>
                                 </div>
-                                <div class="mb-6 flex items-baseline gap-1">
-                                    <span class="text-3xl font-bold text-white tracking-tight">₹{{ subscription.price }}</span>
-                                </div>
-                                <form action="{% url "freelancer:subscribe_start" subscription.slug %}">
-                                <button
-                                    class="w-full py-3 rounded-2xl bg-indigo-500 text-white font-semibold text-sm hover:bg-indigo-400 transition-colors shadow-lg shadow-indigo-500/30"
-                                >
-                                    Subscribe
-                                </button>
-                                </form>
+                                <div class="mt-auto pt-6 border-t border-gray-800 flex items-end justify-between relative z-10">
+                                    <div>
+                                        <span class="text-3xl font-bold text-white tracking-tight">₹{{ subscription.price }}</span>
+                                        <span class="text-xs text-gray-400 block font-medium">Auto-renewal</span>
+                                    </div>
+                                    <form action="{% url "freelancer:subscribe_start" subscription.slug %}">
+                                        <button class="px-6 py-2 bg-indigo-600 text-white rounded-sm text-sm font-semibold hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20">
+                                            Subscribe
+                                        </button>
+                                    </form>
+                                 </div>
                             </div>
                             {% endfor %}
                         </div>
+
+                        <!-- Animations CSS -->
+                        <style>
+                            @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                            .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+                            
+                            @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+                            .animate-float { animation: float 6s ease-in-out infinite; }
+                            
+                            @keyframes drawChart { from { stroke-dasharray: 100; stroke-dashoffset: 100; } to { stroke-dasharray: 100; stroke-dashoffset: 0; } }
+                            .animate-draw-chart { animation: drawChart 2s ease-out forwards; }
+                            
+                            @keyframes ping-slow { 75%, 100% { transform: scale(2); opacity: 0; } }
+                            .animate-ping-slow { animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite; }
+                        </style>
+                    </div>
 
                         <!-- Footnote -->
                         <div class="mt-4 text-center pb-8 pr-6 md:pr-12">

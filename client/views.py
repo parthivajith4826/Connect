@@ -502,13 +502,21 @@ def gig_details(request,gig_slug,card_slug):
     card = get_object_or_404(Card,slug = card_slug )
     connection = get_object_or_404(Connections,gig = gig,card = card)
     rating = Rating.objects.filter(reviewer = request.user,gig = gig,card = card).exists()
+    print("Oh my god")
+    print(rating)
+    total_rating = 0
+    for i in Rating.objects.filter( reviewee = gig.freelancer_id):
+        total_rating += i.stars
+    average_rating = 0
+    if total_rating > 0 :
+        average_rating = total_rating/Rating.objects.filter(reviewee = gig.freelancer_id).count()
     
     pricing = Pricing.objects.get(id = 1)
     wallet = get_object_or_404(Wallet,user = request.user)
     error = None
     if pricing.connection_price > wallet.balance :
         error = "Error: Insufficient funds. Unable to connect."
-    return render(request,"client/view_proposal_gig.html",{"gig":gig,"skills":skills,"card":card,"connection":connection,"rating":rating,"pricing":pricing,"error":error,"wallet":wallet})
+    return render(request,"client/view_proposal_gig.html",{"gig":gig,"skills":skills,"card":card,"connection":connection,"rating":rating,"pricing":pricing,"error":error,"wallet":wallet,"average_rating":average_rating})
 
 
 

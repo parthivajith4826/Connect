@@ -1,8 +1,89 @@
 {% extends 'freelancer/freelancer_base.html' %} {% load static %} {% block subscriptions %}
 <!-- Main Content -->
 <main class="flex-1 overflow-y-auto bg-gray-50">
+    <!-- Animations & Styles -->
+    <style>
+        /* Entry Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-card {
+            opacity: 0;
+            animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-100 {
+            animation-delay: 100ms;
+        }
+        .delay-200 {
+            animation-delay: 200ms;
+        }
+
+        /* SVG Animations */
+        @keyframes drawPath {
+            from {
+                stroke-dasharray: 100;
+                stroke-dashoffset: 100;
+            }
+            to {
+                stroke-dasharray: 100;
+                stroke-dashoffset: 0;
+            }
+        }
+        .animate-draw {
+            animation: drawPath 1.5s ease-out forwards;
+        }
+
+        @keyframes barGrow {
+            from {
+                transform: scaleY(0);
+            }
+            to {
+                transform: scaleY(1);
+            }
+        }
+        .animate-bar {
+            transform-origin: bottom;
+            animation: barGrow 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+        .animate-pulse-ring {
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
     <!-- Topbar (Matched to Home) -->
-    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 md:px-8">
+    <header class="bg-white border-b border-black/5 h-16 flex items-center justify-between px-4 md:px-8">
         <h1 class="text-lg md:text-xl font-bold text-slate-800">Subscription Status</h1>
         <div class="flex items-center gap-4">
             <a
@@ -65,78 +146,114 @@
         <!-- Summary Stats (Standard Grid with Transparent Illustration) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
             <div
-                class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden"
+                class="bg-white p-6 rounded-sm shadow-sm border border-black/5 flex flex-col justify-between relative overflow-hidden"
             >
                 <div class="relative z-10">
                     <div class="text-slate-500 text-sm font-medium uppercase tracking-wide">Total Gigs Available</div>
-                    <div class="mt-2 text-3xl font-bold text-slate-900">{{ total_pack.gig_count|default:"0" }}</div>
-                </div>
-                <!-- Transparent Illustration -->
-                <div class="absolute right-0 bottom-0 opacity-[0.03] pointer-events-none">
-                    <svg
-                        width="100"
-                        height="100"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        class="text-slate-900"
-                        xmlns="http://www.w3.org/2000/svg"
+                    <div
+                        class="mt-2 text-3xl font-bold text-slate-900 stat-counter"
+                        data-target="{{ total_pack.gig_count|default:'0' }}"
                     >
-                        <path
-                            d="M4 16L8.586 11.414C9.36706 10.6331 10.6329 10.6331 11.414 11.414L16 16M14 14L15.586 12.414C16.3671 11.6331 17.6329 11.633 18.414 12.414L20 14M14 8H14.01M6 20H18C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20Z"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                        0
+                    </div>
+                </div>
+                <!-- Animated Illustration: Gigs -->
+                <div class="absolute right-[-10px] bottom-[-10px] opacity-[0.08] pointer-events-none">
+                    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" class="text-indigo-900">
+                        <rect
+                            x="20"
+                            y="40"
+                            width="15"
+                            height="40"
+                            rx="2"
+                            fill="currentColor"
+                            class="animate-bar"
+                            style="animation-delay: 100ms"
                         />
+                        <rect
+                            x="45"
+                            y="25"
+                            width="15"
+                            height="55"
+                            rx="2"
+                            fill="currentColor"
+                            class="animate-bar"
+                            style="animation-delay: 200ms"
+                        />
+                        <rect
+                            x="70"
+                            y="50"
+                            width="15"
+                            height="30"
+                            rx="2"
+                            fill="currentColor"
+                            class="animate-bar"
+                            style="animation-delay: 300ms"
+                        />
+                        <path d="M15 85H85" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
                     </svg>
                 </div>
             </div>
             <div
-                class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden"
+                class="bg-white p-6 rounded-sm shadow-sm border border-black/5 flex flex-col justify-between relative overflow-hidden animate-card delay-100"
             >
                 <div class="relative z-10">
                     <div class="text-slate-500 text-sm font-medium uppercase tracking-wide">Total Connections</div>
-                    <div class="mt-2 text-3xl font-bold text-slate-900">{{ total_pack.connection_limit|default:"0" }}</div>
-                </div>
-                <!-- Transparent Illustration -->
-                <div class="absolute right-0 bottom-0 opacity-[0.03] pointer-events-none">
-                    <svg
-                        width="100"
-                        height="100"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        class="text-slate-900"
-                        xmlns="http://www.w3.org/2000/svg"
+                    <div
+                        class="mt-2 text-3xl font-bold text-slate-900 stat-counter"
+                        data-target="{{ total_pack.connection_limit|default:'0' }}"
                     >
-                        <path
-                            d="M17 20H22V18C22 16.3431 20.6569 15 19 15C18.6724 15 18.3562 15.0532 18.0628 15.1528M9 4C11.2091 4 13 5.79086 13 8C13 10.2091 11.2091 12 9 12C6.79086 12 5 10.2091 5 8C5 5.79086 6.79086 4 9 4ZM17 4C18.1046 4 19 4.89543 19 6C19 7.10457 18.1046 8 17 8C15.8954 8 15 7.10457 15 6C15 4.89543 15.8954 4 17 4ZM7 20H2V18C2 15.7909 3.79086 14 6 14H12C14.2091 14 16 15.7909 16 18V20H7Z"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                        0
+                    </div>
+                </div>
+                <!-- Animated Illustration: Connections -->
+                <div class="absolute right-[-5px] bottom-[-5px] opacity-[0.08] pointer-events-none">
+                    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" class="text-indigo-900">
+                        <circle cx="50" cy="50" r="8" fill="currentColor" class="animate-float" />
+                        <circle cx="50" cy="50" r="15" stroke="currentColor" stroke-width="2" class="animate-pulse-ring" />
+                        <circle
+                            cx="25"
+                            cy="75"
+                            r="5"
+                            fill="currentColor"
+                            class="animate-float"
+                            style="animation-delay: 500ms"
                         />
+                        <circle
+                            cx="75"
+                            cy="25"
+                            r="5"
+                            fill="currentColor"
+                            class="animate-float"
+                            style="animation-delay: 700ms"
+                        />
+                        <path d="M50 50L25 75M50 50L75 25" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" />
                     </svg>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+        <div class="bg-white rounded-sm shadow-sm border border-black/5 overflow-hidden animate-card delay-200">
+            <div class="px-6 py-4 border-b border-black/5 flex justify-between items-center bg-slate-50/50">
                 <h3 class="font-semibold text-slate-800">Active Subscriptions</h3>
             </div>
 
-            <div class="divide-y divide-slate-100">
+            <div class="divide-y divide-black/5">
                 {% for subscription in subscriptions %}
                 <!-- Compact Row -->
                 <div class="px-6 py-3 hover:bg-slate-50 transition-colors">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3">
-                                <h4 class="text-sm font-semibold text-slate-900">{{ subscription.subscription_pack.title }}</h4>
-                                {% comment %} <span
+                                <h4 class="text-sm font-semibold text-slate-900">
+                                    {{ subscription.subscription_pack.title }}
+                                </h4>
+                                {% comment %}
+                                <span
                                     class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700"
                                     >Active</span
-                                > {% endcomment %}
+                                >
+                                {% endcomment %}
                             </div>
                             <div class="mt-0.5 flex items-center gap-4 text-xs text-slate-500">
                                 <span>Expires: {{ subscription.end_date|date:"M d, Y" }}</span>
@@ -146,20 +263,92 @@
                         <div class="flex items-center gap-8 md:gap-12">
                             <div class="text-center min-w-[80px]">
                                 <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Gigs</div>
-                                <div class="font-bold text-slate-900 text-sm">{{ subscription.subscription_pack.max_gigs }}</div>
+                                <div class="font-bold text-slate-900 text-sm">
+                                    {{ subscription.subscription_pack.max_gigs }}
+                                </div>
                             </div>
                             <div class="text-center min-w-[80px]">
                                 <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
                                     Connections
                                 </div>
-                                <div class="font-bold text-slate-900 text-sm">{{ subscription.subscription_pack.connection_limit }}</div>
+                                <div class="font-bold text-slate-900 text-sm">
+                                    {{ subscription.subscription_pack.connection_limit }}
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+                {% empty %}
+                <div class="py-12 flex flex-col items-center justify-center text-center p-8 bg-white">
+                    <div
+                        class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mb-3 border border-black/5 relative"
+                    >
+                        <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            class="text-slate-400 absolute animate-float"
+                        >
+                            <path
+                                d="M20 12V22H4V12"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M22 7H2V12H22V7Z"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M12 22V7"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </div>
+                    <h3 class="text-slate-900 font-bold text-sm mb-1">No active subscriptions</h3>
+                    <p class="text-slate-500 text-xs max-w-xs mx-auto mb-4">Choose a plan to upgrade your limits.</p>
+                    <a
+                        href="{% url 'freelancer:subscriptions' %}"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-[#1d1d1f] text-white font-medium text-xs rounded-sm hover:bg-slate-800 transition-colors shadow-sm"
+                    >
+                        View Plans
+                    </a>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Counter Animation for Stats
+        const counters = document.querySelectorAll(".stat-counter");
+        const speed = 200; // The lower the slower
+
+        counters.forEach((counter) => {
+            const updateCount = () => {
+                const target = +counter.getAttribute("data-target");
+                const count = +counter.innerText;
+                const inc = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + inc);
+                    setTimeout(updateCount, 20);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            updateCount();
+        });
+    });
+</script>
 {% endblock %}

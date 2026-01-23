@@ -150,7 +150,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex justify-end gap-4">
+            <div id="action-buttons" class="hidden flex justify-end gap-4">
                 <button
                     type="button"
                     class="px-6 py-2 border border-slate-300 rounded-sm text-slate-700 hover:bg-slate-50 font-medium text-sm"
@@ -385,6 +385,25 @@
                 }, 500);
             });
         }, 5000);
+
+        // --- Interaction Logic for Buttons ---
+        const form = document.querySelector("form");
+        const actionButtons = document.getElementById("action-buttons");
+        let hasInteracted = false;
+
+        function showButtons() {
+            if (!hasInteracted && actionButtons) {
+                actionButtons.classList.remove("hidden");
+                // Optional: Add animation class if desired, e.g., actionButtons.classList.add("animate-fade-in");
+                hasInteracted = true;
+            }
+        }
+
+        if (form) {
+            form.addEventListener("focusin", showButtons);
+            form.addEventListener("input", showButtons);
+            form.addEventListener("change", showButtons);
+        }
     });
 </script>
 

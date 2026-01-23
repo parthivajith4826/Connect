@@ -1,25 +1,28 @@
 {% extends "freelancer\freelancer_base.html" %} {% block gig_view %}
 {% load static %}
 <style>
-    @keyframes bounce-slow {
-        0%, 100% {
-            transform: translateY(-15%);
-            animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-        }
-        50% {
-            transform: translateY(0);
-            animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-        }
-    }
-    .animate-bounce-slow {
-        animation: bounce-slow 2s infinite;
-    }
+    /* Entry Animations */
+    @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-enter { opacity: 0; animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .delay-100 { animation-delay: 100ms; }
+    .delay-200 { animation-delay: 200ms; }
+    .delay-300 { animation-delay: 300ms; }
+
+    /* SVG Animations */
+    @keyframes bounce-slow { 0%, 100% { transform: translateY(-15%); } 50% { transform: translateY(0); } }
+    .animate-bounce-slow { animation: bounce-slow 2s infinite; }
+    
+    @keyframes pulse-soft { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } }
+    .animate-pulse-soft { animation: pulse-soft 2s infinite; }
+    
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .animate-spin-slow { animation: spin-slow 8s linear infinite; }
 </style>
 
 <!-- Main Content -->
 <main class="flex-1 overflow-y-auto h-screen">
     <!-- Topbar -->
-    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
+    <header class="bg-white border-b border-black/5 h-16 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
         <div class="flex items-center gap-4">
              <!-- Mobile Menu Button -->
             <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
@@ -42,7 +45,7 @@
         <div class="flex items-center gap-4">
             {% comment %} <a
                 href="{% url 'freelancer:edit_gig' gig.slug %}"
-                class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium text-sm transition-colors"
+                class="px-4 py-2 border border-slate-300 rounded-sm text-slate-700 hover:bg-slate-50 font-medium text-sm transition-colors"
             >
                 Edit Gig
             </a> {% endcomment %}
@@ -55,13 +58,13 @@
                     src="{% static 'images/user.png' %}"
                     alt="Profile"
                     {% endif %}
-                    class="w-8 h-8 rounded-full"
+                    class="w-8 h-8 rounded-full border border-black/5"
                 />
             </div>
         </div>
     </header>
 
-    <div class="p-4 md:p-8 max-w-5xl mx-auto">
+    <div class="p-4 md:p-8 max-w-5xl mx-auto animate-enter">
         <div class="grid lg:grid-cols-3 gap-6 md:gap-8">
             <!-- Main Info -->
             <div class="lg:col-span-2 space-y-8">
@@ -74,7 +77,7 @@
                     />
                 </div> {% endcomment %}
 
-                <div class="relative overflow-hidden h-64 rounded-xl">
+                <div class="relative overflow-hidden h-64 rounded-sm border border-black/5">
     {% for img in gig.images.all %}
     <img
         src="{{ img.image.url }}"
@@ -92,7 +95,7 @@
 
 
                 <!-- Details -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+                <div class="bg-white rounded-sm shadow-sm border border-black/5 p-8">
                     <div class="flex justify-between items-start mb-4">
                         <h2 class="text-lg md:text-xl font-bold text-slate-900">{{ gig.title }}</h2>
                         {% if not gig.is_blocked %}
@@ -104,25 +107,16 @@
                     </div>
 
                     <div class="flex items-center gap-4 text-sm text-slate-500 mb-6">
-                        <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                                ></path>
+                        <span class="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <svg class="w-4 h-4 animate-pulse-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                             </svg>
                             {{ gig.categories }}
                         </span>
-                        <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
+                        <span class="flex items-center gap-1.5 text-slate-500 font-medium">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle>
+                                <path d="M12 6v6l4 2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                             {{ gig.created_at|timesince }} ago
                          </span>
@@ -132,7 +126,7 @@
                         {{ gig.description|safe }}
                     </div>
 
-                    <div class="mt-8 pt-8 border-t border-slate-100">
+                    <div class="mt-8 pt-8 border-t border-black/5">
                         <h3 class="text-lg font-bold text-slate-900 mb-4">Skills</h3>
                         
                         <div class="flex flex-wrap gap-2">
@@ -148,14 +142,14 @@
             </div>
 
             <!-- Sidebar Info -->
-            <div class="space-y-6">
+            <div class="space-y-6 sticky top-24 self-start">
                 <!-- Pricing Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                    <h3 class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Pricing</h3>
+                <div class="bg-white rounded-sm shadow-sm border border-black/5 p-6 animate-enter delay-100">
+                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-4">Pricing</h3>
                     <div class="flex items-baseline gap-1 mb-2">
-                        <span class="text-3xl font-bold text-slate-900">₹{{ gig.price_min }}</span>
-                        <span class="text-slate-500"> - </span>
-                        <span class="text-3xl font-bold text-slate-900">₹{{gig.price_max}}</span>
+                        <span class="text-xl font-bold text-slate-900">₹{{ gig.price_min }}</span>
+                        <span class="text-slate-400 text-sm"> - </span>
+                        <span class="text-xl font-bold text-slate-900">₹{{gig.price_max}}</span>
                     </div>
                     {% comment %} <p class="text-sm text-slate-500 mb-6">Estimated price range for this service.</p>
                     <div class="space-y-3">
@@ -194,8 +188,8 @@
                 </div> {% endcomment %}
 
                 <!-- Actions -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                    <h3 class="text-slate-500 text-sm font-medium uppercase tracking-wide mb-4">Actions</h3>
+                <div class="bg-white rounded-sm shadow-sm border border-black/5 p-6 animate-enter delay-200">
+                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-4">Actions</h3>
                     <div class="space-y-4"> <!-- Increased spacing from space-y-3 to space-y-4 -->
                         {% comment %} <button
                             class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
@@ -207,7 +201,7 @@
                          <button
                             id="shareBtn"
                             data-share-url="{{ request.scheme }}://{{ request.get_host }}{% url 'freelancer:gig_preview' gig.slug %}"
-                            class="w-full py-2.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 font-medium transition-colors flex items-center justify-center gap-2 group relative overflow-hidden"
+                            class="w-full py-2.5 bg-indigo-50 text-indigo-700 rounded-sm hover:bg-indigo-100 font-medium transition-colors flex items-center justify-center gap-2 group relative overflow-hidden"
                         >
                             <span class="absolute w-full h-full bg-indigo-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                             <div class="relative flex items-center gap-2">
@@ -219,7 +213,7 @@
                         </button>
 
                         <a href="{% url 'freelancer:edit_gig' gig.slug %}" class="block w-full text-decoration-none">
-                            <button class="w-full py-2.5 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium transition-colors flex items-center justify-center gap-2">
+                            <button class="w-full py-2.5 border border-slate-300 rounded-sm text-slate-700 hover:bg-slate-50 font-medium transition-colors flex items-center justify-center gap-2">
                                 <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
@@ -228,7 +222,7 @@
                         </a>
                         
                         <a href="{% url 'freelancer:close_gig' gig.slug %}" class="block w-full text-decoration-none">
-                            <button class="w-full py-2.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 font-medium transition-colors flex items-center justify-center gap-2">
+                            <button class="w-full py-2.5 border border-red-200 text-red-600 rounded-sm hover:bg-red-50 font-medium transition-colors flex items-center justify-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                 </svg>
@@ -266,7 +260,7 @@ function prevSlide() {
 {% comment %} Social Sharing Modal {% endcomment %}
 <div id="shareBox" style="display: none;" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm transition-opacity flex items-center justify-center p-4" aria-hidden="true">
     <!-- Modal Panel -->
-    <div class="w-full max-w-sm p-6 bg-white shadow-xl rounded-2xl animate-bounce-slow" style="animation: none;" onclick="event.stopPropagation()">
+    <div class="w-full max-w-sm p-6 bg-white shadow-xl rounded-sm animate-bounce-slow" style="animation: none;" onclick="event.stopPropagation()">
         
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-bold text-slate-900">Share this Gig</h3>
@@ -279,7 +273,7 @@ function prevSlide() {
 
         <div class="grid grid-cols-2 gap-4">
             <!-- WhatsApp -->
-            <a id="wa" target="_blank" class="flex flex-col items-center gap-3 group p-3 rounded-xl hover:bg-green-50 transition-colors">
+            <a id="wa" target="_blank" class="flex flex-col items-center gap-3 group p-3 rounded-sm hover:bg-green-50 transition-colors">
                 <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -289,7 +283,7 @@ function prevSlide() {
             </a>
 
             <!-- Telegram -->
-            <a id="tg" target="_blank" class="flex flex-col items-center gap-3 group p-3 rounded-xl hover:bg-sky-50 transition-colors">
+            <a id="tg" target="_blank" class="flex flex-col items-center gap-3 group p-3 rounded-sm hover:bg-sky-50 transition-colors">
                 <div class="w-12 h-12 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>

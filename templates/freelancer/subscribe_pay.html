@@ -4,7 +4,7 @@
 
 <div class="flex-1 overflow-y-auto w-full">
     <div class="min-h-full flex items-center justify-center py-16 px-4">
-        <div class="w-full max-w-md bg-[#1d1d1f] rounded-3xl p-8 shadow-2xl border border-gray-800">
+        <div class="w-full max-w-md bg-[#1d1d1f] rounded-sm p-8 shadow-2xl border border-gray-800">
             <!-- HEADER -->
             <div class="mb-6 text-center">
                 <h2 class="text-2xl font-semibold text-white">Subscribe to {{ pack.title }}</h2>
@@ -18,7 +18,7 @@
             </div>
 
             <!-- PAYMENT ELEMENT -->
-            <div id="payment-element" class="p-4 rounded-xl bg-white mb-4"></div>
+            <div id="payment-element" class="p-4 rounded-sm bg-white mb-4"></div>
 
             <!-- ERROR MESSAGE -->
             <div id="payment-error" class="hidden text-sm text-red-400 mb-4"></div>
@@ -26,7 +26,7 @@
             <!-- PAY BUTTON -->
             <button
                 id="payBtn"
-                class="w-full py-3 rounded-2xl bg-indigo-500 text-white font-semibold text-sm hover:bg-indigo-400 transition disabled:opacity-60"
+                class="w-full py-3 rounded-sm bg-indigo-500 text-white font-semibold text-sm hover:bg-indigo-400 transition disabled:opacity-60"
             >
                 Pay Now
             </button>
