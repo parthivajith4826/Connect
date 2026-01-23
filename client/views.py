@@ -501,7 +501,10 @@ def gig_details(request,gig_slug,card_slug):
     skills = skills.split(",")
     card = get_object_or_404(Card,slug = card_slug )
     connection = get_object_or_404(Connections,gig = gig,card = card)
-    rating = Rating.objects.filter(reviewer = request.user,gig = gig).first()
+    rating = Rating.objects.filter(reviewer = request.user,gig = gig).exists()
+    print(f"rating - {rating}")
+    # print(f"rating -- rating_reviewer - {rating.reviewer} , rating-gig - {Rating.gig} ")
+    
     pricing = Pricing.objects.get(id = 1)
     wallet = get_object_or_404(Wallet,user = request.user)
     error = None
