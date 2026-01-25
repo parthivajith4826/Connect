@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate,login
 from accounts.models import User
-from freelancer.models import Gig,Freelancer_Profile,GigImages
+from freelancer.models import Gig,Freelancer_Profile,GigImages,Connections
 from client.models import Card,Categories,WalletTransactions,Wallet,Card_images
 from django.http import Http404
 from .forms import CategoryForm,SubscriptionForm,PlanTypeForm,EditSubscriptionForm,EditPlanTypeForm,PricingForm
@@ -228,6 +228,9 @@ def freelancer_gig_list(request,profile_name):
     user = User.objects.filter(Profile_name = profile_name).first()
     gigs = Gig.objects.filter(freelancer_id = user)
     return render(request,"management/freelancer-gigs-list.html",{"user":user,"gigs":gigs})
+
+
+
 
 
 
@@ -975,3 +978,17 @@ def service_pricing(request):
     else :
         form = PricingForm(instance = pricing)
     return render(request,"management/service_pricing.html",{"form":form,"pricing":pricing})
+
+
+
+
+def freelancer_connections(request,id):
+    user = User.objects.get(id = id)
+    connections = Connections.objects.filter(user = user)
+    return render(request,"management/freelancer-connections.html",{"connections":connections})
+
+
+def client_connections(request,id):
+    user = User.objects.get(id = id)
+    connections = Connections.objects.filter(client_user = user)
+    return render(request,"management/clients/client-connections.html",{"connections":connections})

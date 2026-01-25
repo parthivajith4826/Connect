@@ -64,4 +64,8 @@ urlpatterns = [
     
     path("service-pricing",views.service_pricing,name = "service_pricing"),
     
+    
+    
+    path("freelancer-connections/<int:id>",views.freelancer_connections , name = "freelancer_connections"),
+    path("client-connections/<int:id>",views.client_connections , name = "client_connections"),
    ] 

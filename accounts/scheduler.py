@@ -12,10 +12,10 @@ def delete_invalid_users():
         is_verified = False,
         date_joined__lt=thirty_minutes_ago
     ).delete()
-    print("orale delete akeettende")
+    print("deleted the unverified user.")
 
 def start_scheduler():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(delete_invalid_users, 'interval', minutes=10)
+    scheduler.add_job(delete_invalid_users, 'interval', minutes=5)
     scheduler.start()
 
