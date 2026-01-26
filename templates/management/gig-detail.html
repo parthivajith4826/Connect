@@ -1,11 +1,11 @@
-{% extends "management\management_base.html" %} {% block general %}
+{% extends "management/management_base.html" %} {% block general %}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <!-- Main Info -->
     <div class="md:col-span-2 space-y-6">
         <!-- Header & Back Button -->
         <div class="bg-white shadow rounded-lg p-4 sm:p-6 mb-4 flex items-center justify-between">
             <div>
-                <h3 class="text-xl font-bold leading-none text-gray-900 mb-2">{{ gig.title }}</h3>
+                <h3 class="text-lg sm:text-xl font-bold leading-none text-gray-900 mb-2">{{ gig.title }}</h3>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                     {{ gig.categories }}
                 </span>

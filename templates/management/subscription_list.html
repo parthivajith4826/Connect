@@ -1,4 +1,4 @@
-{% extends "management\management_base.html" %} {% block general %}
+{% extends "management/management_base.html" %} {% block general %}
 
 <div class="flex flex-col min-h-full">
     <main class="flex-grow pt-6 px-4">
@@ -8,8 +8,8 @@
                         TAB NAVIGATION HEADER
                         -->
                 <div class="border-b border-gray-200 mb-6">
-                    <div class="flex items-center justify-between">
-                        <ul class="flex flex-wrap -mb-px">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 pb-4 sm:pb-0">
+                        <ul class="flex flex-wrap -mb-px justify-center sm:justify-start">
                             <li class="mr-2">
                                 <button
                                     onclick="switchTab('subscription')"
@@ -30,12 +30,13 @@
                             </li>
                         </ul>
                         <!-- Create Button (Only visible for Subscription Packs) -->
-                        <div class="flex-shrink-0" id="create-btn-container">
+                        <div class="flex-shrink-0 w-full sm:w-auto" id="create-btn-container">
                             <a
                                 href="{% url "control_panel:create_subscriptions" %}"
-                                class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center px-4 py-2"
+                                class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center px-4 py-2 w-full block sm:inline-block"
                             >
-                                Create New Subscription Pack
+                                <span class="hidden sm:inline">Create New Subscription Pack</span>
+                                <span class="sm:hidden">Create New Pack</span>
                             </a>
                         </div>
                     </div>

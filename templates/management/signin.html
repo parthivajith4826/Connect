@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="overflow-x-hidden">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Sign In | Admin Dashboard</title>
+        <link rel="icon" type="image/png" href="{% static 'images/icon.png' %}">
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -94,7 +96,8 @@
         <div class="content-wrapper w-full flex flex-col items-center justify-center">
             <!-- Logo / Brand -->
             <a href="#" class="flex items-center justify-center mb-8 text-2xl font-semibold lg:mb-10 text-gray-900 drop-shadow-sm">
-                <span class="self-center whitespace-nowrap text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
+                <img src="{% static 'images/icon.png' %}" class="h-10 w-10 mr-3" alt="Logo">
+                <span class="self-center whitespace-nowrap text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
                     AdminPanel
                 </span>
             </a>
