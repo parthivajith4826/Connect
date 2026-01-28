@@ -29,9 +29,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = [
+    "freelanceconnect.online",
+    "www.freelanceconnect.online",
+    "127.0.0.1",
+    "localhost",
+    "3.110.119.27",
+]
+
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -123,13 +133,14 @@ WSGI_APPLICATION = 'connect.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('NAME'),
-        'USER': os.getenv('USER'),
-        'PASSWORD': os.getenv('PASSWORD'),
-        'HOST': os.getenv('HOST'),
-        'PORT': os.getenv('PORT'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
+
 
 
 # Password validation
@@ -196,24 +207,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 
-#allauth
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': os.getenv("GOOGLE_CLIENT_ID"),
-            'secret': os.getenv("GOOGLE_SECRET"),
-            'key': ""
-        },
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
-
 
 #allauth
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
@@ -229,6 +222,7 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # SOCIALACCOUNT_QUERY_EMAIL = True
 
 SOCIALACCOUNT_ADAPTER = "accounts.adapters.MySocialAccountAdapter"
+
 
 
 
@@ -268,3 +262,12 @@ MESSAGE_TAGS = {
 }
 
 ACCOUNT_ADAPTER = "freelancer.adapters.NoMessageAccountAdapter"
+
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://freelanceconnect.online",
+    "https://www.freelanceconnect.online",
+]
+

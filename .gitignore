@@ -5,21 +5,25 @@ __pycache__/
 # Database
 db.sqlite3
 
-# Virtual environment
+# Virtual environments
 env/
 env1/
 venv/
 .venv/
 
-# Environment variables
+# Environment variables (CRITICAL)
 .env
+.env.*
 
-# Django static files
+# Django static & media
 staticfiles/
+media/
 
 # VS Code
 .vscode/
 
-media/
+# Backup / temp files
+*.save
 
+# JS secrets
 creditial.js

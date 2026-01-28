@@ -223,7 +223,7 @@ def role(request):
             else :
                 user.role = role
                 user.save()
-                Wallet.objects.create(user = request.user)
+                Wallet.objects.create(user = user)
             
             request.session['user_email'] = email
             
