@@ -593,8 +593,6 @@ def my_connections(request):
 
 
 
-@login_required(login_url=reverse_lazy('accounts:landing_page'))
-@never_cache
 def gig_preview(request,slug):
     gig = Gig.objects.filter(slug = slug).first()
     skills = gig.skills
