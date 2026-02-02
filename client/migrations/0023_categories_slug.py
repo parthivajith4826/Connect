@@ -7,13 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('client', '0022_wallet_is_blocked'),
+        ("client", "0022_wallet_is_blocked"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='categories',
-            name='slug',
-            field=autoslug.fields.AutoSlugField(blank=True, editable=False, populate_from='name'),
+            model_name="categories",
+            name="slug",
+            field=autoslug.fields.AutoSlugField(
+                blank=True, editable=False, populate_from="name"
+            ),
         ),
     ]

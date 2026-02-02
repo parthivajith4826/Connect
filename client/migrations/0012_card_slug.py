@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('client', '0011_alter_card_client_id'),
+        ("client", "0011_alter_card_client_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='card',
-            name='slug',
+            model_name="card",
+            name="slug",
             field=models.SlugField(blank=True, max_length=255, unique=True),
         ),
     ]
