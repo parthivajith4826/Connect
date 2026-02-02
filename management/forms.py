@@ -1,9 +1,11 @@
+import re
 
 from django import forms
 from django.core.exceptions import ValidationError
+
 from client.models import Categories
-from .models import SubscriptionPack,Plantype,Pricing
-import re
+
+from .models import Plantype, Pricing, SubscriptionPack
 
 
 class CategoryForm(forms.ModelForm):
@@ -28,14 +30,21 @@ class CategoryForm(forms.ModelForm):
             raise forms.ValidationError("This category already exists.")
 
         return name.strip()
-    
-    
+
+
 class SubscriptionForm(forms.ModelForm):
     class Meta:
         model = SubscriptionPack
-        fields = ["title","plantype","max_gigs","connection_limit","duration_days","price","is_free"]
-        
-        
+        fields = [
+            "title",
+            "plantype",
+            "max_gigs",
+            "connection_limit",
+            "duration_days",
+            "price",
+            "is_free",
+        ]
+
     def clean_title(self):
         title = self.cleaned_data.get("title")
 
@@ -44,19 +53,14 @@ class SubscriptionForm(forms.ModelForm):
 
         title = title.strip()
 
-        # # No spaces inside
-        # if " " in title:
-        #     raise ValidationError("Spaces are not allowed in the title.")
-
         # Length check
         if len(title) < 3:
             raise ValidationError("Title must be at least 3 characters long.")
 
         # block special characters
-        if not re.match(r'^[A-Za-z ]+$', title):
+        if not re.match(r"^[A-Za-z ]+$", title):
             raise ValidationError("Only letters are allowed.")
-        
-        
+
         if SubscriptionPack.objects.filter(title__iexact=title).exists():
             raise forms.ValidationError("This title already exists.")
 
@@ -97,8 +101,6 @@ class SubscriptionForm(forms.ModelForm):
 
         return price
 
-    
-
     def clean(self):
         cleaned_data = super().clean()
 
@@ -108,44 +110,42 @@ class SubscriptionForm(forms.ModelForm):
         # Free plan logic
         if is_free:
             if price != 0:
-                raise ValidationError(
-                    "Free plans must have a price of 0."
-                )
+                raise ValidationError("Free plans must have a price of 0.")
         else:
             if price == 0:
-                raise ValidationError(
-                    "Paid plans must have a price greater than 0."
-                )
+                raise ValidationError("Paid plans must have a price greater than 0.")
 
         return cleaned_data
-
 
 
 class EditSubscriptionForm(forms.ModelForm):
     class Meta:
         model = SubscriptionPack
-        fields = ["title","plantype","max_gigs","max_images_per_gig","connection_limit","duration_days","price","is_free"]
-        
-        
+        fields = [
+            "title",
+            "plantype",
+            "max_gigs",
+            "max_images_per_gig",
+            "connection_limit",
+            "duration_days",
+            "price",
+            "is_free",
+        ]
+
     def clean_title(self):
         title = self.cleaned_data.get("title")
-        print(title)
 
         if not title:
             raise ValidationError("Title is required.")
 
         title = title.strip()
 
-        # # No spaces inside
-        # if " " in title:
-        #     raise ValidationError("Spaces are not allowed in the title.")
-
         # Length check
         if len(title) < 3:
             raise ValidationError("Title must be at least 3 characters long.")
 
         # block special characters
-        if not re.match(r'^[A-Za-z ]+$', title):
+        if not re.match(r"^[A-Za-z ]+$", title):
             raise ValidationError("Only letters are allowed.")
 
         return title
@@ -193,8 +193,6 @@ class EditSubscriptionForm(forms.ModelForm):
 
         return price
 
-    
-
     def clean(self):
         cleaned_data = super().clean()
 
@@ -204,17 +202,12 @@ class EditSubscriptionForm(forms.ModelForm):
         # Free plan logic
         if is_free:
             if price != 0:
-                raise ValidationError(
-                    "Free plans must have a price of 0."
-                )
+                raise ValidationError("Free plans must have a price of 0.")
         else:
             if price == 0:
-                raise ValidationError(
-                    "Paid plans must have a price greater than 0."
-                )
+                raise ValidationError("Paid plans must have a price greater than 0.")
 
         return cleaned_data
-
 
 
 class PlanTypeForm(forms.ModelForm):
@@ -222,10 +215,8 @@ class PlanTypeForm(forms.ModelForm):
         model = Plantype
         fields = ["name", "description"]
 
-
     def clean_name(self):
         name = self.cleaned_data.get("name")
-        print(name)
         if not name:
             raise ValidationError("Plan type name is required.")
 
@@ -234,20 +225,16 @@ class PlanTypeForm(forms.ModelForm):
         if len(name) < 2:
             raise ValidationError("Minimum 2 characters should be there.")
 
-        if not re.match(r'^[A-Za-z ]+$', name):
+        if not re.match(r"^[A-Za-z ]+$", name):
             raise ValidationError("Only letters are allowed.")
-        
-        
+
         if Plantype.objects.filter(name__iexact=name).exists():
             raise forms.ValidationError("This title already exists.")
 
         return name
 
-    
     def clean_description(self):
         description = self.cleaned_data.get("description")
-        print(description)
-
         # Description is optional
         if not description:
             return description
@@ -260,15 +247,11 @@ class PlanTypeForm(forms.ModelForm):
 
         # Minimum length
         if len(description) < 10:
-            raise ValidationError(
-                "Description must be at least 10 characters long."
-            )
+            raise ValidationError("Description must be at least 10 characters long.")
 
         # Maximum length
         if len(description) > 300:
-            raise ValidationError(
-                "Description cannot exceed 300 characters."
-            )
+            raise ValidationError("Description cannot exceed 300 characters.")
 
         # Block email addresses
         email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
@@ -281,13 +264,12 @@ class PlanTypeForm(forms.ModelForm):
             raise ValidationError("Phone numbers are not allowed.")
 
         return description
-    
-    
+
+
 class EditPlanTypeForm(forms.ModelForm):
     class Meta:
         model = Plantype
         fields = ["name", "description"]
-
 
     def clean_name(self):
         name = self.cleaned_data.get("name")
@@ -299,12 +281,11 @@ class EditPlanTypeForm(forms.ModelForm):
         if len(name) < 2:
             raise ValidationError("Minimum 2 characters should be there.")
 
-        if not re.match(r'^[A-Za-z ]+$', name):
+        if not re.match(r"^[A-Za-z ]+$", name):
             raise ValidationError("Only letters are allowed.")
 
         return name
 
-    
     def clean_description(self):
         description = self.cleaned_data.get("description")
 
@@ -320,15 +301,11 @@ class EditPlanTypeForm(forms.ModelForm):
 
         # Minimum length
         if len(description) < 10:
-            raise ValidationError(
-                "Description must be at least 10 characters long."
-            )
+            raise ValidationError("Description must be at least 10 characters long.")
 
         # Maximum length
         if len(description) > 300:
-            raise ValidationError(
-                "Description cannot exceed 300 characters."
-            )
+            raise ValidationError("Description cannot exceed 300 characters.")
 
         # Block email addresses
         email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
@@ -341,21 +318,19 @@ class EditPlanTypeForm(forms.ModelForm):
             raise ValidationError("Phone numbers are not allowed.")
 
         return description
-
-
-
-
 
 
 class PricingForm(forms.ModelForm):
 
     class Meta:
         model = Pricing
-        fields = ['card_creation_price','connection_price',]
+        fields = [
+            "card_creation_price",
+            "connection_price",
+        ]
 
-    
     def clean_card_creation_price(self):
-        price = self.cleaned_data.get('card_creation_price')
+        price = self.cleaned_data.get("card_creation_price")
 
         if price is None:
             raise forms.ValidationError("Card creation price is required.")
@@ -365,9 +340,8 @@ class PricingForm(forms.ModelForm):
 
         return price
 
-    
     def clean_connection_price(self):
-        price = self.cleaned_data.get('connection_price')
+        price = self.cleaned_data.get("connection_price")
 
         if price is None:
             raise forms.ValidationError("Connection price is required.")

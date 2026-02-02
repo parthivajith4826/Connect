@@ -7,15 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0019_alter_rating_unique_together'),
-        ('client', '0023_categories_slug'),
+        ("accounts", "0019_alter_rating_unique_together"),
+        ("client", "0023_categories_slug"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='rating',
-            name='card',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='card', to='client.card'),
+            model_name="rating",
+            name="card",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="card",
+                to="client.card",
+            ),
             preserve_default=False,
         ),
     ]

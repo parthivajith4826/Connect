@@ -7,18 +7,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('client', '0009_card_images'),
+        ("client", "0009_card_images"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='card_images',
-            name='card_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='image', to='client.card'),
+            model_name="card_images",
+            name="card_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="image",
+                to="client.card",
+            ),
         ),
         migrations.AlterField(
-            model_name='card_images',
-            name='image',
-            field=models.ImageField(upload_to='card_images/'),
+            model_name="card_images",
+            name="image",
+            field=models.ImageField(upload_to="card_images/"),
         ),
     ]

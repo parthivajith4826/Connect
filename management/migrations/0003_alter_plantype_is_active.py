@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('management', '0002_subscriptionpack'),
+        ("management", "0002_subscriptionpack"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='plantype',
-            name='is_active',
+            model_name="plantype",
+            name="is_active",
             field=models.BooleanField(default=True),
         ),
     ]

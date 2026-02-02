@@ -6,19 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('freelancer', '0005_rating'),
+        ("freelancer", "0005_rating"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='rating',
+            name="rating",
             unique_together=None,
         ),
         migrations.RemoveConstraint(
-            model_name='rating',
-            name='stars_between_1_and_5',
+            model_name="rating",
+            name="stars_between_1_and_5",
         ),
         migrations.DeleteModel(
-            name='Rating',
+            name="Rating",
         ),
     ]

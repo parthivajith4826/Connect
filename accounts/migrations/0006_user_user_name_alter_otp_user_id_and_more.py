@@ -8,23 +8,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0005_otp'),
+        ("accounts", "0005_otp"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='user_name',
+            model_name="user",
+            name="user_name",
             field=models.CharField(blank=True, max_length=255, null=True, unique=True),
         ),
         migrations.AlterField(
-            model_name='otp',
-            name='user_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='otps', to=settings.AUTH_USER_MODEL),
+            model_name="otp",
+            name="user_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="otps",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='profile_photo',
-            field=models.ImageField(blank=True, null=True, upload_to='profile_photo'),
+            model_name="user",
+            name="profile_photo",
+            field=models.ImageField(blank=True, null=True, upload_to="profile_photo"),
         ),
     ]

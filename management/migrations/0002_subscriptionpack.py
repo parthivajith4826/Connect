@@ -8,25 +8,45 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('management', '0001_initial'),
+        ("management", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SubscriptionPack',
+            name="SubscriptionPack",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('slug', autoslug.fields.AutoSlugField(editable=False, populate_from='title')),
-                ('max_gigs', models.PositiveIntegerField()),
-                ('max_images_per_gig', models.PositiveBigIntegerField(default=3)),
-                ('connection_limit', models.PositiveIntegerField()),
-                ('duration_days', models.PositiveIntegerField()),
-                ('price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('is_free', models.BooleanField(default=False)),
-                ('is_active', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('plantype', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='packs', to='management.plantype')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=100)),
+                (
+                    "slug",
+                    autoslug.fields.AutoSlugField(
+                        editable=False, populate_from="title"
+                    ),
+                ),
+                ("max_gigs", models.PositiveIntegerField()),
+                ("max_images_per_gig", models.PositiveBigIntegerField(default=3)),
+                ("connection_limit", models.PositiveIntegerField()),
+                ("duration_days", models.PositiveIntegerField()),
+                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("is_free", models.BooleanField(default=False)),
+                ("is_active", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "plantype",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="packs",
+                        to="management.plantype",
+                    ),
+                ),
             ],
         ),
     ]

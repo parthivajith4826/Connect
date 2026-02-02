@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0018_alter_rating_unique_together'),
-        ('freelancer', '0012_alter_connections_client_user'),
+        ("accounts", "0018_alter_rating_unique_together"),
+        ("freelancer", "0012_alter_connections_client_user"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='rating',
-            unique_together={('reviewer', 'gig')},
+            name="rating",
+            unique_together={("reviewer", "gig")},
         ),
     ]
