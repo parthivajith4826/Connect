@@ -5,8 +5,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 
-from freelancer.models import Gig
-
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -75,7 +73,7 @@ class Rating(models.Model):
     reviewee = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="received_ratings"
     )
-    gig = models.ForeignKey(Gig, on_delete=models.CASCADE)
+    gig = models.ForeignKey("freelancer.Gig", on_delete=models.CASCADE)
 
     card = models.ForeignKey(
         "client.Card", on_delete=models.CASCADE, related_name="card"
