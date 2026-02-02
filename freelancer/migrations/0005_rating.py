@@ -9,23 +9,63 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('freelancer', '0004_alter_freelancer_profile_user_id'),
+        ("freelancer", "0004_alter_freelancer_profile_user_id"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Rating',
+            name="Rating",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('stars', models.PositiveSmallIntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
-                ('freelancer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='received_ratings', to=settings.AUTH_USER_MODEL)),
-                ('gig', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='freelancer.gig')),
-                ('reviewer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='given_ratings', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "stars",
+                    models.PositiveSmallIntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(1),
+                            django.core.validators.MaxValueValidator(5),
+                        ]
+                    ),
+                ),
+                (
+                    "freelancer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="received_ratings",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "gig",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="freelancer.gig"
+                    ),
+                ),
+                (
+                    "reviewer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="given_ratings",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.CheckConstraint(condition=models.Q(('stars__gte', 1), ('stars__lte', 5)), name='stars_between_1_and_5')],
-                'unique_together': {('reviewer', 'gig')},
+                "constraints": [
+                    models.CheckConstraint(
+                        condition=models.Q(("stars__gte", 1), ("stars__lte", 5)),
+                        name="stars_between_1_and_5",
+                    )
+                ],
+                "unique_together": {("reviewer", "gig")},
             },
         ),
     ]

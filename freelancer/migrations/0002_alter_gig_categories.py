@@ -7,14 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('client', '0021_wallettransactions'),
-        ('freelancer', '0001_initial'),
+        ("client", "0021_wallettransactions"),
+        ("freelancer", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='gig',
-            name='categories',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categories', to='client.categories'),
+            model_name="gig",
+            name="categories",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="categories",
+                to="client.categories",
+            ),
         ),
     ]

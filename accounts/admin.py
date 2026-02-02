@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import User, Otp,Rating
 
-# Register your models here.
+from .models import Otp, Rating, User
 
 admin.site.register(User)
 admin.site.register(Otp)
