@@ -14,7 +14,6 @@ from management.models import SubscriptionPack, Total_pack, UserSubscription
 from .forms import Reset_passwordForm, SignupForm
 from .models import Otp, User
 
-
 @never_cache
 # Create your views here.
 def landing_page(request):
