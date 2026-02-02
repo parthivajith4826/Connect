@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("management", "0010_remove_subscriptionpack_is_current"),
+        ('management', '0010_remove_subscriptionpack_is_current'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="usersubscription",
-            name="connection_limit",
+            model_name='usersubscription',
+            name='connection_limit',
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name="usersubscription",
-            name="gig_count",
+            model_name='usersubscription',
+            name='gig_count',
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name="usersubscription",
-            name="gig_image_count",
+            model_name='usersubscription',
+            name='gig_image_count',
             field=models.IntegerField(default=0),
         ),
     ]

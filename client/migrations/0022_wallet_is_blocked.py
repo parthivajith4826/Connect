@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("client", "0021_wallettransactions"),
+        ('client', '0021_wallettransactions'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="wallet",
-            name="is_blocked",
+            model_name='wallet',
+            name='is_blocked',
             field=models.BooleanField(default=False),
         ),
     ]

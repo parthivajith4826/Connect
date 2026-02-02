@@ -7,42 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("client", "0020_wallet"),
+        ('client', '0020_wallet'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="WalletTransactions",
+            name='WalletTransactions',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("amount", models.DecimalField(decimal_places=2, max_digits=10)),
-                (
-                    "transaction_type",
-                    models.CharField(
-                        choices=[("credit", "Credit"), ("debit", "Debit")],
-                        max_length=20,
-                    ),
-                ),
-                (
-                    "stripe_payment_intent",
-                    models.CharField(blank=True, max_length=255, null=True),
-                ),
-                ("status", models.CharField(max_length=20)),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                (
-                    "wallet",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="client.wallet"
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('amount', models.DecimalField(decimal_places=2, max_digits=10)),
+                ('transaction_type', models.CharField(choices=[('credit', 'Credit'), ('debit', 'Debit')], max_length=20)),
+                ('stripe_payment_intent', models.CharField(blank=True, max_length=255, null=True)),
+                ('status', models.CharField(max_length=20)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('wallet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='client.wallet')),
             ],
         ),
     ]

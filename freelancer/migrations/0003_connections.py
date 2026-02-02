@@ -8,63 +8,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("client", "0023_categories_slug"),
-        ("freelancer", "0002_alter_gig_categories"),
+        ('client', '0023_categories_slug'),
+        ('freelancer', '0002_alter_gig_categories'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="Connections",
+            name='Connections',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                (
-                    "status",
-                    models.CharField(
-                        choices=[
-                            ("pending", "Pending"),
-                            ("accepted", "Accepted"),
-                            ("rejected", "Rejected"),
-                        ],
-                        default="pending",
-                        max_length=20,
-                    ),
-                ),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                (
-                    "card",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="connections",
-                        to="client.card",
-                    ),
-                ),
-                (
-                    "gig",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="connections",
-                        to="freelancer.gig",
-                    ),
-                ),
-                (
-                    "user",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('status', models.CharField(choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')], default='pending', max_length=20)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('card', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='connections', to='client.card')),
+                ('gig', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='connections', to='freelancer.gig')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                "unique_together": {("card", "gig")},
+                'unique_together': {('card', 'gig')},
             },
         ),
     ]

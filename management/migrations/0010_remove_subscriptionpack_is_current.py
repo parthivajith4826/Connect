@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("management", "0009_alter_subscriptiontransaction_payment_status"),
+        ('management', '0009_alter_subscriptiontransaction_payment_status'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name="subscriptionpack",
-            name="is_current",
+            model_name='subscriptionpack',
+            name='is_current',
         ),
     ]

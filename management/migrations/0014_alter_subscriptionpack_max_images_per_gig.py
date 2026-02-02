@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("management", "0013_alter_usersubscription_user"),
+        ('management', '0013_alter_usersubscription_user'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="subscriptionpack",
-            name="max_images_per_gig",
+            model_name='subscriptionpack',
+            name='max_images_per_gig',
             field=models.PositiveBigIntegerField(default=0),
         ),
     ]

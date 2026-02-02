@@ -11,98 +11,44 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("client", "0021_wallettransactions"),
+        ('client', '0021_wallettransactions'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="Freelancer_Profile",
+            name='Freelancer_Profile',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("phone_number", models.CharField(max_length=255, unique=True)),
-                ("T_user_name", models.CharField(max_length=255, unique=True)),
-                (
-                    "user_id",
-                    models.OneToOneField(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('phone_number', models.CharField(max_length=255, unique=True)),
+                ('T_user_name', models.CharField(max_length=255, unique=True)),
+                ('user_id', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name="Gig",
+            name='Gig',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("title", models.CharField(max_length=255)),
-                (
-                    "slug",
-                    autoslug.fields.AutoSlugField(
-                        blank=True, editable=False, populate_from="title", unique=True
-                    ),
-                ),
-                ("is_blocked", models.BooleanField(default=False)),
-                ("portfolio", models.CharField(max_length=255)),
-                ("price_max", models.IntegerField()),
-                ("price_min", models.IntegerField()),
-                ("skills", models.CharField(max_length=255)),
-                ("description", models.TextField()),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                (
-                    "categories",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="client.categories",
-                    ),
-                ),
-                (
-                    "freelancer_id",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=255)),
+                ('slug', autoslug.fields.AutoSlugField(blank=True, editable=False, populate_from='title', unique=True)),
+                ('is_blocked', models.BooleanField(default=False)),
+                ('portfolio', models.CharField(max_length=255)),
+                ('price_max', models.IntegerField()),
+                ('price_min', models.IntegerField()),
+                ('skills', models.CharField(max_length=255)),
+                ('description', models.TextField()),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('categories', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='client.categories')),
+                ('freelancer_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name="GigImages",
+            name='GigImages',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("image", models.ImageField(upload_to="gig_images/")),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                (
-                    "gig_id",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="images",
-                        to="freelancer.gig",
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('image', models.ImageField(upload_to='gig_images/')),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('gig_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='freelancer.gig')),
             ],
         ),
     ]

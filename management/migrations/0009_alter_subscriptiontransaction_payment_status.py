@@ -6,20 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("management", "0008_alter_usersubscription_end_date"),
+        ('management', '0008_alter_usersubscription_end_date'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="subscriptiontransaction",
-            name="payment_status",
-            field=models.CharField(
-                choices=[
-                    ("succeeded", "Succeeded"),
-                    ("failed", "Failed"),
-                    ("canceled", "Canceled"),
-                ],
-                max_length=50,
-            ),
+            model_name='subscriptiontransaction',
+            name='payment_status',
+            field=models.CharField(choices=[('succeeded', 'Succeeded'), ('failed', 'Failed'), ('canceled', 'Canceled')], max_length=50),
         ),
     ]

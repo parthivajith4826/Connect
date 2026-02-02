@@ -6,14 +6,14 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("accounts", "0020_rating_card"),
-        ("client", "0023_categories_slug"),
-        ("freelancer", "0012_alter_connections_client_user"),
+        ('accounts', '0020_rating_card'),
+        ('client', '0023_categories_slug'),
+        ('freelancer', '0012_alter_connections_client_user'),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name="rating",
-            unique_together={("reviewer", "gig", "card")},
+            name='rating',
+            unique_together={('reviewer', 'gig', 'card')},
         ),
     ]

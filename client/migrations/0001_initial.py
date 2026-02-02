@@ -15,41 +15,13 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="location",
+            name='location',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                (
-                    "location_name",
-                    models.CharField(blank=True, max_length=255, null=True),
-                ),
-                (
-                    "latitude",
-                    models.DecimalField(
-                        blank=True, decimal_places=6, max_digits=9, null=True
-                    ),
-                ),
-                (
-                    "longitude",
-                    models.DecimalField(
-                        blank=True, decimal_places=6, max_digits=9, null=True
-                    ),
-                ),
-                (
-                    "user_id",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="location",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('location_name', models.CharField(blank=True, max_length=255, null=True)),
+                ('latitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
+                ('longitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
+                ('user_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='location', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

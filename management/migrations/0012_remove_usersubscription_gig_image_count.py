@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("management", "0011_usersubscription_connection_limit_and_more"),
+        ('management', '0011_usersubscription_connection_limit_and_more'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name="usersubscription",
-            name="gig_image_count",
+            model_name='usersubscription',
+            name='gig_image_count',
         ),
     ]

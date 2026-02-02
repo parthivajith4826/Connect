@@ -6,24 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("client", "0006_alter_location_latitude_alter_location_longitude"),
+        ('client', '0006_alter_location_latitude_alter_location_longitude'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="Categories",
+            name='Categories',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("name", models.CharField(max_length=255)),
-                ("is_blocked", models.BooleanField(default=False)),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=255)),
+                ('is_blocked', models.BooleanField(default=False)),
             ],
         ),
     ]

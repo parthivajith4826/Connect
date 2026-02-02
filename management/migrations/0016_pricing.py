@@ -6,33 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("management", "0015_remove_usersubscription_connection_limit_and_more"),
+        ('management', '0015_remove_usersubscription_connection_limit_and_more'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="Pricing",
+            name='Pricing',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                (
-                    "card_creation_price",
-                    models.DecimalField(decimal_places=2, max_digits=10),
-                ),
-                (
-                    "connection_price",
-                    models.DecimalField(decimal_places=2, max_digits=10),
-                ),
-                ("is_active", models.BooleanField(default=True)),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                ("updated_at", models.DateTimeField(auto_now=True)),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('card_creation_price', models.DecimalField(decimal_places=2, max_digits=10)),
+                ('connection_price', models.DecimalField(decimal_places=2, max_digits=10)),
+                ('is_active', models.BooleanField(default=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

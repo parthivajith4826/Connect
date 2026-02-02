@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("management", "0003_alter_plantype_is_active"),
+        ('management', '0003_alter_plantype_is_active'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="plantype",
-            name="name",
+            model_name='plantype',
+            name='name',
             field=models.CharField(max_length=100, unique=True),
         ),
     ]

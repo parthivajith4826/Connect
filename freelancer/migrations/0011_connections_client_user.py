@@ -8,19 +8,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("freelancer", "0010_remove_connections_client_user"),
+        ('freelancer', '0010_remove_connections_client_user'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="connections",
-            name="client_user",
-            field=models.ForeignKey(
-                default=1,
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="user_client",
-                to=settings.AUTH_USER_MODEL,
-            ),
+            model_name='connections',
+            name='client_user',
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='user_client', to=settings.AUTH_USER_MODEL),
         ),
     ]

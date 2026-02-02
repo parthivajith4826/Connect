@@ -8,18 +8,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("client", "0010_alter_card_images_card_id_alter_card_images_image"),
+        ('client', '0010_alter_card_images_card_id_alter_card_images_image'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="card",
-            name="client_id",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="client",
-                to=settings.AUTH_USER_MODEL,
-            ),
+            model_name='card',
+            name='client_id',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='client', to=settings.AUTH_USER_MODEL),
         ),
     ]
