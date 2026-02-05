@@ -89,9 +89,20 @@
             </div>
         </div>
     </header>
-    {% if error %}
+{% if error %}
+  <div style="
+    background-color:#fdecea;
+    color:#b71c1c;
+    border:1px solid #f5c6cb;
+    padding:10px 14px;
+    border-radius:6px;
+    font-size:14px;
+    margin-top:10px;
+  ">
     {{ error }}
-    {% endif %}
+  </div>
+{% endif %}
+
     <!-- Messages -->
     {% if messages %}
     <div id="message-container" class="fixed top-6 left-1/2 -translate-x-1/2 space-y-3 z-50 w-full max-w-md pointer-events-none">

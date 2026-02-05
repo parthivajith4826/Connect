@@ -405,9 +405,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await response.json();
 
             if (data.success) {
-                const range = quill.getSelection();
-                quill.insertEmbed(range.index, 'image', data.url);
-            }
+                let range = quill.getSelection(true);
+
+		if (!range) {
+   		range = { index: quill.getLength() };
+				}
+
+		quill.insertEmbed(range.index, 'image', data.url);
+		quill.setSelection(range.index + 1);            }
         };
     }
 

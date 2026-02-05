@@ -491,6 +491,23 @@
     </div>
 </main>
 <script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+
     document.addEventListener("DOMContentLoaded", function () {
         // register resize module correctly
         Quill.register("modules/imageResize", window.ImageResize.default);
@@ -525,15 +542,21 @@
                 formData.append("image", file);
 
                 const response = await fetch("/quill/upload-image/", {
-                    method: "POST",
-                    body: formData,
-                });
+    		method: "POST",
+   		headers: {
+        	"X-CSRFToken": getCookie("csrftoken"),
+    		},
+    		body: formData,
+		});
+
 
                 const data = await response.json();
 
-                if (data.success) {
-                    const range = quill.getSelection();
-                    quill.insertEmbed(range.index, "image", data.url);
+                if (data.success && data.url){
+			const range = quill.getSelection(true); // force selection
+    			const index = range ? range.index : quill.getLength();
+    			quill.insertEmbed(index, "image", data.url);
+   			quill.setSelection(index + 1);
                 }
             };
         }
